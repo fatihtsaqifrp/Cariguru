@@ -78,8 +78,10 @@ async function waitForServer() {
 
   const tutor=await login('guru@trevy.id','guru123','tutor');
   const availability=await api('/api/tutor/availability',tutor,'PUT',{slots:[{day:'Senin',time:'14:00 - 17:00'}]});assert.equal(availability.response.status,200);
-  const nextMonday=new Date();nextMonday.setDate(nextMonday.getDate()+((8-nextMonday.getDay())%7||7));
-  const localDate=nextMonday.toISOString().slice(0,10);const scheduledAt=new Date(`${localDate}T14:00:00+07:00`).toISOString();
+  const nowJakarta=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));
+  nowJakarta.setDate(nowJakarta.getDate()+((8-nowJakarta.getDay())%7||7));
+  const localDate=`${nowJakarta.getFullYear()}-${String(nowJakarta.getMonth()+1).padStart(2,'0')}-${String(nowJakarta.getDate()).padStart(2,'0')}`;
+  const scheduledAt=new Date(`${localDate}T14:00:00+07:00`).toISOString();
   const match=await api(`/api/student/bookings/match?subject=Matematika&scheduledAt=${encodeURIComponent(scheduledAt)}`,student);assert.equal(match.response.status,200,JSON.stringify(match.payload));
   const booking=await api('/api/student/bookings',student,'POST',{subject:'Matematika',scheduledAt,freeTrial:false});assert.equal(booking.response.status,201,JSON.stringify(booking.payload));
   const tutorSchedule=await api('/api/tutor/sessions',tutor);assert(tutorSchedule.payload.some(session=>session.id===booking.payload.id));

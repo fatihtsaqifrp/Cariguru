@@ -1,4 +1,7 @@
 /* Netlify Serverless Function Handler for Trevy API */
+process.env.NETLIFY = 'true';
+process.env.TREVY_DB_PATH = '/tmp/trevy.sqlite';
+process.env.TREVY_UPLOAD_DIR = '/tmp/trevy-uploads';
 const serverless = require('serverless-http');
 const { app, seedDevelopmentUsers } = require('../../server.js');
 

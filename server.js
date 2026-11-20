@@ -18,12 +18,32 @@ const IS_PRODUCTION = process.env.NODE_ENV !== 'development';
 const COOKIE_NAME = 'trevy_session';
 const scrypt = promisify(crypto.scrypt);
 if (process.platform !== 'win32') process.umask(0o077);
-const isServerless = Boolean(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.VERCEL);
-const defaultDbDir = isServerless ? '/tmp' : path.join(__dirname, '..', 'trevy-data');
-const dbPath = process.env.TREVY_DB_PATH || path.join(defaultDbDir, 'trevy.sqlite');
-require('node:fs').mkdirSync(path.dirname(dbPath), { recursive: true, mode: 0o700 });
+const isServerless = Boolean(
+  process.env.NETLIFY ||
+  process.env.AWS_LAMBDA_FUNCTION_NAME ||
+  process.env.LAMBDA_TASK_ROOT ||
+  process.env.AWS_EXECUTION_ENV ||
+  process.env.VERCEL
+);
+let dbPath = isServerless
+  ? '/tmp/trevy.sqlite'
+  : (process.env.TREVY_DB_PATH && !process.env.TREVY_DB_PATH.startsWith('../')
+      ? path.resolve(process.env.TREVY_DB_PATH)
+      : path.join(__dirname, '..', 'trevy-data', 'trevy.sqlite'));
+
+try {
+  require('node:fs').mkdirSync(path.dirname(dbPath), { recursive: true, mode: 0o700 });
+} catch (err) {
+  if (err.code !== 'EEXIST') {
+    dbPath = '/tmp/trevy.sqlite';
+    require('node:fs').mkdirSync(path.dirname(dbPath), { recursive: true, mode: 0o700 });
+  }
+}
+
 const db = new Database(dbPath);
-if (process.platform !== 'win32') require('node:fs').chmodSync(dbPath, 0o600);
+if (process.platform !== 'win32') {
+  try { require('node:fs').chmodSync(dbPath, 0o600); } catch (_) {}
+}
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
 function runMigrations() {
@@ -40,9 +60,24 @@ function runMigrations() {
   }
 }
 runMigrations();
-const uploadDir = process.env.TREVY_UPLOAD_DIR || path.join(path.dirname(dbPath), 'trevy-uploads');
-fs.mkdirSync(uploadDir, { recursive: true, mode: 0o700 });
-if (process.platform !== 'win32') fs.chmodSync(uploadDir, 0o700);
+
+let uploadDir = isServerless
+  ? '/tmp/trevy-uploads'
+  : (process.env.TREVY_UPLOAD_DIR && !process.env.TREVY_UPLOAD_DIR.startsWith('../')
+      ? path.resolve(process.env.TREVY_UPLOAD_DIR)
+      : path.join(path.dirname(dbPath), 'trevy-uploads'));
+
+try {
+  fs.mkdirSync(uploadDir, { recursive: true, mode: 0o700 });
+} catch (err) {
+  if (err.code !== 'EEXIST') {
+    uploadDir = '/tmp/trevy-uploads';
+    fs.mkdirSync(uploadDir, { recursive: true, mode: 0o700 });
+  }
+}
+if (process.platform !== 'win32') {
+  try { fs.chmodSync(uploadDir, 0o700); } catch (_) {}
+}
 
 const now = () => new Date().toISOString();
 function standardSessionRate() {
