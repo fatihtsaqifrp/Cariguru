@@ -746,6 +746,224 @@ app.post('/api/payments/webhooks/xendit',(req,res)=>{
   res.sendStatus(200);
 });
 
+/* ── Midtrans Snap & BI-SNAP Local Sandbox Bridge API ── */
+
+app.post('/api/payments/bisnap/notify', (req, res) => {
+  const payment = paymentSettings();
+  const pubKey = payment.biSnapNotificationPublicKey;
+  const timestamp = req.get('x-timestamp') || '';
+  const signature = req.get('x-signature') || '';
+  const partnerId = req.get('x-partner-id') || '';
+  const channelId = req.get('channel-id') || '';
+  const bodyStr = JSON.stringify(req.body || {});
+
+  if (pubKey && signature) {
+    try {
+      const verifier = crypto.createVerify('RSA-SHA256');
+      verifier.update(`${req.method}:${req.originalUrl || req.url}:${bodyStr}:${timestamp}`);
+      const valid = verifier.verify(pubKey, signature, 'base64');
+      if (!valid && payment.mode === 'production') {
+        return res.status(401).json({ responseCode: '4010000', responseMessage: 'Unauthorized. Signature not match' });
+      }
+    } catch (_e) {
+      if (payment.mode === 'production') {
+        return res.status(401).json({ responseCode: '4010000', responseMessage: 'Invalid signature format' });
+      }
+    }
+  }
+
+  audit(null, 'payment.bisnap_notification', 'bisnap', partnerId || 'unknown', {
+    channelId,
+    timestamp,
+    body: req.body
+  });
+
+  res.status(200).json({
+    responseCode: '2000000',
+    responseMessage: 'Successful',
+    referenceNo: req.body?.referenceNo || req.body?.partnerReferenceNo || null
+  });
+});
+
+app.post('/api/admin/payments/bridge/midtrans-verify', requireAuth('admin'), requirePermission('admin.manage'), requireCsrf, asyncRoute(async (_req, res) => {
+  const payment = paymentSettings();
+  const serverKey = providerSecret(payment, 'midtrans', 'serverKey');
+  if (!serverKey) {
+    return res.status(400).json({ valid: false, error: 'Server Key Midtrans belum disimpan.' });
+  }
+
+  try {
+    const response = await fetch('https://api.sandbox.midtrans.com/v2/TREVY-PING-CHECK/status', {
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Basic ${Buffer.from(`${serverKey}:`).toString('base64')}`
+      }
+    });
+
+    if (response.status === 401) {
+      return res.status(401).json({
+        valid: false,
+        error: 'Midtrans Sandbox menolak Server Key (401 Unauthorized). Pastikan Server Key diawali "SB-Mid-server-".'
+      });
+    }
+
+    return res.json({
+      valid: true,
+      message: 'Koneksi ke Midtrans Sandbox berhasil! Server Key valid dan terautentikasi.',
+      mode: payment.mode || 'sandbox',
+      merchantId: payment.merchantId || null
+    });
+  } catch (err) {
+    return res.status(502).json({
+      valid: false,
+      error: `Gagal menghubungi server Midtrans Sandbox: ${err.message}`
+    });
+  }
+}));
+
+app.post('/api/admin/payments/bridge/midtrans-simulate-webhook', requireAuth('admin'), requirePermission('admin.manage'), requireCsrf, (req, res) => {
+  const { orderId, transactionStatus } = req.body || {};
+  if (!orderId) return res.status(400).json({ error: 'Order ID wajib diisi.' });
+
+  const tx = db.prepare("SELECT id,user_id,gateway,status,amount,metadata FROM transactions WHERE id=? AND kind='payment_gateway'").get(String(orderId));
+  if (!tx) return res.status(404).json({ error: `Transaksi ${orderId} tidak ditemukan.` });
+
+  const status = transactionStatus || 'settlement';
+  try {
+    if (status === 'settlement') {
+      finalizeGatewayPayment(tx, tx.amount);
+      return res.json({
+        success: true,
+        message: `Transaksi ${tx.id} berhasil diselesaikan (settlement). Sesi belajar telah dialokasikan ke pengguna.`,
+        status: 'paid'
+      });
+    } else if (['deny', 'cancel', 'expire'].includes(status)) {
+      db.prepare("UPDATE transactions SET status='failed' WHERE id=? AND status='pending'").run(tx.id);
+      return res.json({
+        success: true,
+        message: `Transaksi ${tx.id} ditandai sebagai ${status}.`,
+        status: 'failed'
+      });
+    }
+    return res.status(400).json({ error: 'Status simulasi tidak valid.' });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/api/admin/payments/bridge/bisnap-verify', requireAuth('admin'), requirePermission('admin.manage'), requireCsrf, asyncRoute(async (_req, res) => {
+  const payment = paymentSettings();
+  const clientId = payment.biSnapClientId;
+  const partnerId = payment.biSnapPartnerId;
+  const channelId = payment.biSnapChannelId;
+  const privKey = providerSecret(payment, 'midtrans', 'biSnapPrivateKey');
+  const clientSecret = providerSecret(payment, 'midtrans', 'biSnapClientSecret');
+  const merchantPubKey = payment.biSnapMerchantPublicKey;
+  const notifPubKey = payment.biSnapNotificationPublicKey;
+
+  const checks = {
+    metadata: {
+      hasClientId: Boolean(clientId),
+      hasPartnerId: Boolean(partnerId),
+      hasChannelId: Boolean(channelId && /^\d{5}$/.test(channelId)),
+      hasClientSecret: Boolean(clientSecret)
+    },
+    keys: {
+      privateKeyParsed: false,
+      merchantPublicKeyParsed: false,
+      notificationPublicKeyParsed: false,
+      rsaKeyPairMatches: false
+    },
+    sandboxB2BToken: {
+      tested: false,
+      success: false,
+      responseCode: null,
+      message: null
+    }
+  };
+
+  if (privKey) {
+    try {
+      crypto.createPrivateKey(privKey);
+      checks.keys.privateKeyParsed = true;
+    } catch (e) {
+      checks.keys.privateKeyError = e.message;
+    }
+  }
+
+  if (merchantPubKey) {
+    try {
+      crypto.createPublicKey(merchantPubKey);
+      checks.keys.merchantPublicKeyParsed = true;
+    } catch (e) {
+      checks.keys.merchantPublicKeyError = e.message;
+    }
+  }
+
+  if (notifPubKey) {
+    try {
+      crypto.createPublicKey(notifPubKey);
+      checks.keys.notificationPublicKeyParsed = true;
+    } catch (e) {
+      checks.keys.notificationPublicKeyError = e.message;
+    }
+  }
+
+  if (checks.keys.privateKeyParsed && checks.keys.merchantPublicKeyParsed) {
+    try {
+      const testData = Buffer.from('trevy-bisnap-crypto-test-' + Date.now());
+      const signature = crypto.sign('sha256', testData, privKey);
+      checks.keys.rsaKeyPairMatches = crypto.verify('sha256', testData, merchantPubKey, signature);
+    } catch (e) {
+      checks.keys.rsaMatchError = e.message;
+    }
+  }
+
+  if (clientId && checks.keys.privateKeyParsed) {
+    checks.sandboxB2BToken.tested = true;
+    try {
+      const timestamp = new Date().toISOString();
+      const stringToSign = `${clientId}|${timestamp}`;
+      const signature = crypto.sign('sha256', Buffer.from(stringToSign), privKey).toString('base64');
+
+      const response = await fetch('https://merchants.sbx.midtrans.com/v1.0/access-token/b2b', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-TIMESTAMP': timestamp,
+          'X-CLIENT-KEY': clientId,
+          'X-SIGNATURE': signature
+        },
+        body: JSON.stringify({ grantType: 'client_credentials', additionalInfo: {} }),
+        signal: AbortSignal.timeout(6000)
+      });
+
+      const data = await response.json().catch(() => ({}));
+      checks.sandboxB2BToken.responseCode = data.responseCode || response.status;
+      checks.sandboxB2BToken.responseMessage = data.responseMessage || response.statusText;
+
+      if (data.responseCode === '2007300') {
+        checks.sandboxB2BToken.success = true;
+        checks.sandboxB2BToken.message = 'B2B Token exchange berhasil! Kredensial terverifikasi oleh Midtrans Sandbox.';
+      } else {
+        checks.sandboxB2BToken.message = data.responseMessage || `Response ${response.status}: ${JSON.stringify(data)}`;
+      }
+    } catch (e) {
+      checks.sandboxB2BToken.message = `Gagal menghubungi Midtrans Sandbox B2B endpoint: ${e.message}`;
+    }
+  }
+
+  res.json({
+    status: checks.keys.rsaKeyPairMatches ? 'ready' : 'incomplete',
+    checks
+  });
+}));
+
+app.get('/api/admin/payments/bridge/pending-orders', requireAuth('admin'), requirePermission('admin.manage'), (_req, res) => {
+  const orders = db.prepare("SELECT id, amount, description, gateway, created_at AS date FROM transactions WHERE kind='payment_gateway' AND status='pending' ORDER BY created_at DESC LIMIT 20").all();
+  res.json({ orders });
+});
+
 app.post('/api/payments/simulate', requireAuth('student'), requirePermission('student.dashboard'), requireCsrf, (req, res) => {
   if (IS_PRODUCTION) return res.status(403).json({ error: 'Simulator pembayaran dimatikan di production.' });
   const pkg = db.prepare("SELECT id,package_key AS packageId,name,price,session_count AS sessions,duration_minutes AS durationMinutes FROM packages WHERE tenant_id='default' AND is_active=1 AND package_key=?").get(String(req.body?.packageId || ''));

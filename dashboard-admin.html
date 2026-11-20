@@ -635,41 +635,393 @@
                 <button class="btn btn--sm btn--outline" type="button" data-settings-tab="finance">Keuangan</button>
               </div>
               <section class="settings-pane active" data-settings-pane="branding">
-                <h3>Branding</h3><div class="settings-form-grid">
-                  <label class="form-group">Nama platform<input class="form-input" id="setting-platform-name" maxlength="100"></label>
-                  <label class="form-group">Tagline<input class="form-input" id="setting-tagline" maxlength="180"></label>
-                  <label class="form-group">Warna utama<input class="form-input" id="setting-primary-color" type="color" value="#4f46e5"></label>
-                  <label class="form-group">Logo (PNG, JPG, SVG, WebP; maks. 2 MB)<input class="form-input" id="setting-logo" type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp"></label>
-                  <label class="form-group">Favicon (PNG, JPG, SVG, WebP; maks. 2 MB)<input class="form-input" id="setting-favicon" type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp"></label>
-                </div><img id="setting-logo-preview" alt="Pratinjau logo" hidden style="max-width:180px;max-height:90px;object-fit:contain;margin:8px 0"><button class="btn btn--primary" type="button" onclick="saveTenantSettings('branding')">Simpan Branding</button>
-              </section>
-              <section class="settings-pane" data-settings-pane="general"><h3>Umum</h3><div class="settings-form-grid">
-                <label class="form-group">Email kontak<input class="form-input" id="setting-contact-email" type="email"></label><label class="form-group">Telepon kontak<input class="form-input" id="setting-contact-phone"></label><label class="form-group">Alamat<textarea class="form-input" id="setting-address"></textarea></label><label class="form-group">Zona waktu<select class="form-input" id="setting-timezone"><option>Asia/Jakarta</option><option>Asia/Makassar</option><option>Asia/Jayapura</option><option>UTC</option></select></label><label class="form-group">Mata uang<select class="form-input" id="setting-currency"><option>IDR</option><option>USD</option></select></label><label class="form-group">Bahasa<select class="form-input" id="setting-language"><option value="id">Indonesia</option><option value="en">English</option></select></label>
-              </div><button class="btn btn--primary" type="button" onclick="saveTenantSettings('general')">Simpan Umum</button></section>
-              <section class="settings-pane" data-settings-pane="payment"><h3>Payment Gateway</h3><p>Secret key dienkripsi di server dan tidak dapat dibaca kembali. Checkout sungguhan aktif setelah key dan webhook terpasang.</p><div class="settings-form-grid">
-                <label class="form-group">Provider aktif<select class="form-input" id="setting-provider" onchange="selectGatewayOption(this.value)"><option value="midtrans">Midtrans Snap</option><option value="xendit">Xendit Payment Session</option></select></label><label class="form-group">Mode<select class="form-input" id="setting-payment-mode"><option value="simulator">Simulator (development saja)</option><option value="sandbox">Sandbox / Test</option><option value="production">Production / Live</option></select></label><label class="form-group">Midtrans Merchant ID<input class="form-input" id="setting-merchant-id"></label><label class="form-group">Midtrans Snap Client Key (informasi)<input class="form-input" id="setting-client-key"></label><label class="form-group">Midtrans Snap Server Key<input class="form-input" id="setting-server-key" type="password" autocomplete="new-password" placeholder="Kosongkan agar key tersimpan tetap dipakai"></label><label class="form-group">Xendit Secret API Key<input class="form-input" id="setting-secret-key" type="password" autocomplete="new-password" placeholder="Kosongkan agar key tersimpan tetap dipakai"></label><label class="form-group">Xendit Public Key (informasi)<input class="form-input" id="setting-public-key"></label><label class="form-group">Xendit Webhook Verification Token<input class="form-input" id="setting-webhook-token" type="password" autocomplete="new-password" placeholder="Token dari pengaturan webhook Xendit"></label>
-              </div>
-              <div class="bisnap-settings">
-                <h4>Midtrans BI-SNAP Core API</h4>
-                <p>Konfigurasi ini terpisah dari Midtrans Snap checkout. Field BI-SNAP disimpan terenkripsi, tetapi transaksi BI-SNAP belum diaktifkan di checkout Trevy.</p>
-                <div class="settings-form-grid">
-                  <label class="form-group">BI-SNAP Environment<select class="form-input" id="setting-bisnap-mode"><option value="sandbox">Sandbox</option><option value="staging">Staging</option><option value="production">Production</option></select></label>
-                  <label class="form-group">BI-SNAP Client ID<input class="form-input" id="setting-bisnap-client-id" autocomplete="off"></label>
-                  <label class="form-group">BI-SNAP Partner ID<input class="form-input" id="setting-bisnap-partner-id" autocomplete="off"></label>
-                  <label class="form-group">BI-SNAP Channel ID (5 digit)<input class="form-input" id="setting-bisnap-channel-id" inputmode="numeric" maxlength="5"></label>
-                  <label class="form-group">BI-SNAP Client Secret<input class="form-input" id="setting-bisnap-client-secret" type="password" autocomplete="new-password" placeholder="Kosongkan agar secret tersimpan tetap dipakai"></label>
-                  <label class="form-group">Merchant Private Key (PKCS#8 PEM)<textarea class="form-input" id="setting-bisnap-private-key" rows="5" spellcheck="false" placeholder="Kosongkan agar private key tersimpan tetap dipakai"></textarea></label>
-                  <label class="form-group">Merchant Public Key yang didaftarkan ke Midtrans<textarea class="form-input" id="setting-bisnap-merchant-public-key" rows="5" spellcheck="false"></textarea></label>
-                  <label class="form-group">Midtrans Public Key untuk verifikasi notifikasi<textarea class="form-input" id="setting-bisnap-notification-public-key" rows="5" spellcheck="false"></textarea></label>
+                <div class="pg-section">
+                  <div class="pg-section__header">
+                    <h4 class="pg-section__title">🎨 Identitas &amp; Visual Platform</h4>
+                  </div>
+                  <div class="pg-grid pg-grid--2" style="padding-top: var(--sp-5);">
+                    <label class="pg-field">
+                      <span class="pg-field__label">Nama platform</span>
+                      <input class="pg-field__input" id="setting-platform-name" maxlength="100" placeholder="Trevy">
+                    </label>
+                    <label class="pg-field">
+                      <span class="pg-field__label">Tagline</span>
+                      <input class="pg-field__input" id="setting-tagline" maxlength="180" placeholder="Les Privat Terbaik di Semarang">
+                    </label>
+                  </div>
+                  <div class="pg-grid pg-grid--3">
+                    <label class="pg-field">
+                      <span class="pg-field__label">Warna utama</span>
+                      <div style="display:flex; align-items:center; gap:8px;">
+                        <input class="pg-field__input" id="setting-primary-color" type="color" value="#4f46e5" style="padding:4px; height:42px; width:60px; cursor:pointer; flex-shrink:0;">
+                        <span style="font-size:var(--fs-xs); color:var(--text-secondary); font-family:var(--font-mono);">Warna tema UI</span>
+                      </div>
+                    </label>
+                    <label class="pg-field">
+                      <span class="pg-field__label">Logo <span class="pg-field__hint">(PNG, JPG, SVG, WebP; maks. 2 MB)</span></span>
+                      <input class="pg-field__input" id="setting-logo" type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" style="padding:6px 12px; font-size:var(--fs-xs);">
+                    </label>
+                    <label class="pg-field">
+                      <span class="pg-field__label">Favicon <span class="pg-field__hint">(PNG, JPG, SVG, WebP; maks. 2 MB)</span></span>
+                      <input class="pg-field__input" id="setting-favicon" type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" style="padding:6px 12px; font-size:var(--fs-xs);">
+                    </label>
+                  </div>
+                  <div style="padding: 0 var(--sp-5) var(--sp-4);">
+                    <img id="setting-logo-preview" alt="Pratinjau logo" hidden style="max-width:180px; max-height:90px; object-fit:contain; border:1px solid var(--clr-neutral-200); border-radius:var(--radius-md); padding:6px; background:var(--clr-neutral-50);">
+                  </div>
                 </div>
-                <p id="setting-bisnap-status" aria-live="polite">Kredensial BI-SNAP belum lengkap.</p>
-                <p class="bisnap-hint">Midtrans perlu mengaktifkan BI-SNAP untuk akun merchant. Minta Client ID, Client Secret, Partner ID, dan Channel ID melalui proses credential exchange; daftarkan Merchant Public Key. Gunakan API HTTPS dan IP server yang diizinkan Midtrans.</p>
-              </div>
-              <div class="gateway-setup-note"><strong>Status koneksi</strong><p id="setting-gateway-status" aria-live="polite">Memeriksa konfigurasi…</p><p>Pasang URL webhook ini di dashboard provider setelah deploy dengan HTTPS:</p><code id="setting-gateway-webhook-url"></code><p>Atur <code>TREVY_PUBLIC_URL</code> ke alamat publik aplikasi. Secret Midtrans atau Xendit dan token webhook harus berasal dari environment yang sama dengan mode yang dipilih. Untuk Xendit, gunakan API key test atau live sesuai mode.</p><label class="gateway-webhook-confirm"><input type="checkbox" id="setting-webhook-ready"> Saya sudah memasang URL webhook di dashboard provider</label></div><p id="setting-secret-status" aria-live="polite">Secret gateway ditampilkan tersamarkan setelah disimpan.</p><button class="btn btn--primary" type="button" onclick="saveTenantSettings('payment')">Simpan Payment Gateway</button></section>
-              <section class="settings-pane" data-settings-pane="security"><h3>Keamanan</h3><div class="settings-form-grid"><label class="form-group">Panjang minimum sandi<input class="form-input" id="setting-password-min" type="number" min="12" max="128"></label><label class="form-group">Timeout sesi (menit)<input class="form-input" id="setting-session-timeout" type="number" min="5" max="1440"></label></div><button class="btn btn--primary" type="button" onclick="saveTenantSettings('security')">Simpan Keamanan</button></section>
-              <section class="settings-pane" data-settings-pane="operations"><h3>Tarif & Operasional</h3><div class="settings-form-grid"><label class="form-group">Tarif standar per sesi (Rp)<input class="form-input" id="setting-standard-rate" type="number" min="0"></label><label class="form-group">Kuota free trial<input class="form-input" id="setting-trial-quota" type="number" min="0"></label><label class="form-group">Durasi sesi (menit)<input class="form-input" id="setting-session-duration" type="number" min="15"></label></div><button class="btn btn--primary" type="button" onclick="saveTenantSettings('operations')">Simpan Operasional</button></section>
-              <section class="settings-pane" data-settings-pane="notifications"><h3>Notifikasi</h3><div class="settings-form-grid"><label class="form-group">Template pesan<input class="form-input" id="setting-notification-template"></label><label><input type="checkbox" id="setting-notification-enabled"> Notifikasi aktif</label></div><button class="btn btn--primary" type="button" onclick="saveTenantSettings('notifications')">Simpan Notifikasi</button></section>
-              <section class="settings-pane" data-settings-pane="finance"><h3>Keuangan</h3><div class="settings-form-grid"><label class="form-group">Bagan akun / COA<input class="form-input" id="setting-coa"></label><label class="form-group">Periode akuntansi<input class="form-input" id="setting-accounting-period" placeholder="Bulanan"></label></div><button class="btn btn--primary" type="button" onclick="saveTenantSettings('finance')">Simpan Keuangan</button></section>
+                <button class="btn btn--primary" type="button" onclick="saveTenantSettings('branding')" style="margin-top: var(--sp-2);">Simpan Branding</button>
+              </section>
+              <section class="settings-pane" data-settings-pane="general">
+                <div class="pg-section">
+                  <div class="pg-section__header">
+                    <h4 class="pg-section__title">🏢 Informasi Kontak &amp; Lokalisasi</h4>
+                  </div>
+                  <div class="pg-grid pg-grid--2" style="padding-top: var(--sp-5);">
+                    <label class="pg-field">
+                      <span class="pg-field__label">Email kontak</span>
+                      <input class="pg-field__input" id="setting-contact-email" type="email" placeholder="kontak@trevy.id">
+                    </label>
+                    <label class="pg-field">
+                      <span class="pg-field__label">Telepon kontak</span>
+                      <input class="pg-field__input" id="setting-contact-phone" placeholder="08xxxxxxxxxx">
+                    </label>
+                  </div>
+                  <div class="pg-grid pg-grid--1">
+                    <label class="pg-field pg-field--tall">
+                      <span class="pg-field__label">Alamat operasional</span>
+                      <textarea class="pg-field__input pg-field__textarea" id="setting-address" rows="3" placeholder="Jl. Pemuda No. 123, Semarang"></textarea>
+                    </label>
+                  </div>
+                  <div class="pg-grid pg-grid--3">
+                    <label class="pg-field">
+                      <span class="pg-field__label">Zona waktu</span>
+                      <select class="pg-field__input" id="setting-timezone">
+                        <option>Asia/Jakarta</option>
+                        <option>Asia/Makassar</option>
+                        <option>Asia/Jayapura</option>
+                        <option>UTC</option>
+                      </select>
+                    </label>
+                    <label class="pg-field">
+                      <span class="pg-field__label">Mata uang</span>
+                      <select class="pg-field__input" id="setting-currency">
+                        <option>IDR</option>
+                        <option>USD</option>
+                      </select>
+                    </label>
+                    <label class="pg-field">
+                      <span class="pg-field__label">Bahasa</span>
+                      <select class="pg-field__input" id="setting-language">
+                        <option value="id">Indonesia</option>
+                        <option value="en">English</option>
+                      </select>
+                    </label>
+                  </div>
+                </div>
+                <button class="btn btn--primary" type="button" onclick="saveTenantSettings('general')" style="margin-top: var(--sp-2);">Simpan Umum</button>
+              </section>
+              <section class="settings-pane" data-settings-pane="payment">
+                <h3>Payment Gateway</h3>
+                <p style="color: var(--text-secondary); font-size: var(--fs-sm); margin-bottom: var(--sp-5);">Secret key dienkripsi di server dan tidak dapat dibaca kembali. Checkout sungguhan aktif setelah key dan webhook terpasang.</p>
+
+                <!-- Global Settings -->
+                <div class="pg-section">
+                  <div class="pg-section__header">
+                    <h4 class="pg-section__title">&#x2699;&#xFE0F; Pengaturan Umum</h4>
+                  </div>
+                  <div class="pg-grid pg-grid--2">
+                    <label class="pg-field">
+                      <span class="pg-field__label">Provider aktif</span>
+                      <select class="pg-field__input" id="setting-provider" onchange="selectGatewayOption(this.value)">
+                        <option value="midtrans">Midtrans Snap</option>
+                        <option value="xendit">Xendit Payment Session</option>
+                      </select>
+                    </label>
+                    <label class="pg-field">
+                      <span class="pg-field__label">Mode</span>
+                      <select class="pg-field__input" id="setting-payment-mode" onchange="toggleSandboxBridgeVisibility()">
+                        <option value="simulator">Simulator (development saja)</option>
+                        <option value="sandbox">Sandbox / Test</option>
+                        <option value="production">Production / Live</option>
+                      </select>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Midtrans Snap Section -->
+                <div class="pg-section pg-provider-section" id="pg-section-midtrans">
+                  <div class="pg-section__header">
+                    <h4 class="pg-section__title">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                      Midtrans Snap
+                    </h4>
+                    <span class="pg-badge pg-badge--blue" id="pg-badge-midtrans">Aktif</span>
+                  </div>
+                  <div class="pg-grid pg-grid--2">
+                    <label class="pg-field">
+                      <span class="pg-field__label">Merchant ID</span>
+                      <input class="pg-field__input" id="setting-merchant-id" placeholder="M-XXXXX">
+                    </label>
+                    <label class="pg-field">
+                      <span class="pg-field__label">Snap Client Key <span class="pg-field__hint">(informasi)</span></span>
+                      <input class="pg-field__input" id="setting-client-key" placeholder="SB-Mid-client-xxx">
+                    </label>
+                  </div>
+                  <div class="pg-grid pg-grid--1">
+                    <label class="pg-field">
+                      <span class="pg-field__label">Snap Server Key <span class="pg-field__hint">(rahasia)</span></span>
+                      <input class="pg-field__input pg-field__input--mono" id="setting-server-key" type="password" autocomplete="new-password" placeholder="Kosongkan agar key tersimpan tetap dipakai">
+                    </label>
+                  </div>
+                  <!-- Sandbox Bridge -->
+                  <div class="pg-sandbox-bridge" id="pg-midtrans-sandbox-bridge">
+                    <div class="pg-sandbox-bridge__header">
+                      <span class="pg-sandbox-bridge__icon">&#x1F9EA;</span>
+                      <div>
+                        <strong>Local Sandbox Bridge (Midtrans Snap)</strong>
+                        <p>Uji transaksi Midtrans Snap di localhost. Verifikasi Server Key langsung ke API Sandbox Midtrans dan simulasikan webhook transaksi.</p>
+                      </div>
+                    </div>
+                    <div class="pg-grid pg-grid--2">
+                      <label class="pg-field">
+                        <span class="pg-field__label">Local Webhook Endpoint</span>
+                        <input class="pg-field__input pg-field__input--mono" id="setting-midtrans-local-url" value="/api/payments/webhooks/midtrans" readonly>
+                      </label>
+                      <label class="pg-field">
+                        <span class="pg-field__label">Midtrans Sandbox Notification URL <span class="pg-field__hint">(masukkan ke dashboard Midtrans)</span></span>
+                        <input class="pg-field__input pg-field__input--mono" id="setting-midtrans-sandbox-notif-url" readonly>
+                      </label>
+                    </div>
+                    <div class="pg-sandbox-bridge__actions">
+                      <button class="btn btn--sm btn--primary" type="button" id="btn-midtrans-bridge-test" onclick="testMidtransSandboxBridge()">&#x1F50D; Verifikasi ke Midtrans Sandbox</button>
+                      <button class="btn btn--sm btn--outline" type="button" onclick="simulateMidtransWebhookModal()">&#x26A1; Simulasi Webhook Settlement</button>
+                      <button class="btn btn--sm btn--outline" type="button" onclick="copyMidtransSandboxUrl()">&#x1F4CB; Salin URL Webhook</button>
+                    </div>
+                    <div id="midtrans-bridge-status-box" style="margin-top: 10px; display: none;"></div>
+                  </div>
+                </div>
+
+                <!-- Xendit Section -->
+                <div class="pg-section pg-provider-section" id="pg-section-xendit">
+                  <div class="pg-section__header">
+                    <h4 class="pg-section__title">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                      Xendit Payment Session
+                    </h4>
+                    <span class="pg-badge pg-badge--muted" id="pg-badge-xendit">Tidak aktif</span>
+                  </div>
+                  <div class="pg-grid pg-grid--2">
+                    <label class="pg-field">
+                      <span class="pg-field__label">Public Key <span class="pg-field__hint">(informasi)</span></span>
+                      <input class="pg-field__input" id="setting-public-key" placeholder="xnd_public_xxx">
+                    </label>
+                    <label class="pg-field">
+                      <span class="pg-field__label">Webhook Verification Token</span>
+                      <input class="pg-field__input pg-field__input--mono" id="setting-webhook-token" type="password" autocomplete="new-password" placeholder="Token dari pengaturan webhook Xendit">
+                    </label>
+                  </div>
+                  <div class="pg-grid pg-grid--1">
+                    <label class="pg-field">
+                      <span class="pg-field__label">Secret API Key <span class="pg-field__hint">(rahasia)</span></span>
+                      <input class="pg-field__input pg-field__input--mono" id="setting-secret-key" type="password" autocomplete="new-password" placeholder="Kosongkan agar key tersimpan tetap dipakai">
+                    </label>
+                  </div>
+                </div>
+
+                <!-- BI-SNAP Section -->
+                <div class="pg-section" id="pg-section-bisnap">
+                  <div class="pg-section__header pg-section__header--collapsible" onclick="toggleBiSnapSection()" role="button" tabindex="0" aria-expanded="false" aria-controls="pg-bisnap-body">
+                    <h4 class="pg-section__title">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                      Midtrans BI-SNAP Core API
+                    </h4>
+                    <span class="pg-section__chevron" id="pg-bisnap-chevron">&#x25B6;</span>
+                  </div>
+                  <div class="pg-section__body pg-section__body--collapsed" id="pg-bisnap-body">
+                    <p style="color: var(--text-secondary); font-size: var(--fs-sm); line-height: 1.6; margin-bottom: var(--sp-4);">
+                      Konfigurasi terpisah dari Midtrans Snap checkout. Field BI-SNAP disimpan terenkripsi. Transaksi BI-SNAP belum diaktifkan di checkout Trevy.
+                    </p>
+                    <div class="pg-grid pg-grid--4">
+                      <label class="pg-field">
+                        <span class="pg-field__label">Environment</span>
+                        <select class="pg-field__input" id="setting-bisnap-mode">
+                          <option value="sandbox">Sandbox</option>
+                          <option value="staging">Staging</option>
+                          <option value="production">Production</option>
+                        </select>
+                      </label>
+                      <label class="pg-field">
+                        <span class="pg-field__label">Client ID</span>
+                        <input class="pg-field__input pg-field__input--mono" id="setting-bisnap-client-id" autocomplete="off">
+                      </label>
+                      <label class="pg-field">
+                        <span class="pg-field__label">Partner ID</span>
+                        <input class="pg-field__input pg-field__input--mono" id="setting-bisnap-partner-id" autocomplete="off">
+                      </label>
+                      <label class="pg-field">
+                        <span class="pg-field__label">Channel ID <span class="pg-field__hint">(5 digit)</span></span>
+                        <input class="pg-field__input pg-field__input--mono" id="setting-bisnap-channel-id" inputmode="numeric" maxlength="5">
+                      </label>
+                    </div>
+                    <div class="pg-grid pg-grid--2">
+                      <label class="pg-field">
+                        <span class="pg-field__label">Client Secret <span class="pg-field__hint">(rahasia)</span></span>
+                        <input class="pg-field__input pg-field__input--mono" id="setting-bisnap-client-secret" type="password" autocomplete="new-password" placeholder="Kosongkan agar secret tersimpan tetap dipakai">
+                      </label>
+                      <label class="pg-field pg-field--tall">
+                        <span class="pg-field__label">Merchant Private Key <span class="pg-field__hint">(PKCS#8 PEM)</span></span>
+                        <textarea class="pg-field__input pg-field__input--mono pg-field__textarea" id="setting-bisnap-private-key" rows="4" spellcheck="false" placeholder="Kosongkan agar private key tersimpan tetap dipakai"></textarea>
+                      </label>
+                    </div>
+                    <div class="pg-grid pg-grid--2">
+                      <label class="pg-field pg-field--tall">
+                        <span class="pg-field__label">Merchant Public Key <span class="pg-field__hint">(didaftarkan ke Midtrans)</span></span>
+                        <textarea class="pg-field__input pg-field__input--mono pg-field__textarea" id="setting-bisnap-merchant-public-key" rows="4" spellcheck="false"></textarea>
+                      </label>
+                      <label class="pg-field pg-field--tall">
+                        <span class="pg-field__label">Midtrans Public Key <span class="pg-field__hint">(verifikasi notifikasi)</span></span>
+                        <textarea class="pg-field__input pg-field__input--mono pg-field__textarea" id="setting-bisnap-notification-public-key" rows="4" spellcheck="false"></textarea>
+                      </label>
+                    </div>
+                    <p id="setting-bisnap-status" class="pg-status-text" aria-live="polite">Kredensial BI-SNAP belum lengkap.</p>
+
+                    <!-- BI-SNAP Sandbox Bridge -->
+                    <div class="pg-sandbox-bridge" id="pg-bisnap-sandbox-bridge">
+                      <div class="pg-sandbox-bridge__header">
+                        <span class="pg-sandbox-bridge__icon">&#x1F9EA;</span>
+                        <div>
+                          <strong>BI-SNAP Local Sandbox Bridge</strong>
+                          <p>Uji konfigurasi Bank Indonesia SNAP. Memverifikasi format Private Key PKCS#8, kecocokan RSA keypair, dan handshake B2B Access Token ke Midtrans Sandbox.</p>
+                        </div>
+                      </div>
+                      <div class="pg-grid pg-grid--2">
+                        <label class="pg-field">
+                          <span class="pg-field__label">BI-SNAP Local Webhook Endpoint</span>
+                          <input class="pg-field__input pg-field__input--mono" id="setting-bisnap-local-url" value="/api/payments/bisnap/notify" readonly>
+                        </label>
+                        <label class="pg-field">
+                          <span class="pg-field__label">Midtrans BI-SNAP Sandbox Host</span>
+                          <input class="pg-field__input pg-field__input--mono" id="setting-bisnap-sandbox-base" value="https://merchants.sbx.midtrans.com" readonly>
+                        </label>
+                      </div>
+                      <div class="pg-sandbox-bridge__actions">
+                        <button class="btn btn--sm btn--primary" type="button" onclick="testBiSnapSandboxBridge()">&#x1F50D; Uji Kredensial &amp; Token Sandbox</button>
+                        <button class="btn btn--sm btn--outline" type="button" onclick="simulateBiSnapNotification()">&#x26A1; Uji Notifikasi Webhook</button>
+                      </div>
+                      <div id="bisnap-bridge-status-box" style="margin-top: 10px; display: none;"></div>
+                    </div>
+
+                    <div class="pg-hint-box">
+                      <strong>&#x1F4A1; Panduan BI-SNAP</strong>
+                      <p>Midtrans perlu mengaktifkan BI-SNAP untuk akun merchant. Minta Client ID, Client Secret, Partner ID, dan Channel ID melalui proses credential exchange; daftarkan Merchant Public Key. Gunakan API HTTPS dan IP server yang diizinkan Midtrans.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Status & Webhook -->
+                <div class="pg-section pg-section--status">
+                  <div class="pg-section__header">
+                    <h4 class="pg-section__title">&#x1F4E1; Status &amp; Webhook</h4>
+                  </div>
+                  <div class="pg-status-box">
+                    <div class="pg-status-box__row">
+                      <strong>Status koneksi</strong>
+                      <p id="setting-gateway-status" aria-live="polite">Memeriksa konfigurasi&hellip;</p>
+                    </div>
+                    <div class="pg-status-box__row">
+                      <strong>URL Webhook</strong>
+                      <code id="setting-gateway-webhook-url" class="pg-webhook-url"></code>
+                      <p style="color: var(--text-tertiary); font-size: var(--fs-xs); margin-top: 4px;">Pasang URL ini di dashboard provider setelah deploy HTTPS. Atur <code>TREVY_PUBLIC_URL</code> ke alamat publik aplikasi.</p>
+                    </div>
+                    <label class="pg-webhook-confirm">
+                      <input type="checkbox" id="setting-webhook-ready">
+                      <span>Saya sudah memasang URL webhook di dashboard provider</span>
+                    </label>
+                  </div>
+                  <p id="setting-secret-status" class="pg-status-text" aria-live="polite">Secret gateway ditampilkan tersamarkan setelah disimpan.</p>
+                </div>
+
+                <button class="btn btn--primary" type="button" onclick="saveTenantSettings('payment')" style="margin-top: var(--sp-4);">Simpan Payment Gateway</button>
+              </section>
+              <section class="settings-pane" data-settings-pane="security">
+                <div class="pg-section">
+                  <div class="pg-section__header">
+                    <h4 class="pg-section__title">🔒 Kebijakan Keamanan Akun &amp; Sesi</h4>
+                  </div>
+                  <div class="pg-grid pg-grid--2" style="padding-top: var(--sp-5); padding-bottom: var(--sp-5);">
+                    <label class="pg-field">
+                      <span class="pg-field__label">Panjang minimum sandi <span class="pg-field__hint">(12 - 128 karakter)</span></span>
+                      <input class="pg-field__input" id="setting-password-min" type="number" min="12" max="128" placeholder="12">
+                    </label>
+                    <label class="pg-field">
+                      <span class="pg-field__label">Timeout sesi <span class="pg-field__hint">(menit, 5 - 1440)</span></span>
+                      <input class="pg-field__input" id="setting-session-timeout" type="number" min="5" max="1440" placeholder="480">
+                    </label>
+                  </div>
+                </div>
+                <button class="btn btn--primary" type="button" onclick="saveTenantSettings('security')" style="margin-top: var(--sp-2);">Simpan Keamanan</button>
+              </section>
+              <section class="settings-pane" data-settings-pane="operations">
+                <div class="pg-section">
+                  <div class="pg-section__header">
+                    <h4 class="pg-section__title">⏱️ Parameter Tarif &amp; Durasi Layanan</h4>
+                  </div>
+                  <div class="pg-grid pg-grid--3" style="padding-top: var(--sp-5); padding-bottom: var(--sp-5);">
+                    <label class="pg-field">
+                      <span class="pg-field__label">Tarif standar per sesi (Rp)</span>
+                      <input class="pg-field__input" id="setting-standard-rate" type="number" min="0" placeholder="100000">
+                    </label>
+                    <label class="pg-field">
+                      <span class="pg-field__label">Kuota free trial per siswa</span>
+                      <input class="pg-field__input" id="setting-trial-quota" type="number" min="0" placeholder="1">
+                    </label>
+                    <label class="pg-field">
+                      <span class="pg-field__label">Durasi sesi standar (menit)</span>
+                      <input class="pg-field__input" id="setting-session-duration" type="number" min="15" placeholder="90">
+                    </label>
+                  </div>
+                </div>
+                <button class="btn btn--primary" type="button" onclick="saveTenantSettings('operations')" style="margin-top: var(--sp-2);">Simpan Operasional</button>
+              </section>
+              <section class="settings-pane" data-settings-pane="notifications">
+                <div class="pg-section">
+                  <div class="pg-section__header">
+                    <h4 class="pg-section__title">🔔 Konfigurasi Pesan &amp; Notifikasi</h4>
+                  </div>
+                  <div class="pg-grid pg-grid--1" style="padding-top: var(--sp-5);">
+                    <label class="pg-field pg-field--tall">
+                      <span class="pg-field__label">Template pesan notifikasi</span>
+                      <textarea class="pg-field__input pg-field__textarea" id="setting-notification-template" rows="3" placeholder="Halo {name}, jadwal les Anda pada {time}..."></textarea>
+                    </label>
+                  </div>
+                  <div style="padding: 0 var(--sp-5) var(--sp-5);">
+                    <label class="pg-webhook-confirm" style="padding:0;">
+                      <input type="checkbox" id="setting-notification-enabled">
+                      <span style="font-size:var(--fs-sm); font-weight:var(--fw-medium);">Aktifkan sistem notifikasi otomatis</span>
+                    </label>
+                  </div>
+                </div>
+                <button class="btn btn--primary" type="button" onclick="saveTenantSettings('notifications')" style="margin-top: var(--sp-2);">Simpan Notifikasi</button>
+              </section>
+              <section class="settings-pane" data-settings-pane="finance">
+                <div class="pg-section">
+                  <div class="pg-section__header">
+                    <h4 class="pg-section__title">💰 Parameter Pembukuan &amp; Akuntansi</h4>
+                  </div>
+                  <div class="pg-grid pg-grid--2" style="padding-top: var(--sp-5); padding-bottom: var(--sp-5);">
+                    <label class="pg-field">
+                      <span class="pg-field__label">Bagan akun / COA</span>
+                      <input class="pg-field__input" id="setting-coa" placeholder="Contoh: Standar UKM">
+                    </label>
+                    <label class="pg-field">
+                      <span class="pg-field__label">Periode akuntansi</span>
+                      <input class="pg-field__input" id="setting-accounting-period" placeholder="Bulanan">
+                    </label>
+                  </div>
+                </div>
+                <button class="btn btn--primary" type="button" onclick="saveTenantSettings('finance')" style="margin-top: var(--sp-2);">Simpan Keuangan</button>
+              </section>
             </div>
           </div>
         </div>
@@ -1141,6 +1493,12 @@
       const providerSelect=document.getElementById('setting-provider');if(providerSelect)providerSelect.value=currentActiveGateway;
       const webhookConfirm=document.getElementById('setting-webhook-ready');if(webhookConfirm)webhookConfirm.checked=Boolean(currentWebhookReadiness[currentActiveGateway]);
 
+      /* ── New: Toggle provider sections visibility ── */
+      const sectionMid = document.getElementById('pg-section-midtrans');
+      const sectionXnd = document.getElementById('pg-section-xendit');
+      const pgBadgeMid = document.getElementById('pg-badge-midtrans');
+      const pgBadgeXnd = document.getElementById('pg-badge-xendit');
+
       if (currentActiveGateway === 'midtrans') {
         cardMid?.classList.add('active');
         cardXnd?.classList.remove('active');
@@ -1149,7 +1507,11 @@
         if (navBadge) navBadge.textContent = 'Midtrans';
         if (statGateway) statGateway.textContent = 'Midtrans';
         if (activeBadge) activeBadge.textContent = 'Midtrans';
-
+        /* Show Midtrans, hide Xendit */
+        if (sectionMid) sectionMid.style.display = '';
+        if (sectionXnd) sectionXnd.style.display = 'none';
+        if (pgBadgeMid) { pgBadgeMid.className = 'pg-badge pg-badge--blue'; pgBadgeMid.textContent = 'Aktif'; }
+        if (pgBadgeXnd) { pgBadgeXnd.className = 'pg-badge pg-badge--muted'; pgBadgeXnd.textContent = 'Tidak aktif'; }
       } else {
         cardXnd?.classList.add('active');
         cardMid?.classList.remove('active');
@@ -1158,7 +1520,226 @@
         if (navBadge) navBadge.textContent = 'Xendit';
         if (statGateway) statGateway.textContent = 'Xendit';
         if (activeBadge) activeBadge.textContent = 'Xendit';
+        /* Show Xendit, hide Midtrans */
+        if (sectionMid) sectionMid.style.display = 'none';
+        if (sectionXnd) sectionXnd.style.display = '';
+        if (pgBadgeMid) { pgBadgeMid.className = 'pg-badge pg-badge--muted'; pgBadgeMid.textContent = 'Tidak aktif'; }
+        if (pgBadgeXnd) { pgBadgeXnd.className = 'pg-badge pg-badge--blue'; pgBadgeXnd.textContent = 'Aktif'; }
+      }
+      toggleSandboxBridgeVisibility();
+    }
 
+    /* ── BI-SNAP Collapsible Section ── */
+    function toggleBiSnapSection() {
+      const body = document.getElementById('pg-bisnap-body');
+      const chevron = document.getElementById('pg-bisnap-chevron');
+      const header = body?.previousElementSibling;
+      if (!body) return;
+      const isCollapsed = body.classList.contains('pg-section__body--collapsed');
+      if (isCollapsed) {
+        body.classList.remove('pg-section__body--collapsed');
+        body.classList.add('pg-section__body--expanded');
+        if (chevron) chevron.classList.add('pg-section__chevron--open');
+        if (header) header.setAttribute('aria-expanded', 'true');
+      } else {
+        body.classList.add('pg-section__body--collapsed');
+        body.classList.remove('pg-section__body--expanded');
+        if (chevron) chevron.classList.remove('pg-section__chevron--open');
+        if (header) header.setAttribute('aria-expanded', 'false');
+      }
+    }
+
+    /* ── Sandbox Bridge Visibility ── */
+    function toggleSandboxBridgeVisibility() {
+      const mode = document.getElementById('setting-payment-mode')?.value;
+      const isSandbox = mode === 'sandbox';
+      const midBridge = document.getElementById('pg-midtrans-sandbox-bridge');
+      const biSnapBridge = document.getElementById('pg-bisnap-sandbox-bridge');
+      if (midBridge) midBridge.style.display = isSandbox ? '' : 'none';
+      if (biSnapBridge) biSnapBridge.style.display = isSandbox ? '' : 'none';
+      /* Populate the sandbox notification URL */
+      const notifUrl = document.getElementById('setting-midtrans-sandbox-notif-url');
+      if (notifUrl) {
+        const origin = location.origin === 'null' || location.protocol === 'file:' ? 'https://your-domain.com' : location.origin;
+        notifUrl.value = `${origin}/api/payments/webhooks/midtrans`;
+      }
+    }
+
+    /* ── Sandbox Bridge Test Functions (Midtrans Snap & BI-SNAP) ── */
+    async function testMidtransSandboxBridge() {
+      const box = document.getElementById('midtrans-bridge-status-box');
+      const btn = document.getElementById('btn-midtrans-bridge-test');
+      if (btn) btn.disabled = true;
+      if (box) {
+        box.style.display = 'block';
+        box.innerHTML = '<div style="font-size:var(--fs-xs); color:var(--text-secondary); padding:8px 12px; background:var(--clr-neutral-50); border:1px solid var(--clr-neutral-200); border-radius:var(--radius-md);">⏳ Menghubungi Midtrans Sandbox API...</div>';
+      }
+      try {
+        const result = await TrevyAPI.request('/api/admin/payments/bridge/midtrans-verify', { method: 'POST' });
+        if (box) {
+          box.innerHTML = `<div style="font-size:var(--fs-xs); color:var(--clr-success-700); background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.3); border-radius:var(--radius-md); padding:10px 14px; line-height:1.5;">
+            <strong>✅ ${htmlSafe(result.message)}</strong>
+            <div style="margin-top:4px; font-family:var(--font-mono); font-size:0.75rem;">Mode: ${htmlSafe(result.mode)} • Merchant ID: ${htmlSafe(result.merchantId || '-')}</div>
+          </div>`;
+        }
+        showToast('Koneksi Midtrans Sandbox valid!', 'success');
+      } catch (err) {
+        if (box) {
+          box.innerHTML = `<div style="font-size:var(--fs-xs); color:var(--clr-danger-600); background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:var(--radius-md); padding:10px 14px; line-height:1.5;">
+            <strong>❌ Gagal Verifikasi Sandbox</strong>
+            <div style="margin-top:4px;">${htmlSafe(err.message)}</div>
+          </div>`;
+        }
+        showToast(err.message, 'danger');
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    async function simulateMidtransWebhookModal() {
+      try {
+        const data = await TrevyAPI.request('/api/admin/payments/bridge/pending-orders');
+        const orders = data.orders || [];
+        const options = orders.length > 0
+          ? orders.map(o => `${o.id} (${formatIDR(o.amount)} - ${o.description})`)
+          : [];
+        
+        const fields = [
+          {
+            name: 'orderId',
+            label: 'Order ID Transaksi (Pending)',
+            type: options.length > 0 ? 'select' : 'text',
+            options: options.length > 0 ? orders.map(o => o.id) : undefined,
+            placeholder: 'PAY-XXXXXX',
+            required: true,
+            hint: options.length > 0 ? 'Pilih salah satu transaksi pending' : 'Belum ada order pending. Masukkan Order ID manual jika ada.'
+          },
+          {
+            name: 'status',
+            label: 'Status yang disimulasikan',
+            type: 'select',
+            options: ['settlement', 'expire', 'cancel'],
+            required: true
+          }
+        ];
+
+        const values = await showStandardForm({
+          title: '⚡ Simulasi Webhook Midtrans Sandbox',
+          description: 'Simulasikan notifikasi pembayaran dari Midtrans Sandbox ke server local Trevy. Status settlement akan langsung mengalokasikan sesi belajar ke akun siswa.',
+          submitLabel: 'Kirim Simulasi Webhook',
+          fields
+        });
+
+        if (!values) return;
+
+        const res = await TrevyAPI.request('/api/admin/payments/bridge/midtrans-simulate-webhook', {
+          method: 'POST',
+          body: { orderId: values.orderId, transactionStatus: values.status }
+        });
+
+        showToast(res.message, 'success');
+        await renderConnectedAdminData();
+      } catch (err) {
+        showToast(err.message, 'danger');
+      }
+    }
+
+    function copyMidtransSandboxUrl() {
+      const url = document.getElementById('setting-midtrans-sandbox-notif-url')?.value;
+      if (url) {
+        navigator.clipboard?.writeText(url)
+          .then(() => showToast('URL webhook disalin ke clipboard!', 'success'))
+          .catch(() => showToast('Gagal menyalin', 'danger'));
+      }
+    }
+
+    async function testBiSnapSandboxBridge() {
+      const box = document.getElementById('bisnap-bridge-status-box');
+      if (box) {
+        box.style.display = 'block';
+        box.innerHTML = '<div style="font-size:var(--fs-xs); color:var(--text-secondary); padding:8px 12px; background:var(--clr-neutral-50); border:1px solid var(--clr-neutral-200); border-radius:var(--radius-md);">⏳ Menguji parsing kunci RSA dan handshake token BI-SNAP...</div>';
+      }
+      try {
+        const res = await TrevyAPI.request('/api/admin/payments/bridge/bisnap-verify', { method: 'POST' });
+        const c = res.checks || {};
+        const k = c.keys || {};
+        const b2b = c.sandboxB2BToken || {};
+        
+        let html = '<div style="font-size:var(--fs-xs); background:var(--surface-primary); border:1px solid var(--clr-neutral-200); border-radius:var(--radius-md); padding:12px; line-height:1.6;">';
+        html += '<strong style="display:block; margin-bottom:6px;">📋 Hasil Diagnostik BI-SNAP Sandbox:</strong>';
+        html += `<div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;">
+          <div>Private Key PKCS#8: ${k.privateKeyParsed ? '✅ Valid' : '❌ ' + htmlSafe(k.privateKeyError || 'Belum diisi')}</div>
+          <div>Merchant Public Key: ${k.merchantPublicKeyParsed ? '✅ Valid' : '❌ ' + htmlSafe(k.merchantPublicKeyError || 'Belum diisi')}</div>
+          <div>Notif Public Key: ${k.notificationPublicKeyParsed ? '✅ Valid' : '❌ ' + htmlSafe(k.notificationPublicKeyError || 'Belum diisi')}</div>
+          <div>RSA Keypair Match: ${k.rsaKeyPairMatches ? '✅ Cocok (Sign & Verify OK)' : '❌ Mismatch / Tidak cocok'}</div>
+        </div>`;
+
+        if (b2b.tested) {
+          html += `<div style="border-top:1px solid var(--clr-neutral-200); padding-top:6px; margin-top:6px;">
+            <strong>Handshake Midtrans Sandbox B2B Token:</strong>
+            <div style="color:${b2b.success ? 'var(--clr-success-700)' : 'var(--clr-danger-600)'}; margin-top:2px;">
+              ${b2b.success ? '✅ ' : '⚠️ '}${htmlSafe(b2b.message || '')}
+            </div>
+          </div>`;
+        }
+        html += '</div>';
+
+        if (box) box.innerHTML = html;
+        showToast(res.status === 'ready' ? 'Diagnostik BI-SNAP selesai!' : 'Kredensial BI-SNAP belum lengkap', res.status === 'ready' ? 'success' : 'warning');
+      } catch (err) {
+        if (box) {
+          box.innerHTML = `<div style="font-size:var(--fs-xs); color:var(--clr-danger-600); background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:var(--radius-md); padding:10px 14px;">
+            ❌ Gagal menguji BI-SNAP: ${htmlSafe(err.message)}
+          </div>`;
+        }
+        showToast(err.message, 'danger');
+      }
+    }
+
+    async function simulateBiSnapNotification() {
+      const box = document.getElementById('bisnap-bridge-status-box');
+      if (box) {
+        box.style.display = 'block';
+        box.innerHTML = '<div style="font-size:var(--fs-xs); color:var(--text-secondary); padding:8px 12px; background:var(--clr-neutral-50); border:1px solid var(--clr-neutral-200); border-radius:var(--radius-md);">⏳ Mengirim notifikasi simulasi ke /api/payments/bisnap/notify...</div>';
+      }
+      try {
+        const payload = {
+          originalPartnerReferenceNo: 'TREVY-TEST-' + Date.now(),
+          serviceCode: '54',
+          transactionDate: new Date().toISOString(),
+          amount: { value: '150000.00', currency: 'IDR' },
+          latestTransactionStatus: '00',
+          transactionStatusDesc: 'Success'
+        };
+        const resp = await fetch('/api/payments/bisnap/notify', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-TIMESTAMP': new Date().toISOString(),
+            'X-PARTNER-ID': document.getElementById('setting-bisnap-partner-id')?.value || 'TREVY-TEST',
+            'CHANNEL-ID': document.getElementById('setting-bisnap-channel-id')?.value || '95221'
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await resp.json().catch(() => ({}));
+        if (resp.ok && data.responseCode === '2000000') {
+          if (box) {
+            box.innerHTML = `<div style="font-size:var(--fs-xs); color:var(--clr-success-700); background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.3); border-radius:var(--radius-md); padding:10px 14px; line-height:1.5;">
+              <strong>✅ Endpoint Webhook BI-SNAP Berhasil Merespons (HTTP 200)</strong>
+              <div style="margin-top:4px; font-family:var(--font-mono); font-size:0.75rem;">Response Code: ${htmlSafe(data.responseCode)} • Message: ${htmlSafe(data.responseMessage)}</div>
+            </div>`;
+          }
+          showToast('Webhook BI-SNAP berhasil diuji!', 'success');
+        } else {
+          throw new Error(data.responseMessage || 'Response ' + resp.status);
+        }
+      } catch (err) {
+        if (box) {
+          box.innerHTML = `<div style="font-size:var(--fs-xs); color:var(--clr-danger-600); background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:var(--radius-md); padding:10px 14px;">
+            ❌ Notifikasi BI-SNAP gagal: ${htmlSafe(err.message)}
+          </div>`;
+        }
+        showToast(err.message, 'danger');
       }
     }
 
