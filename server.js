@@ -6,6 +6,12 @@ const { promisify } = require('node:util');
 const Database = require('better-sqlite3');
 const fs = require('node:fs');
 
+try {
+  if (typeof process.loadEnvFile === 'function' && fs.existsSync(path.join(__dirname, '.env'))) {
+    process.loadEnvFile(path.join(__dirname, '.env'));
+  }
+} catch (_) {}
+
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
 const IS_PRODUCTION = process.env.NODE_ENV !== 'development';

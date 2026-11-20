@@ -4,3 +4,7 @@ node_modules/
 *.sqlite-shm
 *.sqlite-wal
 trevy-data/
+.env
+.env.local
+.env.*.local
+.netlify/

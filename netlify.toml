@@ -10,6 +10,7 @@
 [build.environment]
   NODE_VERSION = "22"
   NODE_ENV = "production"
+  TREVY_PUBLIC_URL = "https://cariguru-staging.netlify.app"
   # ─────────────────────────────────────────────────────────────────
   #  Netlify Database (Netlify DB / Serverless Postgres):
   #  Ketika Anda mengaktifkan Netlify DB di dashboard (Tab "Database"):
