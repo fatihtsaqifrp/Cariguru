@@ -12,7 +12,9 @@ const IS_PRODUCTION = process.env.NODE_ENV !== 'development';
 const COOKIE_NAME = 'trevy_session';
 const scrypt = promisify(crypto.scrypt);
 if (process.platform !== 'win32') process.umask(0o077);
-const dbPath = process.env.TREVY_DB_PATH || path.join(__dirname, '..', 'trevy-data', 'trevy.sqlite');
+const isServerless = Boolean(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.VERCEL);
+const defaultDbDir = isServerless ? '/tmp' : path.join(__dirname, '..', 'trevy-data');
+const dbPath = process.env.TREVY_DB_PATH || path.join(defaultDbDir, 'trevy.sqlite');
 require('node:fs').mkdirSync(path.dirname(dbPath), { recursive: true, mode: 0o700 });
 const db = new Database(dbPath);
 if (process.platform !== 'win32') require('node:fs').chmodSync(dbPath, 0o600);
@@ -1220,4 +1222,9 @@ async function start() {
     if (!IS_PRODUCTION) console.log('Development demo accounts are enabled. Do not use this mode for public deployment.');
   });
 }
-start().catch(error => { console.error(error.message); process.exit(1); });
+
+if (require.main === module) {
+  start().catch(error => { console.error(error.message); process.exit(1); });
+}
+
+module.exports = { app, start };

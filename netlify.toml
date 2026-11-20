@@ -1,0 +1,124 @@
+# ===================================================================
+#  TREVY — Netlify Configuration & Database Setup
+# ===================================================================
+
+[build]
+  publish = "."
+  functions = "netlify/functions"
+  command = "npm run netlify:build"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NODE_ENV = "production"
+  # ─────────────────────────────────────────────────────────────────
+  #  Netlify Database (Netlify DB / Serverless Postgres):
+  #  Ketika Anda mengaktifkan Netlify DB di dashboard (Tab "Database"):
+  #  - NETLIFY_DATABASE_URL dan DATABASE_URL akan diinjeksi otomatis.
+  #  - Anda juga dapat mengisi TREVY_DB_PATH atau DATABASE_URL
+  #    pada Environment Variables di Netlify Site Settings.
+  # ─────────────────────────────────────────────────────────────────
+
+[functions]
+  node_bundler = "esbuild"
+  included_files = [
+    "migrations/**",
+    "dashboard-*.html",
+    "index.html",
+    "login.html",
+    "register.html",
+    "register-tutor.html"
+  ]
+
+# ───────────────────────────────────────────────────────────────────
+#  Routing & Redirects
+# ───────────────────────────────────────────────────────────────────
+
+# 1. API routes ditangani oleh Netlify Serverless Function (Express)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/api/:splat"
+  status = 200
+  force = true
+
+# 2. Halaman dashboard terproteksi diarahkan ke function untuk auth guard
+[[redirects]]
+  from = "/dashboard-admin.html"
+  to = "/.netlify/functions/api/dashboard-admin.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/dashboard-admin"
+  to = "/.netlify/functions/api/dashboard-admin"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/dashboard-student.html"
+  to = "/.netlify/functions/api/dashboard-student.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/dashboard-student"
+  to = "/.netlify/functions/api/dashboard-student"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/dashboard-tutor.html"
+  to = "/.netlify/functions/api/dashboard-tutor.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/dashboard-tutor"
+  to = "/.netlify/functions/api/dashboard-tutor"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/dashboard-staff.html"
+  to = "/.netlify/functions/api/dashboard-staff.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/dashboard-staff"
+  to = "/.netlify/functions/api/dashboard-staff"
+  status = 200
+  force = true
+
+# 3. Static assets & SPA fallback
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# ───────────────────────────────────────────────────────────────────
+#  HTTP Security Headers & Caching
+# ───────────────────────────────────────────────────────────────────
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000, immutable"
