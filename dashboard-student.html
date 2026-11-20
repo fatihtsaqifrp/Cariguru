@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Siswa</title>
+  <meta name="description" content="Dashboard siswa platform. Lihat jadwal les privat, booking kelas baru, dan kelola paket belajar di Semarang.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2'><path d='M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z'/></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <script src="js/branding.js" defer></script>
+  <script src="js/profile-photo.js" defer></script>
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__header">
+        <a href="index.html" class="sidebar__brand">
+          <div class="sidebar__logo">T</div>
+          <div>
+            <div class="sidebar__name">platform</div>
+            <div class="sidebar__label">Portal Siswa</div>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar__nav">
+        <div class="sidebar__section-title">Menu Utama</div>
+        <a href="#beranda" class="sidebar__link active" data-tab="beranda">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </span>
+          Beranda
+        </a>
+        <a href="#jadwal" class="sidebar__link" data-tab="jadwal">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+          </span>
+          Jadwal Les
+          <span class="sidebar__link-badge" id="student-schedule-badge">2</span>
+        </a>
+        <a href="#booking" class="sidebar__link" data-tab="booking">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+          </span>
+          Booking Kelas
+        </a>
+        <a href="#trial" class="sidebar__link" data-tab="trial">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg>
+          </span>
+          Free Trial
+          <span class="sidebar__link-badge" style="background: var(--clr-success-600);">1</span>
+        </a>
+
+        <div class="sidebar__section-title">Riwayat Belajar</div>
+        <a href="#absensi" class="sidebar__link" data-tab="absensi">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </span>
+          Absensi
+        </a>
+        <a href="#pembayaran" class="sidebar__link" data-tab="pembayaran">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+          </span>
+          Pembayaran & Paket
+        </a>
+
+        <div class="sidebar__section-title">Akun & Pengaturan</div>
+        <a href="#profil" class="sidebar__link" data-tab="profil">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          Profil Siswa
+        </a>
+        <a href="#pengaturan" class="sidebar__link" data-tab="pengaturan">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          </span>
+          Pengaturan
+        </a>
+      </nav>
+
+      <div class="sidebar__footer">
+        <a href="login.html" class="sidebar__link" data-logout style="color: var(--clr-danger-400);">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+          </span>
+          Keluar
+        </a>
+        <div class="sidebar__user">
+          <div class="avatar">DF</div>
+          <div class="sidebar__user-info">
+            <div class="sidebar__user-name">Dina Fauziah</div>
+            <div class="sidebar__user-role">SMA Kelas 11 — Tembalang</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="main-content__header">
+        <div style="display: flex; align-items: center; gap: var(--sp-4);">
+          <button class="sidebar-toggle" aria-label="Toggle Menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+          </button>
+          <div class="main-content__title-group">
+            <h1 class="main-content__title" id="student-page-title">Selamat Datang, Dina</h1>
+            <p class="main-content__subtitle" id="student-page-subtitle">Sabtu, 1 November 2026 — Wilayah Tembalang, Semarang</p>
+          </div>
+        </div>
+        <div class="main-content__actions">
+          <button class="btn btn--icon btn--ghost" style="position: relative;" onclick="toggleNotifDropdown(event)" title="Notifikasi">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            <span style="position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; background: var(--clr-danger-500); border-radius: 50%; border: 2px solid white;"></span>
+          </button>
+
+          <!-- Notification Dropdown -->
+          <div class="notif-dropdown" id="notif-dropdown">
+            <div style="padding: var(--sp-4); border-bottom: 1px solid var(--clr-neutral-100); display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: var(--fw-bold); font-size: var(--fs-sm);">Notifikasi Siswa</span>
+              <button onclick="markAllNotifsRead()" style="background: none; border: none; font-size: var(--fs-xs); color: var(--clr-primary-600); cursor: pointer;">Tandai dibaca</button>
+            </div>
+            <div style="max-height: 280px; overflow-y: auto;">
+              <div class="notification-item unread">
+                <div class="notification-item__icon" style="background: var(--clr-primary-100); color: var(--clr-primary-600);">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <div class="notification-item__content">
+                  <div class="notification-item__text"><strong>Pencocokan Guru Berhasil:</strong> Sesi Matematika bersama Pak Budi Wicaksono terkonfirmasi.</div>
+                  <div class="notification-item__time">15 menit yang lalu</div>
+                </div>
+              </div>
+              <div class="notification-item unread">
+                <div class="notification-item__icon" style="background: rgba(34,197,94,0.1); color: var(--clr-success-600);">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                </div>
+                <div class="notification-item__content">
+                  <div class="notification-item__text">Pembayaran Paket Bulanan telah terverifikasi otomatis.</div>
+                  <div class="notification-item__time">2 hari yang lalu</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="avatar">DF</div>
+        </div>
+      </header>
+
+      <div class="main-content__body">
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 1: BERANDA (OVERVIEW)
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view active" id="view-beranda">
+          <!-- Free Trial Banner -->
+          <div style="background: linear-gradient(135deg, var(--clr-secondary-700), var(--clr-primary-700)); border-radius: var(--radius-xl); padding: var(--sp-5) var(--sp-6); color: white; display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--sp-6); flex-wrap: wrap; gap: var(--sp-4);">
+            <div style="display: flex; align-items: center; gap: var(--sp-4);">
+              <div style="width: 44px; height: 44px; border-radius: var(--radius-lg); background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg>
+              </div>
+              <div>
+                <div style="font-weight: var(--fw-bold); font-size: var(--fs-md);">Hak Akses: 1x Kelas Percobaan Gratis (Free Trial)</div>
+                <div style="font-size: var(--fs-sm); opacity: 0.9;">Coba sesi belajar privat pertama Anda tanpa komitmen dan biaya awal di Semarang.</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: var(--sp-2);">
+              <button class="btn btn--secondary" onclick="claimTrialBanner()">Gunakan Sesi Percobaan</button>
+              <button class="btn btn--outline" style="background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.4);" onclick="openPackageModal()">Beli Paket</button>
+            </div>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card stat-card--gradient" onclick="openPackageModal()" style="cursor: pointer;" title="Klik untuk tambah kuota belajar">
+              <div class="stat-card__label">Sisa Kuota Belajar (Klik untuk Tambah)</div>
+              <div class="stat-card__value" id="quota-display-value">6 / 8</div>
+              <div class="stat-card__meta" style="color: rgba(255,255,255,0.8);">Tersisa 2 sesi • Top up kuota &rarr;</div>
+              <div class="stat-card__icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card__label">Total Sesi Selesai</div>
+              <div class="stat-card__value">24</div>
+              <div class="stat-card__meta" style="color: var(--clr-success-600);">+6 sesi selesai bulan ini</div>
+              <div class="stat-card__icon" style="background: var(--clr-secondary-50); color: var(--clr-secondary-600);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card__label">Mata Pelajaran Aktif</div>
+              <div class="stat-card__value">3</div>
+              <div class="stat-card__meta" style="color: var(--clr-primary-700);">Matematika, Fisika, B. Inggris</div>
+              <div class="stat-card__icon" style="background: var(--clr-primary-50); color: var(--clr-primary-700);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/></svg>
+              </div>
+            </div>
+
+            <div class="stat-card" onclick="openPackageModal()" style="cursor: pointer;" title="Klik untuk perpanjang paket">
+              <div class="stat-card__label">Status Paket (Klik Perpanjang)</div>
+              <div class="stat-card__value" style="font-size: var(--fs-xl);">Paket Bulanan</div>
+              <div class="stat-card__meta" style="color: var(--text-secondary);">Masa aktif s.d. 28 Nov 2026 &rarr;</div>
+              <div class="stat-card__icon" style="background: rgba(20,184,166,0.1); color: var(--clr-secondary-600);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Dashboard Grid -->
+          <div class="dashboard-grid">
+            <!-- Schedule Panel -->
+            <div class="panel">
+              <div class="panel__header">
+                <h2 class="panel__title">Jadwal Sesi Terdekat</h2>
+                <button class="btn btn--sm btn--ghost" onclick="switchStudentTab('jadwal')">Lihat Seluruhnya</button>
+              </div>
+              <div class="panel__body" style="padding-top: 0;" id="home-schedule-container">
+                <div class="schedule-item schedule-item--upcoming">
+                  <div class="schedule-item__time">
+                    <div class="schedule-item__time-value">14:00</div>
+                    <div class="schedule-item__time-label">Senin</div>
+                  </div>
+                  <div class="schedule-item__info">
+                    <div class="schedule-item__subject">Matematika — Kalkulus & Integral</div>
+                    <div class="schedule-item__meta">
+                      <span class="status-dot status-dot--active"></span>
+                      Pengajar: Budi Wicaksono, S.Pd • 90 menit tatap muka
+                    </div>
+                  </div>
+                  <span class="badge badge--success">Besok</span>
+                </div>
+
+                <div class="schedule-item">
+                  <div class="schedule-item__time">
+                    <div class="schedule-item__time-value">10:00</div>
+                    <div class="schedule-item__time-label">Rabu</div>
+                  </div>
+                  <div class="schedule-item__info">
+                    <div class="schedule-item__subject">Fisika — Gelombang & Optik</div>
+                    <div class="schedule-item__meta">
+                      <span class="status-dot status-dot--pending"></span>
+                      Pengajar telah dikonfirmasi • 90 menit
+                    </div>
+                  </div>
+                  <span class="badge">3 Nov</span>
+                </div>
+
+                <div class="schedule-item schedule-item--completed">
+                  <div class="schedule-item__time">
+                    <div class="schedule-item__time-value">09:00</div>
+                    <div class="schedule-item__time-label">Kemarin</div>
+                  </div>
+                  <div class="schedule-item__info">
+                    <div class="schedule-item__subject">Matematika — Trigonometri Dasar</div>
+                    <div class="schedule-item__meta">
+                      Selesai • Pengajar: Budi Wicaksono, S.Pd
+                    </div>
+                  </div>
+                  <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                    <span class="badge badge--success">Selesai</span>
+                    <button class="btn btn--sm btn--outline" style="font-size:0.7rem; padding: 2px 8px;" onclick="openReviewModal('Matematika', 'Budi Wicaksono, S.Pd')">Beri Ulasan</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: Quick Actions + Calendar -->
+            <div style="display: flex; flex-direction: column; gap: var(--sp-6);">
+              <div class="quick-actions" style="margin-bottom: 0;">
+                <div class="quick-action" onclick="switchStudentTab('booking')">
+                  <div class="quick-action__icon" style="background: var(--clr-primary-50); color: var(--clr-primary-700);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/></svg>
+                  </div>
+                  <div>
+                    <div class="quick-action__title">Booking Kelas</div>
+                    <div class="quick-action__desc">Pilih mapel & jadwal otomatis</div>
+                  </div>
+                </div>
+
+                <div class="quick-action" onclick="openPackageModal()">
+                  <div class="quick-action__icon" style="background: rgba(20,184,166,0.1); color: var(--clr-secondary-700);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                  </div>
+                  <div>
+                    <div class="quick-action__title">Beli Paket</div>
+                    <div class="quick-action__desc">Perpanjang sesi belajar</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mini Calendar -->
+              <div class="panel">
+                <div class="panel__header">
+                  <h2 class="panel__title">November 2026</h2>
+                  <span class="badge">Semarang</span>
+                </div>
+                <div class="panel__body">
+                  <div class="calendar-mini">
+                    <div class="calendar-mini__header">Sen</div>
+                    <div class="calendar-mini__header">Sel</div>
+                    <div class="calendar-mini__header">Rab</div>
+                    <div class="calendar-mini__header">Kam</div>
+                    <div class="calendar-mini__header">Jum</div>
+                    <div class="calendar-mini__header">Sab</div>
+                    <div class="calendar-mini__header">Min</div>
+                    
+                    <div class="calendar-mini__day calendar-mini__day--disabled">26</div>
+                    <div class="calendar-mini__day calendar-mini__day--disabled">27</div>
+                    <div class="calendar-mini__day calendar-mini__day--disabled">28</div>
+                    <div class="calendar-mini__day calendar-mini__day--disabled">29</div>
+                    <div class="calendar-mini__day calendar-mini__day--disabled">30</div>
+                    <div class="calendar-mini__day calendar-mini__day--today">1</div>
+                    <div class="calendar-mini__day">2</div>
+                    
+                    <div class="calendar-mini__day calendar-mini__day--has-event">3</div>
+                    <div class="calendar-mini__day">4</div>
+                    <div class="calendar-mini__day calendar-mini__day--has-event">5</div>
+                    <div class="calendar-mini__day">6</div>
+                    <div class="calendar-mini__day">7</div>
+                    <div class="calendar-mini__day">8</div>
+                    <div class="calendar-mini__day">9</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 2: JADWAL LES LENGKAP
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-jadwal">
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">Daftar Seluruh Jadwal Pertemuan</h2>
+              <button class="btn btn--sm btn--primary" onclick="switchStudentTab('booking')">+ Tambah Jadwal Baru</button>
+            </div>
+            <div class="panel__body panel__body--flush">
+              <div class="table-wrapper" style="border: none;">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Tanggal & Jam</th>
+                      <th>Mata Pelajaran</th>
+                      <th>Pengajar</th>
+                      <th>Lokasi Pertemuan</th>
+                      <th>Status Sesi</th>
+                      <th>Tindakan</th>
+                    </tr>
+                  </thead>
+                  <tbody id="student-schedule-table"><tr><td colspan="6">Memuat jadwal…</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 3: BOOKING KELAS BARU (FOCUSED)
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-booking">
+          <div class="booking-widget" id="booking-section">
+            <h2 class="booking-widget__title">Pemesanan Sesi Les Privat</h2>
+            <p style="font-size: var(--fs-sm); color: var(--text-secondary); margin-bottom: var(--sp-5);">
+              Sistem pencocokan otomatis akan menganalisis guru terverifikasi terdekat di Semarang berdasarkan mata pelajaran dan waktu yang Anda tentukan.
+            </p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5);">
+              <div class="form-group">
+                <label class="form-label" for="booking-subject">Mata Pelajaran</label>
+                <select class="form-select" id="booking-subject">
+                  <option value="Matematika" selected>Matematika</option><option value="Bahasa Inggris">Bahasa Inggris</option><option value="Fisika">Fisika</option><option value="Kimia">Kimia</option><option value="Biologi">Biologi</option><option value="Bahasa Indonesia">Bahasa Indonesia</option><option value="Komputer">Komputer</option><option value="Ekonomi">Ekonomi</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="booking-date">Tanggal Pertemuan</label>
+              <input type="date" class="form-input" id="booking-date" required>
+              </div>
+            </div>
+
+            <label style="display:flex;gap:8px;align-items:center;margin:14px 0"><input type="checkbox" id="booking-free-trial"> Gunakan hak free trial (jika masih tersedia)</label>
+
+            <div class="form-group">
+              <label class="form-label">Pilih Jam Sesi (90 Menit)</label>
+              <div class="time-slots">
+                <div class="time-slot" onclick="selectSlot(this)">08:00</div>
+                <div class="time-slot" onclick="selectSlot(this)">09:00</div>
+                <div class="time-slot" onclick="selectSlot(this)">10:00</div>
+                <div class="time-slot unavailable">11:00</div>
+                <div class="time-slot" onclick="selectSlot(this)">13:00</div>
+                <div class="time-slot selected" onclick="selectSlot(this)">14:00</div>
+                <div class="time-slot" onclick="selectSlot(this)">15:00</div>
+                <div class="time-slot" onclick="selectSlot(this)">16:00</div>
+                <div class="time-slot unavailable">17:00</div>
+                <div class="time-slot" onclick="selectSlot(this)">18:00</div>
+                <div class="time-slot" onclick="selectSlot(this)">19:00</div>
+                <div class="time-slot" onclick="selectSlot(this)">20:00</div>
+              </div>
+            </div>
+
+            <button class="btn btn--primary btn--lg" id="btn-start-match" onclick="startAutoMatching()">
+              Mulai Pencocokan Guru Terbaik
+            </button>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 4: FREE TRIAL
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-trial">
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">Klaim Kelas Percobaan Gratis</h2>
+              <span class="badge badge--success">1 Kuota Tersedia</span>
+            </div>
+            <div class="panel__body">
+              <div style="background: var(--clr-primary-50); border: 1px solid var(--clr-primary-200); border-radius: var(--radius-xl); padding: var(--sp-6); margin-bottom: var(--sp-6);">
+                <h3 style="font-size: var(--fs-md); font-weight: var(--fw-bold); margin-bottom: 8px;">Tentang Fasilitas Free Trial platform</h3>
+                <p style="font-size: var(--fs-sm); color: var(--text-secondary); line-height: 1.6; margin-bottom: var(--sp-4);">
+                  Setiap siswa baru yang terdaftar di wilayah Semarang berhak mendapatkan 1x sesi les privat tatap muka durasi 90 menit tanpa dipungut biaya apapun. Guru akan datang langsung ke alamat rumah Anda.
+                </p>
+                <button class="btn btn--primary" onclick="claimTrialBanner()">Aktifkan Free Trial Sekarang</button>
+              </div>
+
+              <h4 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--sp-3);">Ketentuan Layanan Percobaan:</h4>
+              <ul style="font-size: var(--fs-sm); color: var(--text-secondary); line-height: 1.8; padding-left: 20px;">
+                <li>Berlaku untuk seluruh mata pelajaran jenjang SD, SMP, maupun SMA.</li>
+                <li>Pengajar yang ditugaskan merupakan guru terverifikasi platform dengan kualifikasi S1/S2 di Semarang.</li>
+                <li>Tidak ada perpanjangan otomatis tanpa persetujuan siswa atau orang tua.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 5: ABSENSI SISWA
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-absensi">
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">Riwayat Absensi & Kehadiran Belajar</h2>
+              <span class="badge badge--teal">Kehadiran 100%</span>
+            </div>
+            <div class="panel__body panel__body--flush">
+              <div class="table-wrapper" style="border: none;">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Tanggal</th>
+                      <th>Mata Pelajaran</th>
+                      <th>Nama Pengajar</th>
+                      <th>Waktu Masuk - Selesai</th>
+                      <th>Materi Pembelajaran</th>
+                      <th>Status Kehadiran</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>31 Okt 2026</td>
+                      <td>Matematika</td>
+                      <td>Budi Wicaksono, S.Pd</td>
+                      <td>09:02 - 10:35 WIB</td>
+                      <td>Integral Parsial & Substitusi</td>
+                      <td><span class="badge badge--success">Hadir & Terverifikasi</span></td>
+                    </tr>
+                    <tr>
+                      <td>28 Okt 2026</td>
+                      <td>Fisika</td>
+                      <td>Budi Wicaksono, S.Pd</td>
+                      <td>14:00 - 15:30 WIB</td>
+                      <td>Dinamika Gerak Lurus</td>
+                      <td><span class="badge badge--success">Hadir & Terverifikasi</span></td>
+                    </tr>
+                    <tr>
+                      <td>24 Okt 2026</td>
+                      <td>Bahasa Inggris</td>
+                      <td>Agus Kurniawan</td>
+                      <td>16:00 - 17:30 WIB</td>
+                      <td>Reading Comprehension & Grammar</td>
+                      <td><span class="badge badge--success">Hadir & Terverifikasi</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 6: PEMBAYARAN & PAKET
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-pembayaran">
+          <div class="panel" style="margin-bottom: var(--sp-6);">
+            <div class="panel__header">
+              <h2 class="panel__title">Paket Belajar Aktif</h2>
+              <button class="btn btn--sm btn--primary" onclick="openPackageModal()">Beli / Perpanjang Paket</button>
+            </div>
+            <div class="panel__body">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--sp-4);">
+                <div>
+                  <div style="font-size: var(--fs-xs); color: var(--text-tertiary);">Jenis Langganan</div>
+                  <div style="font-size: var(--fs-xl); font-weight: var(--fw-bold); color: var(--clr-primary-700);">Paket Bulanan (8 Pertemuan)</div>
+                  <div style="font-size: var(--fs-sm); color: var(--text-secondary); margin-top: 2px;">Tersisa 2 sesi • Aktif hingga 28 November 2026</div>
+                </div>
+                <div style="display: flex; gap: var(--sp-3);">
+                  <button class="btn btn--outline" onclick="openPackageModal()">Tambah Kuota Sesi</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">Riwayat Pembayaran & Invoice</h2>
+              <span class="badge" id="client-gateway-indicator">Gateway: Midtrans</span>
+            </div>
+            <div class="panel__body panel__body--flush">
+              <div id="payment-history-container">
+                <div class="transaction-item">
+                  <div class="transaction-item__info">
+                    <div class="transaction-item__icon" style="background: var(--clr-success-500); color: white;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div>
+                      <div class="transaction-item__name">Paket Bulanan — Periode November 2026</div>
+                      <div class="transaction-item__date">28 Oktober 2026 • Virtual Account BCA</div>
+                    </div>
+                  </div>
+                  <span class="transaction-item__amount transaction-item__amount--out">Rp499.000</span>
+                </div>
+
+                <div class="transaction-item">
+                  <div class="transaction-item__info">
+                    <div class="transaction-item__icon" style="background: var(--clr-success-500); color: white;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div>
+                      <div class="transaction-item__name">Paket Bulanan — Periode Oktober 2026</div>
+                      <div class="transaction-item__date">28 September 2026 • QRIS Dinamis</div>
+                    </div>
+                  </div>
+                  <span class="transaction-item__amount transaction-item__amount--out">Rp499.000</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 7: PROFIL SISWA
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-profil">
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">Data Profil Siswa</h2>
+              <button class="btn btn--sm btn--primary" onclick="saveStudentProfile()">Simpan Profil</button>
+            </div>
+            <div class="panel__body">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4);">
+                <div class="form-group">
+                  <label class="form-label">Nama Lengkap</label>
+                  <input type="text" class="form-input" id="student-profile-name" disabled>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Jenjang Pendidikan & Kelas</label>
+                  <input type="text" class="form-input" id="student-profile-grade" value="">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email Terdaftar</label>
+                  <input type="email" class="form-input" id="student-profile-email" disabled style="background:var(--clr-neutral-100);">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Nomor WhatsApp Siswa / Wali</label>
+                  <input type="tel" class="form-input" id="student-profile-phone" value="">
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                  <label class="form-label">Alamat Lengkap di Semarang (Lokasi Les)</label>
+                  <input type="text" class="form-input" id="student-profile-address" value="">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 8: PENGATURAN
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-pengaturan">
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">Pengaturan Akun</h2>
+            </div>
+            <div class="panel__body">
+              <div class="form-group">
+                <label class="form-label">Ubah Kata Sandi</label>
+                <input type="password" class="form-input" id="student-current-password" placeholder="Kata sandi saat ini" autocomplete="current-password">
+                <input type="password" class="form-input" id="student-new-password" placeholder="Kata sandi baru (minimal 12 karakter)" minlength="12" autocomplete="new-password">
+              </div>
+              <div class="form-group">
+                <label class="form-checkbox">
+                  <input type="checkbox" id="student-wa-reminder" checked>
+                  <span style="font-size: var(--fs-sm);">Kirim pengingat jadwal les via WhatsApp H-2 jam sebelum sesi</span>
+                </label>
+              </div>
+              <button class="btn btn--primary" onclick="saveStudentAccountSettings()">Simpan Perubahan</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       MODALS: Matching, Review, Buy Package (Dynamic Midtrans/Xendit)
+       ═══════════════════════════════════════════════════ -->
+  <div class="modal-backdrop" id="modal-backdrop"></div>
+
+  <!-- 1. Auto Matching Modal -->
+  <div class="modal" id="modal-matching" style="max-width: 520px;">
+    <div class="modal__header">
+      <h3 style="font-size: var(--fs-md); font-weight: var(--fw-bold);" id="match-modal-title">Pencocokan Pengajar Berdasarkan Jadwal</h3>
+      <button onclick="closeActiveModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;" aria-label="Tutup">&times;</button>
+    </div>
+    <div class="modal__body" id="match-modal-body">
+      <!-- Loading State -->
+      <div class="matching-loader" id="matching-loading">
+        <div class="radar-pulse">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/></svg>
+        </div>
+        <h4 style="font-weight: var(--fw-semibold); margin-bottom: 6px;" id="matching-status-text">Memindai pengajar terverifikasi di Semarang...</h4>
+        <p style="font-size: var(--fs-xs); color: var(--text-tertiary);" id="matching-sub-text">Mencocokkan jadwal, mata pelajaran & lokasi Tembalang</p>
+      </div>
+
+      <!-- Result State -->
+      <div id="matching-result" style="display: none;">
+        <div style="background: var(--clr-primary-50); border: 1px solid var(--clr-primary-200); border-radius: var(--radius-lg); padding: var(--sp-4); margin-bottom: var(--sp-4);">
+          <div style="display: flex; gap: var(--sp-3); align-items: center;">
+            <div class="avatar" id="res-tutor-avatar" style="width: 52px; height: 52px; background: linear-gradient(135deg, var(--clr-accent-400), #e879f9);">BW</div>
+            <div>
+              <div style="font-weight: var(--fw-bold); font-size: var(--fs-md);" id="res-tutor-name">Budi Wicaksono, S.Pd</div>
+              <div style="font-size: var(--fs-xs); color: var(--text-secondary);" id="res-tutor-title">S1 Pendidikan Fisika (UNDIP) • 6 Thn Pengalaman</div>
+              <div style="display: flex; gap: 8px; margin-top: 4px; font-size: var(--fs-xs);">
+                <span class="badge badge--success">Rating 4.9 / 5.0 (156 Ulasan)</span>
+                <span class="badge badge--teal">Tembalang (3.2 km)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size: var(--fs-sm); background: var(--clr-neutral-50); border-radius: var(--radius-md); padding: var(--sp-3); margin-bottom: var(--sp-4);">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span style="color: var(--text-secondary);">Mata Pelajaran:</span>
+            <strong id="res-summary-subject">Matematika</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span style="color: var(--text-secondary);">Waktu & Tanggal:</span>
+            <strong id="res-summary-time">Senin, 3 Nov 2026 • 14:00 WIB</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-secondary);">Durasi:</span>
+            <strong>90 Menit (Tatap Muka di Rumah Siswa)</strong>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Metode Pemotongan Sesi:</label>
+          <div style="display: flex; gap: var(--sp-2);">
+            <label style="flex:1; border: 1px solid var(--clr-primary-400); border-radius: var(--radius-md); padding: var(--sp-2) var(--sp-3); display: flex; align-items: center; gap: 6px; cursor: pointer; background: var(--clr-primary-50);">
+              <input type="radio" name="quota-type" value="quota" checked>
+              <span style="font-size: var(--fs-xs);">Potong Kuota Paket (Sisa 2)</span>
+            </label>
+            <label style="flex:1; border: 1px solid var(--clr-neutral-200); border-radius: var(--radius-md); padding: var(--sp-2) var(--sp-3); display: flex; align-items: center; gap: 6px; cursor: pointer;">
+              <input type="radio" name="quota-type" value="trial">
+              <span style="font-size: var(--fs-xs);">Gunakan 1x Free Trial</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal__footer" id="match-modal-footer" style="display: none;">
+      <button class="btn btn--ghost" onclick="closeActiveModal()">Batal</button>
+      <button class="btn btn--primary" id="btn-confirm-match" onclick="confirmMatchedSession()">Konfirmasi Jadwal Sesi</button>
+    </div>
+  </div>
+
+  <!-- 2. Review Modal (Clean Stars, No Emojis) -->
+  <div class="modal" id="modal-review" style="max-width: 480px;">
+    <div class="modal__header">
+      <h3 style="font-size: var(--fs-md); font-weight: var(--fw-bold);">Ulasan Sesi Pembelajaran</h3>
+      <button onclick="closeActiveModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;" aria-label="Tutup">&times;</button>
+    </div>
+    <div class="modal__body">
+      <p style="font-size: var(--fs-sm); color: var(--text-secondary); margin-bottom: var(--sp-3);" id="review-target-info">
+        Berikan penilaian atas kualitas pengajaran sesi ini.
+      </p>
+      
+      <div style="text-align: center; margin: var(--sp-4) 0;">
+        <div class="star-rating" id="review-stars">
+          <span class="star active" data-rating="1" onclick="setRating(1)"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+          <span class="star active" data-rating="2" onclick="setRating(2)"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+          <span class="star active" data-rating="3" onclick="setRating(3)"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+          <span class="star active" data-rating="4" onclick="setRating(4)"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+          <span class="star active" data-rating="5" onclick="setRating(5)"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+        </div>
+        <div style="font-size: var(--fs-xs); color: #d97706; font-weight: bold; margin-top: 4px;" id="rating-text">Sangat Puas (5 / 5)</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Catatan Evaluasi / Masukan</label>
+        <textarea class="form-input" id="review-comment" rows="3" placeholder="Contoh: Penjelasan konsep sangat terstruktur dan materi dipahami dengan baik."></textarea>
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--ghost" onclick="closeActiveModal()">Tutup</button>
+      <button class="btn btn--primary" onclick="submitReview()">Kirim Evaluasi</button>
+    </div>
+  </div>
+
+  
+  <!-- 4. Development payment simulator modal -->
+  <div class="modal" id="modal-gateway-screen" style="max-width: 520px; padding: 0; overflow: hidden;">
+    <div class="snap-modal-container">
+      <div class="snap-header" id="snap-header-element">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="font-weight:var(--fw-bold); font-size:var(--fs-sm); letter-spacing:1px;" id="snap-provider-title">MIDTRANS SNAP</div>
+          <span class="badge" style="background:rgba(255,255,255,0.2); color:#fff; font-size:0.65rem;" id="snap-env-badge">SIMULATOR</span>
+        </div>
+        <button onclick="closeGatewayScreen()" style="background:none; border:none; color:inherit; font-size:1.5rem; cursor:pointer;" aria-label="Tutup">&times;</button>
+      </div>
+
+      <div class="snap-body">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:var(--sp-4); border-bottom:1px solid var(--clr-neutral-200); padding-bottom:var(--sp-3);">
+          <div>
+            <div style="font-size:var(--fs-xs); color:var(--text-tertiary);">Nomor Pesanan / Invoice:</div>
+            <div style="font-family:var(--font-mono); font-size:var(--fs-sm); font-weight:var(--fw-bold);" id="snap-order-id">MTR-platform-908122</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:var(--fs-xs); color:var(--text-tertiary);">Total Tagihan:</div>
+            <div style="font-size:var(--fs-lg); font-weight:var(--fw-bold); color:var(--clr-primary-700);" id="snap-amount-display">Rp499.000</div>
+          </div>
+        </div>
+
+        <!-- Dynamic Channel Info: VA or QRIS -->
+        <div id="snap-channel-content">
+          <!-- Populated by JS -->
+        </div>
+
+        <div style="margin-top:var(--sp-4); display:flex; flex-direction:column; gap:var(--sp-2);">
+          <button class="btn btn--primary btn--full btn--lg" id="btn-simulate-success" onclick="completeGatewaySimulation()">
+            Simulasikan Bayar Berhasil (Simulator)
+          </button>
+          <button class="btn btn--ghost btn--full" onclick="closeGatewayScreen()">
+            Batalkan Pembayaran
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 3. Dynamic Buy Package / Checkout Modal (Midtrans vs Xendit) -->
+  <div class="modal" id="modal-package" style="max-width: 500px;">
+    <div class="modal__header">
+      <h3 style="font-size: var(--fs-md); font-weight: var(--fw-bold);" id="checkout-modal-title">Pembelian Paket Belajar</h3>
+      <button onclick="closeActiveModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;" aria-label="Tutup">&times;</button>
+    </div>
+    <div class="modal__body">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--sp-4);">
+        <span style="font-size: var(--fs-xs); color: var(--text-tertiary);">Payment Gateway Aktif:</span>
+        <span class="badge badge--teal" id="checkout-gateway-badge">Midtrans Snap</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Pilih Paket:</label>
+        <select class="form-select" id="checkout-package-select" onchange="updateCheckoutPrice()">
+          <option value="monthly" data-price="499000" data-sessions="8" selected>Paket Bulanan (8 Sesi) — Rp499.000</option>
+          <option value="daily" data-price="75000" data-sessions="1">Paket Harian (1 Sesi) — Rp75.000</option>
+          <option value="yearly" data-price="4499000" data-sessions="96">Paket Tahunan (96 Sesi) — Rp4.499.000</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" id="checkout-channel-label">Kanal Pembayaran:</label>
+        <div id="gateway-payment-options" style="display: flex; flex-direction: column; gap: var(--sp-2);">
+          <!-- Dynamic options populated based on active gateway -->
+        </div>
+      </div>
+
+      <div style="background: var(--clr-neutral-50); border-radius: var(--radius-lg); padding: var(--sp-3); margin-top: var(--sp-4); display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: var(--fs-sm); color: var(--text-secondary);">Total Tagihan:</span>
+        <strong style="font-size: var(--fs-lg); color: var(--clr-primary-700);" id="checkout-total-price">Rp499.000</strong>
+      </div>
+      <div style="font-size: 0.68rem; color: var(--text-tertiary); text-align: center; margin-top: 8px;" id="checkout-security-notice">
+        Diproses secara aman menggunakan enkripsi TLS 256-bit
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--ghost" onclick="closeActiveModal()">Batal</button>
+      <button class="btn btn--primary" id="btn-process-pay" onclick="processPayment()">Konfirmasi & Bayar</button>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    /* ── Student Dashboard Tab Navigation & Dynamic Payment Logic ── */
+
+    let currentSelectedSlot = "14:00";
+    let activeRating = 5;
+    let currentMatchedTutor = null;
+    let currentReviewSessionId = null;
+    let currentActiveGateway = 'midtrans';
+    let paymentGatewayConfig = { configured: false, simulator: false };
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const signedInUser = await TrevyAPI.requireRole('student');
+      if (!signedInUser) return;
+      document.querySelector('.sidebar__user-name').textContent = signedInUser.name;
+      document.getElementById('student-page-title').textContent = `Selamat Datang, ${signedInUser.name}`;
+      initSidebar();
+      handleStudentHashNav();
+      updateClientGatewayDisplay();
+      restoreStudentFinancialState();
+      checkReturnedPayment();
+      loadStudentSessions();
+      loadStudentProfile(signedInUser);
+      loadStudentPackages();
+      loadStudentPreferences();
+      const bookingDate=document.getElementById('booking-date'); if(bookingDate){const today=new Date();today.setDate(today.getDate()+1);bookingDate.min=today.toISOString().slice(0,10);bookingDate.value=bookingDate.min;}
+
+      // Check query param or hash for direct checkout
+      const urlParams = new URLSearchParams(window.location.search);
+      const pkgParam = urlParams.get('package');
+      if (pkgParam) {
+        setTimeout(() => {
+          const select = document.getElementById('checkout-package-select');
+          if (select && select.querySelector(`option[value="${pkgParam}"]`)) {
+            select.value = pkgParam;
+            updateCheckoutPrice();
+          }
+          openPackageModal();
+        }, 300);
+      }
+    });
+
+    // Hash navigation
+    function handleStudentHashNav() {
+      const hash = window.location.hash.replace('#', '') || 'beranda';
+      switchStudentTab(hash);
+    }
+    window.addEventListener('hashchange', handleStudentHashNav);
+
+    function switchStudentTab(tabId) {
+      const targetView = document.getElementById('view-' + tabId);
+      if (!targetView) return;
+
+      document.querySelectorAll('.sidebar__link').forEach(link => {
+        link.classList.toggle('active', link.dataset.tab === tabId);
+      });
+
+      document.querySelectorAll('.tab-view').forEach(view => {
+        view.classList.remove('active');
+      });
+      targetView.classList.add('active');
+
+      const titles = {
+        beranda: { title: 'Selamat Datang, Dina', sub: 'Sabtu, 1 November 2026 — Wilayah Tembalang, Semarang' },
+        jadwal: { title: 'Jadwal Les Privat', sub: 'Kelola jadwal belajar tatap muka dan online Anda' },
+        booking: { title: 'Pemesanan Sesi Belajar', sub: 'Sistem auto-matching guru terverifikasi di Semarang' },
+        trial: { title: 'Kelas Percobaan Gratis', sub: '1x Free Trial untuk siswa baru di Semarang' },
+        absensi: { title: 'Riwayat Kehadiran', sub: 'Presensi dan catatan materi pembelajaran' },
+        pembayaran: { title: 'Paket & Pembayaran', sub: 'Kelola kuota belajar dan transaksi' },
+        profil: { title: 'Profil Siswa', sub: 'Data pribadi dan preferensi lokasi mengajar' },
+        pengaturan: { title: 'Pengaturan Akun', sub: 'Notifikasi WhatsApp dan keamanan' }
+      };
+
+      if (titles[tabId]) {
+        document.getElementById('student-page-title').textContent = titles[tabId].title;
+        document.getElementById('student-page-subtitle').textContent = titles[tabId].sub;
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('.sidebar__link[data-tab]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.hash = link.dataset.tab;
+      });
+    });
+
+    // Notification dropdown
+    function toggleNotifDropdown(e) {
+      e.stopPropagation();
+      document.getElementById('notif-dropdown')?.classList.toggle('show');
+    }
+    document.addEventListener('click', () => {
+      document.getElementById('notif-dropdown')?.classList.remove('show');
+    });
+
+    function markAllNotifsRead() {
+      document.querySelectorAll('#notif-dropdown .notification-item').forEach(item => {
+        item.classList.remove('unread');
+      });
+      const badge = document.querySelector('.main-content__actions [style*="border-radius: 50%"]');
+      if (badge) badge.style.display = 'none';
+      showToast('Semua notifikasi ditandai dibaca.', 'info');
+    }
+
+    // Modal Helpers
+    function openModalById(id) {
+      document.getElementById('modal-backdrop').classList.add('active');
+      document.getElementById(id).classList.add('active');
+    }
+    function closeActiveModal() {
+      document.getElementById('modal-backdrop').classList.remove('active');
+      document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+    }
+    document.getElementById('modal-backdrop')?.addEventListener('click', closeActiveModal);
+
+    function selectSlot(el) {
+      if (el.classList.contains('unavailable')) return;
+      document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+      el.classList.add('selected');
+      currentSelectedSlot = el.textContent.trim();
+    }
+
+    function claimTrialBanner() {
+      switchStudentTab('booking');
+      showToast('Silakan tentukan mata pelajaran & jam untuk sesi Free Trial Anda.', 'info');
+    }
+
+    // Rating logic
+    function setRating(val) {
+      activeRating = val;
+      const stars = document.querySelectorAll('#review-stars .star');
+      stars.forEach(s => {
+        const rating = parseInt(s.dataset.rating);
+        s.classList.toggle('active', rating <= val);
+      });
+      const labels = ['', 'Kurang (1 / 5)', 'Cukup (2 / 5)', 'Baik (3 / 5)', 'Sangat Baik (4 / 5)', 'Sangat Puas (5 / 5)'];
+      document.getElementById('rating-text').textContent = labels[val];
+    }
+
+    function openReviewModal(subject, tutor, sessionId) {
+      currentReviewSessionId = sessionId || null;
+      document.getElementById('review-target-info').textContent = 'Berikan ulasan dan penilaian untuk sesi ' + subject + ' bersama pengajar ' + tutor + '.';
+      setRating(5);
+      document.getElementById('review-comment').value = '';
+      openModalById('modal-review');
+    }
+
+    async function submitReview() {
+      if (!currentReviewSessionId) return showToast('Ulasan hanya tersedia untuk sesi selesai yang tercatat.', 'warning');
+      try { await TrevyAPI.request(`/api/student/sessions/${encodeURIComponent(currentReviewSessionId)}/review`,{method:'POST',body:{rating:activeRating,comment:document.getElementById('review-comment').value}}); closeActiveModal(); await loadStudentSessions(); showToast('Terima kasih! Ulasan berhasil dikirim.','success'); }
+      catch(error){showToast(error.message,'danger');}
+    }
+
+    /* ── Dynamic Payment Gateway Checkout (Midtrans & Xendit) ── */
+    function getActiveGateway() {
+      return currentActiveGateway;
+    }
+
+    function updateClientGatewayDisplay() {
+      TrevyAPI.request('/api/tenant/payment-provider').then(config=>{paymentGatewayConfig=config;currentActiveGateway=config.provider;const gw=getActiveGateway();
+      const indicator = document.getElementById('client-gateway-indicator');
+      if (indicator) {
+        indicator.textContent = gw === 'midtrans' ? 'Gateway Aktif: Midtrans Snap' : 'Gateway Aktif: Xendit Checkout';
+      }
+      }).catch(()=>{});
+    }
+
+    async function openPackageModal() {
+      const gw = getActiveGateway();
+      const badge = document.getElementById('checkout-gateway-badge');
+      const container = document.getElementById('gateway-payment-options');
+      const notice = document.getElementById('checkout-security-notice');
+      if (!paymentGatewayConfig.provider) { try { paymentGatewayConfig = await TrevyAPI.request('/api/tenant/payment-provider'); currentActiveGateway = paymentGatewayConfig.provider; } catch {} }
+      badge.textContent = gw === 'midtrans' ? 'Midtrans Snap' : 'Xendit Checkout';
+      badge.className = gw === 'midtrans' ? 'badge badge--teal' : 'badge badge--success';
+      container.innerHTML = paymentGatewayConfig.configured
+        ? '<div class="payment-checkout-note">Anda akan melanjutkan ke halaman checkout aman milik provider. Metode pembayaran yang tersedia ditampilkan di sana.</div>'
+        : paymentGatewayConfig.simulator
+          ? '<div class="payment-checkout-note">Mode development: transaksi hanya simulasi dan tidak menagih uang sungguhan.</div>'
+          : '<div class="payment-checkout-note">Gateway belum dikonfigurasi. Silakan hubungi administrator.</div>';
+      notice.textContent = paymentGatewayConfig.configured ? `Checkout ${gw === 'midtrans' ? 'Midtrans Snap' : 'Xendit Payment Session'} • mode ${paymentGatewayConfig.mode}` : paymentGatewayConfig.simulator ? 'SIMULATOR DEVELOPMENT — tidak ada pembayaran sungguhan' : 'Pembayaran belum tersedia';
+      document.getElementById('btn-process-pay').disabled = !paymentGatewayConfig.configured && !paymentGatewayConfig.simulator;
+      openModalById('modal-package');
+    }
+
+    function updateCheckoutPrice() {
+      const select = document.getElementById('checkout-package-select');
+      const price = select.options[select.selectedIndex].dataset.price;
+      document.getElementById('checkout-total-price').textContent = formatIDR(parseInt(price));
+    }
+
+    
+    let pendingPaymentData = null;
+    let paymentSimulationInProgress = false;
+
+    async function processPayment() {
+      const gw = getActiveGateway();
+      const select = document.getElementById("checkout-package-select");
+      const price = parseInt(select.options[select.selectedIndex].dataset.price);
+      const sessions = parseInt(select.options[select.selectedIndex].dataset.sessions);
+      const packageName = select.options[select.selectedIndex].text.split("—")[0].trim();
+      const channel = document.querySelector("input[name='pay-method']:checked")?.value || "va";
+
+      const orderId = (gw === 'midtrans' ? 'MTR-SNAP-' : 'XND-INV-') + crypto.randomUUID();
+      pendingPaymentData = {
+        gw: gw,
+        packageId: select.value,
+        price: price,
+        sessions: sessions,
+        packageName: packageName,
+        channel: channel,
+        orderId
+      };
+      const button = document.getElementById('btn-process-pay'); button.disabled = true; button.textContent = 'Menyiapkan checkout…';
+      try {
+        if (paymentGatewayConfig.configured) {
+          const result = await TrevyAPI.request('/api/payments/create', { method: 'POST', headers: { 'Idempotency-Key': orderId }, body: { packageId: select.value } });
+          window.location.assign(result.checkoutUrl);
+          return;
+        }
+        if (!paymentGatewayConfig.simulator) throw new Error('Payment gateway belum dikonfigurasi.');
+        closeActiveModal(); openGatewayScreen(pendingPaymentData);
+      } catch (error) { showToast(error.message, 'danger'); }
+      finally { button.disabled = !paymentGatewayConfig.configured && !paymentGatewayConfig.simulator; button.textContent = 'Konfirmasi & Bayar'; }
+    }
+
+    async function checkReturnedPayment() {
+      const params = new URLSearchParams(window.location.search); const orderId = params.get('payment_order'); if (!orderId) return;
+      params.delete('payment_order'); const query = params.toString(); history.replaceState({}, '', `${location.pathname}${query ? `?${query}` : ''}${location.hash}`);
+      for (let attempt = 0; attempt < 8; attempt++) {
+        try { const result = await TrevyAPI.request(`/api/payments/${encodeURIComponent(orderId)}`); if (result.transaction.status === 'paid') { await restoreStudentFinancialState(); showToast('Pembayaran berhasil dikonfirmasi. Paket belajar sudah aktif.', 'success'); return; } if (result.transaction.status === 'failed') { showToast('Pembayaran belum berhasil. Anda bisa mencoba kembali.', 'warning'); return; } }
+        catch (error) { showToast(error.message, 'danger'); return; }
+        await new Promise(resolve => setTimeout(resolve, 2500));
+      }
+      showToast('Pembayaran masih menunggu konfirmasi provider. Status paket akan diperbarui otomatis setelah konfirmasi diterima.', 'info');
+    }
+
+    function openGatewayScreen(data) {
+      const header = document.getElementById("snap-header-element");
+      const title = document.getElementById("snap-provider-title");
+      const orderIdEl = document.getElementById("snap-order-id");
+      const amountEl = document.getElementById("snap-amount-display");
+      const content = document.getElementById("snap-channel-content");
+
+      orderIdEl.textContent = data.orderId;
+      amountEl.textContent = formatIDR(data.price);
+
+      if (data.gw === "midtrans") {
+        header.className = "snap-header snap-header--midtrans";
+        title.textContent = "MIDTRANS SNAP CHECKOUT";
+        if (data.channel.includes("qris")) {
+          content.innerHTML = `
+            <div class="qris-barcode-box">
+              <div style="font-weight:var(--fw-bold); font-size:var(--fs-sm); margin-bottom:8px;">QRIS Dinamis Midtrans</div>
+              <div class="qris-svg-qr">
+                <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect width="8" height="8" x="2" y="2"/><rect width="8" height="8" x="14" y="2"/><rect width="8" height="8" x="2" y="14"/><rect width="4" height="4" x="6" y="6" fill="#fff"/><rect width="4" height="4" x="18" y="6" fill="#fff"/><rect width="4" height="4" x="6" y="18" fill="#fff"/><path d="M14 14h2v2h-2z"/><path d="M18 14h4v4h-4z"/><path d="M14 18h2v4h-2z"/><path d="M18 20h4v2h-4z"/></svg>
+              </div>
+              <div style="font-size:var(--fs-xs); color:var(--text-secondary); margin-top:8px;">Pindai dengan GoPay / ShopeePay / BCA Mobile</div>
+              <div style="font-size:0.7rem; color:var(--clr-danger-500); font-weight:var(--fw-semibold); margin-top:4px;">Berlaku 14:59</div>
+            </div>
+          `;
+        } else {
+          content.innerHTML = `
+            <div class="va-display-box">
+              <div style="font-size:var(--fs-xs); color:var(--text-secondary);">Nomor Virtual Account BCA (Midtrans):</div>
+              <div class="va-number">8077 7081 2283 1901</div>
+              <button class="btn btn--xs btn--outline" type="button" style="margin-top:6px;" onclick="showToast('Nomor Virtual Account disalin ke clipboard!', 'info')">Salin Nomor VA</button>
+            </div>
+            <div style="font-size:var(--fs-xs); color:var(--text-secondary); line-height:1.6;">
+              1. Buka m-BCA &gt; m-Transfer &gt; BCA Virtual Account<br>
+              2. Masukkan nomor VA di atas<br>
+              3. Tidak ada pembayaran sungguhan; gunakan tombol simulasi untuk data demo.
+            </div>
+          `;
+        }
+      } else {
+        header.className = "snap-header snap-header--xendit";
+        title.textContent = "XENDIT XENPAYMENTS INVOICE";
+        if (data.channel.includes("qris")) {
+          content.innerHTML = `
+            <div class="qris-barcode-box">
+              <div style="font-weight:var(--fw-bold); font-size:var(--fs-sm); margin-bottom:8px;">Pratinjau QRIS (simulator)</div>
+              <div class="qris-svg-qr" style="background:#0f172a;">
+                <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.8"><rect width="8" height="8" x="2" y="2"/><rect width="8" height="8" x="14" y="2"/><rect width="8" height="8" x="2" y="14"/><rect width="4" height="4" x="6" y="6" fill="#38bdf8"/><rect width="4" height="4" x="18" y="6" fill="#38bdf8"/><rect width="4" height="4" x="6" y="18" fill="#38bdf8"/><path d="M14 14h2v2h-2z"/><path d="M18 14h4v4h-4z"/><path d="M14 18h2v4h-2z"/><path d="M18 20h4v2h-4z"/></svg>
+              </div>
+              <div style="font-size:var(--fs-xs); color:var(--text-secondary); margin-top:8px;">Tidak terhubung ke dompet atau bank.</div>
+            </div>
+          `;
+        } else {
+          content.innerHTML = `
+            <div class="va-display-box" style="border-color:#38bdf8; background:#f0f9ff;">
+              <div style="font-size:var(--fs-xs); color:#0369a1;">Nomor Virtual Account Xendit Multi-Bank:</div>
+              <div class="va-number" style="color:#0284c7;">8808 1228 3190 1190</div>
+              <button class="btn btn--xs btn--outline" type="button" style="margin-top:6px;" onclick="showToast('Nomor VA Xendit disalin ke clipboard!', 'info')">Salin Nomor VA</button>
+            </div>
+            <div style="font-size:var(--fs-xs); color:var(--text-secondary); line-height:1.6;">
+              Transfer melalui ATM atau Mobile Banking jaringan ATM Bersama / Prima.
+            </div>
+          `;
+        }
+      }
+
+      openModalById("modal-gateway-screen");
+    }
+
+    function closeGatewayScreen() {
+      closeActiveModal();
+    }
+
+    function completeGatewaySimulation() {
+      if (!pendingPaymentData || paymentSimulationInProgress) return;
+      paymentSimulationInProgress = true;
+      const data = pendingPaymentData;
+      const btn = document.getElementById("btn-simulate-success");
+      btn.innerHTML = "Memverifikasi notifikasi webhook " + data.gw + "...";
+      btn.disabled = true;
+
+      setTimeout(async () => {
+        btn.innerHTML = "Simulasikan Bayar Berhasil (Simulator)";
+        btn.disabled = false;
+        try {
+          const result = await TrevyAPI.request('/api/payments/simulate', {
+            method: 'POST', headers: { 'Idempotency-Key': data.orderId },
+            body: { packageId: data.packageId, gateway: data.gw }
+          });
+          closeActiveModal();
+          pendingPaymentData = null;
+          await restoreStudentFinancialState();
+          showToast(`Simulasi tercatat sebesar ${formatIDR(result.transaction.amount)}. Pembayaran sungguhan belum diverifikasi.`, 'success');
+        } catch (error) {
+          showToast(error.message, 'danger');
+        } finally {
+          paymentSimulationInProgress = false;
+        }
+      }, 900);
+    }
+
+    async function restoreStudentFinancialState() {
+      try {
+        const state = await TrevyAPI.request('/api/student/financial');
+        const subscription = state.subscription;
+        const quota = document.getElementById("quota-display-value");
+        if (quota) quota.textContent = `${subscription.remaining} / ${subscription.total}`;
+        const history = document.getElementById("payment-history-container");
+        if (history) history.replaceChildren();
+        state.transactions.forEach(tx => {
+          const item = document.createElement("div");
+          item.className = "transaction-item";
+          const info = document.createElement("div");
+          info.className = "transaction-item__info";
+          const name = document.createElement("div");
+          name.className = "transaction-item__name";
+          name.textContent = tx.description;
+          const date = document.createElement("div");
+          date.className = "transaction-item__date";
+          date.textContent = `${new Date(tx.date).toLocaleString('id-ID')} • ${tx.gateway} • ${tx.status}`;
+          info.append(name, date);
+          const amount = document.createElement("span");
+          amount.className = "transaction-item__amount transaction-item__amount--out";
+          amount.textContent = formatIDR(tx.amount);
+          item.append(info, amount);
+          history?.prepend(item);
+        });
+      } catch (error) {
+        console.error("Gagal memuat data pembayaran siswa", error);
+      }
+    }
+
+
+    async function startAutoMatching() {
+      const subject=document.getElementById('booking-subject').value;
+      const date=document.getElementById('booking-date').value;
+      if(!date){showToast('Pilih tanggal sesi terlebih dahulu.','warning');return;}
+      const time=document.querySelector('.time-slot.selected')?.textContent.trim()||currentSelectedSlot;
+      const scheduledAt=new Date(`${date}T${time}:00`).toISOString();
+      try {
+        const match=await TrevyAPI.request(`/api/student/bookings/match?subject=${encodeURIComponent(subject)}&scheduledAt=${encodeURIComponent(scheduledAt)}`);
+        currentMatchedTutor=match.tutor;
+        document.getElementById('match-modal-title').textContent='Pengajar Terverifikasi Tersedia';
+        document.getElementById('matching-loading').style.display='none';
+        document.getElementById('matching-result').style.display='block';
+        document.getElementById('match-modal-footer').style.display='flex';
+        document.getElementById('res-tutor-name').textContent=match.tutor.name;
+        document.getElementById('res-tutor-title').textContent=match.tutor.qualification;
+        document.getElementById('res-tutor-avatar').textContent=match.tutor.name.split(/\s+/).map(part=>part[0]).slice(0,2).join('').toUpperCase();
+        document.getElementById('res-summary-subject').textContent=subject;
+        document.getElementById('res-summary-time').textContent=`${date} • ${time} WIB`;
+        document.getElementById('matching-status-text').textContent='Kecocokan diambil dari akun pengajar terverifikasi.';
+        openModalById('modal-matching');
+      } catch(error) { showToast(error.message,'danger'); }
+    }
+
+    async function confirmMatchedSession() {
+      const subject=document.getElementById('booking-subject').value;
+      const date=document.getElementById('booking-date').value;
+      const time=document.querySelector('.time-slot.selected')?.textContent.trim()||currentSelectedSlot;
+      const scheduledAt=new Date(`${date}T${time}:00`).toISOString();
+      const button=document.getElementById('btn-confirm-match'); button.disabled=true; button.textContent='Menyimpan jadwal…';
+      try {
+        const result=await TrevyAPI.request('/api/student/bookings',{method:'POST',body:{subject,scheduledAt,freeTrial:document.getElementById('booking-free-trial').checked}});
+        closeActiveModal(); await Promise.all([loadStudentSessions(),restoreStudentFinancialState()]);
+        showToast(`Jadwal ${result.subject} bersama ${result.tutor} tersimpan.`,'success');
+      } catch(error) { showToast(error.message,'danger'); }
+      finally { button.disabled=false; button.textContent='Konfirmasi Jadwal Sesi'; }
+    }
+
+    async function loadStudentSessions() {
+      try {
+        const sessions=await TrevyAPI.request('/api/student/sessions');
+        const dateText=session=>new Date(session.scheduledAt).toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Jakarta'});
+        const rows=sessions.map(session=>`<tr><td>${dateText(session)}</td><td>${session.subject||'—'}${session.freeTrial?' • Trial':''}</td><td>${session.tutor||'Menunggu pengajar'}</td><td>Semarang</td><td>${session.status}</td><td>${session.status==='completed'&&!session.reviewed?`<button class="btn btn--xs btn--outline" onclick="openReviewModal('${String(session.subject||'Sesi').replace(/'/g,'&#39;')}','${String(session.tutor||'Pengajar').replace(/'/g,'&#39;')}','${session.id}')">Beri ulasan</button>`:'—'}</td></tr>`);
+        document.getElementById('student-schedule-table').innerHTML=rows.join('')||'<tr><td colspan="6">Belum ada jadwal. Buat booking untuk mulai.</td></tr>';
+        const home=document.getElementById('home-schedule-container');
+        home.replaceChildren();
+        sessions.filter(item=>['scheduled','ongoing'].includes(item.status)).slice(0,3).forEach(session=>{const item=document.createElement('article');item.className='schedule-item schedule-item--upcoming';item.innerHTML=`<div class="schedule-item__info"><strong class="schedule-item__subject"></strong><div class="schedule-item__meta"></div></div><span class="badge badge--success"></span>`;item.querySelector('.schedule-item__subject').textContent=session.subject||'Sesi';item.querySelector('.schedule-item__meta').textContent=`${dateText(session)} • ${session.tutor||'Pengajar belum tersedia'}`;item.querySelector('.badge').textContent=session.status;home.append(item);});
+        if(!home.children.length)home.textContent='Belum ada sesi terjadwal.';
+      } catch(error) { console.error('Gagal memuat jadwal siswa',error); }
+    }
+    async function loadStudentProfile(user) {
+      try { const profile=await TrevyAPI.request('/api/student/profile');document.getElementById('student-profile-name').value=user.name;document.getElementById('student-profile-email').value=user.email;document.getElementById('student-profile-grade').value=profile.grade||'';document.getElementById('student-profile-address').value=profile.address||'';document.getElementById('student-profile-phone').value=profile.phone||''; }
+      catch(error){showToast(error.message,'danger');}
+    }
+    async function saveStudentProfile() {
+      try { await TrevyAPI.request('/api/student/profile',{method:'PUT',body:{grade:document.getElementById('student-profile-grade').value,school:'',address:document.getElementById('student-profile-address').value,phone:document.getElementById('student-profile-phone').value}});showToast('Profil tersimpan.','success'); }
+      catch(error){showToast(error.message,'danger');}
+    }
+    async function loadStudentPreferences(){try{const preferences=await TrevyAPI.request('/api/account/preferences');document.getElementById('student-wa-reminder').checked=preferences.waReminder!==false;}catch(error){showToast(error.message,'danger');}}
+    async function saveStudentAccountSettings(){
+      try{await TrevyAPI.request('/api/account/preferences',{method:'PUT',body:{preferences:{waReminder:document.getElementById('student-wa-reminder').checked}}});
+        const currentPassword=document.getElementById('student-current-password').value,newPassword=document.getElementById('student-new-password').value;
+        if(newPassword){await TrevyAPI.request('/api/account/password',{method:'PUT',body:{currentPassword,newPassword}});document.getElementById('student-current-password').value='';document.getElementById('student-new-password').value='';}
+        showToast('Pengaturan akun tersimpan.','success');
+      }catch(error){showToast(error.message,'danger');}
+    }
+    async function loadStudentPackages() {
+      try { const packages=await TrevyAPI.request('/api/public/packages');const select=document.getElementById('checkout-package-select');select.replaceChildren(...packages.map(item=>{const option=document.createElement('option');option.value=item.id;option.dataset.price=item.price;option.dataset.sessions=item.sessions;option.textContent=`${item.name} (${item.sessions} sesi) — ${formatIDR(item.price)}`;return option;}));if(packages.length)updateCheckoutPrice(); }
+      catch(error){showToast(error.message,'danger');}
+    }
+  </script>
+</body>
+</html>

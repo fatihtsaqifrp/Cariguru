@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Pengajar</title>
+  <meta name="description" content="Bergabung sebagai guru les privat di platform Semarang. Upload CV, atur jadwal, dan mulai mengajar.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2'><path d='M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z'/></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <script src="js/branding.js" defer></script>
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <div class="auth-page">
+    <div class="auth-page__bg-shapes">
+      <div class="auth-page__bg-shape auth-page__bg-shape--1"></div>
+      <div class="auth-page__bg-shape auth-page__bg-shape--2"></div>
+    </div>
+
+    <div class="auth-split">
+      <div class="auth-split__left">
+        <div class="auth-split__left-content">
+          <a href="index.html" style="display: inline-flex; align-items: center; gap: 10px; margin-bottom: 40px; color: rgba(255,255,255,0.7); font-size: var(--fs-sm);">
+            ← Kembali ke Beranda
+          </a>
+          <div class="auth-split__tagline">Untuk Pengajar</div>
+          <h1 class="auth-split__title">
+            Bergabung Sebagai<br>
+            <span class="auth-split__title-highlight">Guru di platform</span>
+          </h1>
+          <p class="auth-split__desc">
+            Isi waktu luang Anda dengan mengajar siswa-siswa di Semarang. Gaji kompetitif, jadwal fleksibel.
+          </p>
+
+          <div class="auth-split__features">
+            <div class="auth-split__feature">
+              <div class="auth-split__feature-icon" style="background: rgba(74,222,128,0.15); color: var(--clr-success-400);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              <span class="auth-split__feature-text">Rp100.000+ per pertemuan</span>
+            </div>
+            <div class="auth-split__feature">
+              <div class="auth-split__feature-icon" style="background: rgba(99,102,241,0.15); color: var(--clr-primary-300);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+              </div>
+              <span class="auth-split__feature-text">Atur jadwal sesuai keinginan</span>
+            </div>
+            <div class="auth-split__feature">
+              <div class="auth-split__feature-icon" style="background: rgba(249,115,22,0.15); color: var(--clr-accent-300);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              </div>
+              <span class="auth-split__feature-text">Payroll transparan & verifikasi admin</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-split__right">
+        <div class="auth-card" style="max-width: 480px;">
+          <div class="auth-card__header">
+            <a href="index.html" class="auth-card__logo">
+              <div class="auth-card__logo-icon">T</div>
+              <span class="auth-card__logo-text">platform</span>
+            </a>
+            <h2 class="auth-card__title">Daftar Guru</h2>
+            <p class="auth-card__subtitle">Isi data & upload berkas untuk verifikasi</p>
+          </div>
+
+          <div class="step-indicator" id="tutor-step-indicator">
+            <div class="step-indicator__step active" data-step="1">1</div>
+            <div class="step-indicator__line"></div>
+            <div class="step-indicator__step" data-step="2">2</div>
+            <div class="step-indicator__line"></div>
+            <div class="step-indicator__step" data-step="3">3</div>
+          </div>
+
+          <form id="tutor-register-form">
+            <!-- Step 1: Personal Info -->
+            <div id="tutor-step-1" class="register-step">
+              <div class="form-group">
+                <label class="form-label" for="tutor-name">Nama Lengkap</label>
+                <input type="text" id="tutor-name" class="form-input" placeholder="Nama lengkap sesuai KTP" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="tutor-email">Email</label>
+                <input type="email" id="tutor-email" class="form-input" placeholder="contoh@email.com" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="tutor-whatsapp">No. WhatsApp</label>
+                <input type="tel" id="tutor-whatsapp" class="form-input" placeholder="08xxxxxxxxxx" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="tutor-password">Password</label>
+                <div class="password-field">
+                  <input type="password" id="tutor-password" class="form-input" placeholder="Min. 12 karakter" required minlength="12" autocomplete="new-password">
+                  <button type="button" class="password-toggle" onclick="togglePassword('tutor-password', this)" title="Lihat password">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <button type="button" class="btn btn--primary btn--full btn--lg" onclick="goToTutorStep(2)">
+                Lanjutkan →
+              </button>
+            </div>
+
+            <!-- Step 2: Teaching Details -->
+            <div id="tutor-step-2" class="register-step" style="display: none;">
+              <div class="form-group">
+                <label class="form-label" for="tutor-education">Pendidikan Terakhir</label>
+                <select id="tutor-education" class="form-select" required>
+                  <option value="" disabled selected>Pilih pendidikan</option>
+                  <option value="sma">SMA/SMK</option>
+                  <option value="d3">D3</option>
+                  <option value="s1">S1</option>
+                  <option value="s2">S2</option>
+                  <option value="s3">S3</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="tutor-university">Universitas / Institusi</label>
+                <input type="text" id="tutor-university" class="form-input" placeholder="Nama universitas/institusi">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Mata Pelajaran yang Diajarkan</label>
+                <div style="display: flex; flex-wrap: wrap; gap: var(--sp-2);">
+                  <button type="button" class="chip" onclick="toggleChip(this)">Matematika</button>
+                  <button type="button" class="chip" onclick="toggleChip(this)">B. Inggris</button>
+                  <button type="button" class="chip" onclick="toggleChip(this)">Fisika</button>
+                  <button type="button" class="chip" onclick="toggleChip(this)">Kimia</button>
+                  <button type="button" class="chip" onclick="toggleChip(this)">Biologi</button>
+                  <button type="button" class="chip" onclick="toggleChip(this)">B. Indonesia</button>
+                  <button type="button" class="chip" onclick="toggleChip(this)">Komputer</button>
+                  <button type="button" class="chip" onclick="toggleChip(this)">Ekonomi</button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="tutor-experience">Pengalaman Mengajar (tahun)</label>
+                <input type="number" id="tutor-experience" class="form-input" placeholder="0" min="0">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="tutor-district">Kecamatan Domisili</label>
+                <select id="tutor-district" class="form-select" required>
+                  <option value="" disabled selected>Pilih kecamatan</option>
+                  <option value="banyumanik">Banyumanik</option>
+                  <option value="candisari">Candisari</option>
+                  <option value="gajahmungkur">Gajahmungkur</option>
+                  <option value="pedurungan">Pedurungan</option>
+                  <option value="semarang-barat">Semarang Barat</option>
+                  <option value="semarang-selatan">Semarang Selatan</option>
+                  <option value="semarang-tengah">Semarang Tengah</option>
+                  <option value="semarang-timur">Semarang Timur</option>
+                  <option value="tembalang">Tembalang</option>
+                  <option value="ngaliyan">Ngaliyan</option>
+                  <option value="gunungpati">Gunungpati</option>
+                  <option value="mijen">Mijen</option>
+                  <option value="genuk">Genuk</option>
+                  <option value="gayamsari">Gayamsari</option>
+                  <option value="semarang-utara">Semarang Utara</option>
+                  <option value="tugu">Tugu</option>
+                </select>
+              </div>
+
+              <div style="display: flex; gap: var(--sp-3);">
+                <button type="button" class="btn btn--ghost btn--lg" onclick="goToTutorStep(1)">← Kembali</button>
+                <button type="button" class="btn btn--primary btn--full btn--lg" onclick="goToTutorStep(3)">Lanjutkan →</button>
+              </div>
+            </div>
+
+            <!-- Step 3: Documents Upload -->
+            <div id="tutor-step-3" class="register-step" style="display: none;">
+              <div class="form-group">
+                <label class="form-label">Upload CV / Resume</label>
+                <div class="upload-zone" id="cv-upload" onclick="document.getElementById('cv-file').click()">
+                  <div class="upload-zone__icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg>
+                  </div>
+                  <div class="upload-zone__title">Klik atau drag file CV Anda</div>
+                  <div class="upload-zone__desc">PDF, DOC, DOCX (Maks. 5MB)</div>
+                  <input type="file" id="cv-file" style="display:none" accept=".pdf,.doc,.docx" onchange="handleFileUpload(this, 'cv-upload')">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Upload Ijazah / Transkrip Nilai</label>
+                <div class="upload-zone" id="diploma-upload" onclick="document.getElementById('diploma-file').click()">
+                  <div class="upload-zone__icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                  </div>
+                  <div class="upload-zone__title">Klik atau drag file Ijazah</div>
+                  <div class="upload-zone__desc">PDF, JPG, PNG (Maks. 5MB)</div>
+                  <input type="file" id="diploma-file" style="display:none" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileUpload(this, 'diploma-upload')">
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-top: var(--sp-4);">
+                <label class="form-checkbox" style="margin-bottom: var(--sp-3);">
+                  <input type="checkbox" required>
+                  <span style="font-size: var(--fs-sm); color: var(--text-secondary);">Saya setuju dengan <a data-disabled-link style="color: var(--clr-primary-600);">Syarat & Ketentuan Guru</a></span>
+                </label>
+                <label class="form-checkbox">
+                  <input type="checkbox" required>
+                  <span style="font-size: var(--fs-sm); color: var(--text-secondary);">Data yang saya berikan adalah benar dan dapat diverifikasi</span>
+                </label>
+              </div>
+
+              <div style="display: flex; gap: var(--sp-3); margin-top: var(--sp-6);">
+                <button type="button" class="btn btn--ghost btn--lg" onclick="goToTutorStep(2)">← Kembali</button>
+                <button type="submit" class="btn btn--accent btn--full btn--lg" id="tutor-register-btn" onclick="handleTutorRegister(event)">
+                  Kirim Pendaftaran Pengajar
+                </button>
+              </div>
+
+              <div style="margin-top: var(--sp-4); padding: var(--sp-3) var(--sp-4); background: var(--clr-primary-50); border-radius: var(--radius-lg); border-left: 3px solid var(--clr-primary-400);">
+                <p style="font-size: var(--fs-xs); color: var(--clr-primary-700);">
+                  Setelah mendaftar, tim kami akan memverifikasi berkas Anda dalam 1-3 hari kerja. Anda akan menerima notifikasi via WhatsApp.
+                </p>
+              </div>
+            </div>
+          </form>
+
+          <div class="auth-card__footer">
+            Sudah punya akun? <a href="login.html">Masuk di sini</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    function goToTutorStep(step) {
+      document.querySelectorAll('.register-step').forEach(s => s.style.display = 'none');
+      document.getElementById(`tutor-step-${step}`).style.display = 'block';
+      
+      document.querySelectorAll('#tutor-step-indicator .step-indicator__step').forEach(s => {
+        const sNum = parseInt(s.dataset.step);
+        s.classList.remove('active', 'completed');
+        if (sNum === step) s.classList.add('active');
+        if (sNum < step) s.classList.add('completed');
+      });
+
+      document.querySelectorAll('#tutor-step-indicator .step-indicator__line').forEach((l, i) => {
+        l.classList.toggle('active', i < step - 1);
+      });
+    }
+
+    function toggleChip(chip) {
+      chip.classList.toggle('chip--selected');
+    }
+
+    function togglePassword(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>';
+      } else {
+        input.type = 'password';
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+      }
+    }
+
+    function handleFileUpload(input, zoneId) {
+      const zone = document.getElementById(zoneId);
+      if (input.files.length > 0) {
+        const file = input.files[0];
+        zone.innerHTML = `
+          <div style="color: var(--clr-success-600); margin-bottom: 6px;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div class="upload-zone__title" style="color: var(--clr-success-600);">${file.name}</div>
+          <div class="upload-zone__desc">${(file.size / 1024 / 1024).toFixed(2)} MB — Klik untuk ganti file</div>
+        `;
+        zone.style.borderColor = 'var(--clr-success-400)';
+        zone.style.background = 'rgba(34, 197, 94, 0.05)';
+      }
+    }
+
+    // Drag & drop support
+    document.querySelectorAll('.upload-zone').forEach(zone => {
+      zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
+      zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+      zone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        zone.classList.remove('dragover');
+        const input = zone.querySelector('input[type="file"]');
+        if (input && e.dataTransfer.files.length) {
+          input.files = e.dataTransfer.files;
+          handleFileUpload(input, zone.id);
+        }
+      });
+    });
+
+    async function handleTutorRegister(e) {
+      e.preventDefault();
+      const btn = document.getElementById('tutor-register-btn');
+      btn.innerHTML = '<span style="display:inline-block; animation: rotate 1s linear infinite;">⏳</span> Mengirim...';
+      btn.disabled = true;
+      try {
+        const response = await fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ role: 'tutor', name: document.getElementById('tutor-name').value, email: document.getElementById('tutor-email').value, password: document.getElementById('tutor-password').value }) });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Pendaftaran gagal.');
+        showToast(result.message, 'success');
+        window.location.assign('login.html');
+      } catch (error) { showToast(error.message, 'danger'); btn.disabled = false; btn.textContent = 'Kirim Pendaftaran'; }
+    }
+  </script>
+</body>
+</html>

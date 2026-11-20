@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <meta name="description" content="Panel administrator platform untuk operasional, monitoring transaksi, verifikasi pengajar, dan konfigurasi payment gateway.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2'><path d='M12 20h9'/><path d='M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z'/></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <script src="js/branding.js" defer></script>
+  <script src="js/profile-photo.js" defer></script>
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__header">
+        <a href="index.html" class="sidebar__brand">
+          <div class="sidebar__logo">T</div>
+          <div>
+            <div class="sidebar__name">platform</div>
+            <div class="sidebar__label">Admin Panel</div>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar__nav">
+        <div class="sidebar__section-title">Utama</div>
+        <a href="#dashboard" class="sidebar__link active" data-tab="dashboard">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          </span>
+          Dashboard
+        </a>
+        <a href="#pengguna" class="sidebar__link" data-tab="pengguna">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </span>
+          Pengguna
+        </a>
+
+        <div class="sidebar__section-title">Akademik</div>
+        <a href="#verifikasi" class="sidebar__link" data-tab="verifikasi">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </span>
+          Verifikasi Pengajar
+          <span class="sidebar__link-badge" id="sidebar-verify-badge" hidden>0</span>
+        </a>
+                <a href="#presensi" class="sidebar__link" data-tab="presensi">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+          </span>
+          Presensi & Sesi
+          <span class="sidebar__link-badge" style="background: var(--clr-primary-500);" id="sidebar-presensi-badge" hidden>0</span>
+        </a>
+        <a href="#paket" class="sidebar__link" data-tab="paket">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+          </span>
+          Paket & Harga
+        </a>
+
+        <div class="sidebar__section-title">Keuangan</div>
+        <a href="#keuangan" class="sidebar__link" data-tab="keuangan">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/><path d="M6 14h6"/></svg>
+          </span>
+          Ringkasan Keuangan
+        </a>
+        <a href="#transaksi" class="sidebar__link" data-tab="transaksi">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+          </span>
+          Transaksi
+          <span class="sidebar__link-badge" id="sidebar-transactions-badge" hidden>0</span>
+        </a>
+        <a href="#payroll" class="sidebar__link" data-tab="payroll">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </span>
+          Payroll
+        </a>
+        <div class="sidebar__section-title">Pengaturan</div>
+        <a href="#gateway" class="sidebar__link" data-tab="gateway">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
+          </span>
+          Payment Gateway
+          <span class="sidebar__link-badge" style="background: var(--clr-primary-600);" id="nav-gateway-status">Midtrans</span>
+        </a>
+
+        <a href="#pengaturan" class="sidebar__link" data-tab="pengaturan">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          </span>
+          Pengaturan Sistem
+        </a>
+      </nav>
+
+      <div class="sidebar__footer">
+        <a href="login.html" class="sidebar__link" data-logout style="color: var(--clr-danger-400);">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+          </span>
+          Keluar
+        </a>
+        <div class="sidebar__user">
+          <div class="avatar" style="background: linear-gradient(135deg, #e11d48, #7c3aed);">A</div>
+          <div class="sidebar__user-info">
+            <div class="sidebar__user-name">Super Admin</div>
+            <div class="sidebar__user-role">Akun administrator</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="main-content__header">
+        <div style="display: flex; align-items: center; gap: var(--sp-4);">
+          <button class="sidebar-toggle" aria-label="Toggle Menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+          </button>
+          <div class="main-content__title-group">
+            <h1 class="main-content__title" id="page-title">Dashboard Monitoring</h1>
+            <p class="main-content__subtitle" id="page-subtitle">Pusat kendali dan status operasional platform real-time</p>
+          </div>
+        </div>
+        <div class="main-content__actions">
+          <button class="btn btn--sm btn--outline" onclick="exportDataCSV()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            Export Laporan
+          </button>
+          <button class="btn btn--icon btn--ghost" style="position: relative;" onclick="toggleAdminNotifs(event)" title="Notifikasi Sistem">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            <span style="position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; background: var(--clr-danger-500); border-radius: 50%; border: 2px solid white;"></span>
+          </button>
+          
+          <!-- Notif Dropdown -->
+          <div class="notif-dropdown" id="admin-notif-dropdown">
+            <div style="padding: var(--sp-4); border-bottom: 1px solid var(--clr-neutral-100); display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: var(--fw-bold); font-size: var(--fs-sm);">Notifikasi Sistem</span>
+              <button onclick="markAllAdminNotifsRead()" style="background: none; border: none; font-size: var(--fs-xs); color: var(--clr-primary-600); cursor: pointer;">Tandai dibaca</button>
+            </div>
+            <div style="max-height: 280px; overflow-y: auto;">
+              <div class="notification-item unread">
+                <div class="notification-item__icon" style="background: var(--clr-primary-100); color: var(--clr-primary-600);">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg>
+                </div>
+                <div class="notification-item__content">
+                  <div class="notification-item__text"><strong>Pendaftaran Pengajar:</strong> Siti Purnama, S.Pd mengunggah berkas CV & Ijazah.</div>
+                  <div class="notification-item__time">30 menit yang lalu</div>
+                </div>
+              </div>
+              <div class="notification-item unread">
+                <div class="notification-item__icon" style="background: rgba(34,197,94,0.1); color: var(--clr-success-600);">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                </div>
+                <div class="notification-item__content">
+                  <div class="notification-item__text">Transaksi Rp4.499.000 (Paket Tahunan) berhasil via VA Mandiri.</div>
+                  <div class="notification-item__time">2 jam yang lalu</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="main-content__body">
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 1: DASHBOARD MONITORING (DEFAULT)
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view active" id="view-dashboard">
+          <div class="stats-grid">
+            <div class="stat-card stat-card--gradient">
+              <div class="stat-card__label">Total Siswa Terdaftar</div>
+              <div class="stat-card__value" id="admin-student-count">—</div>
+              <div class="stat-card__meta" style="color: rgba(255,255,255,0.8);">Akun aktif</div>
+              <div class="stat-card__icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card__label">Pengajar Terverifikasi</div>
+              <div class="stat-card__value" id="admin-tutor-count">—</div>
+              <div class="stat-card__meta" style="color: var(--clr-success-600);">Terverifikasi</div>
+              <div class="stat-card__icon" style="background: var(--clr-secondary-50); color: var(--clr-secondary-600);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card__label">Pendapatan Bulan Ini</div>
+              <div class="stat-card__value" id="admin-revenue-month" style="font-size: var(--fs-2xl);">—</div>
+              <div class="stat-card__meta" style="color: var(--clr-success-600);">Simulasi tercatat bulan ini</div>
+              <div class="stat-card__icon" style="background: rgba(34,197,94,0.1); color: var(--clr-success-600);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card__label">Provider Pratinjau</div>
+              <div class="stat-card__value" style="font-size: var(--fs-xl);" id="stat-active-gateway">Midtrans</div>
+              <div class="stat-card__meta" style="color: var(--clr-primary-600);">Mode: Simulator</div>
+              <div class="stat-card__icon" style="background: var(--clr-primary-50); color: var(--clr-primary-600);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <!-- Revenue Chart Panel -->
+            <div class="panel">
+              <div class="panel__header">
+                <h2 class="panel__title">Volume Transaksi 6 Bulan Terakhir</h2>
+                <span class="badge badge--teal">Semarang Hub</span>
+              </div>
+              <div class="panel__body"><p>Nilai checkout simulasi yang dicatat pada enam bulan terakhir.</p><div id="admin-revenue-summary" class="settings-form-grid"><span>Memuat data…</span></div>
+            </div>
+            </div>
+
+            <!-- Quick Action Overview -->
+            <div class="panel">
+              <div class="panel__header">
+                <h2 class="panel__title">Aksi Cepat Administrator</h2>
+              </div>
+              <div class="panel__body" style="display:flex; flex-direction:column; gap: var(--sp-3);">
+                <div class="quick-action" onclick="switchTab('verifikasi')" style="margin:0;">
+                  <div class="quick-action__icon" style="background: rgba(99,102,241,0.1); color: var(--clr-primary-600);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                  </div>
+                  <div>
+                    <div class="quick-action__title">Periksa 4 Berkas Pengajar</div>
+                    <div class="quick-action__desc">Verifikasi calon guru baru</div>
+                  </div>
+                </div>
+
+                <div class="quick-action" onclick="switchTab('gateway')" style="margin:0;">
+                  <div class="quick-action__icon" style="background: rgba(20,184,166,0.1); color: var(--clr-secondary-600);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/></svg>
+                  </div>
+                  <div>
+                    <div class="quick-action__title">Pengaturan Payment Gateway</div>
+                    <div class="quick-action__desc">Alihkan antara Midtrans & Xendit</div>
+                  </div>
+                </div>
+
+                <div class="quick-action" onclick="switchTab('payroll')" style="margin:0;">
+                  <div class="quick-action__icon" style="background: rgba(34,197,94,0.1); color: var(--clr-success-600);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  </div>
+                  <div>
+                    <div class="quick-action__title">Persetujuan Payroll Guru</div>
+                    <div class="quick-action__desc">2 Pengajuan transfer honor pending</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 2: SEMUA PENGGUNA
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-pengguna">
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">Data Seluruh Pengguna Platform</h2>
+              <div style="display: flex; gap: var(--sp-3); align-items: center;">
+                <input type="text" id="user-search-input" placeholder="Cari nama, email, kecamatan..." class="form-input" style="padding: 6px 12px; font-size: var(--fs-xs); width: 240px;" onkeyup="filterUsersTable()">
+                <select class="form-select" id="user-role-filter" style="padding: 6px 12px; font-size: var(--fs-xs); width: 130px;" onchange="filterUsersTable()">
+                  <option value="">Semua Peran</option>
+                  <option value="Siswa">Siswa</option>
+                  <option value="Pengajar">Pengajar</option>
+                </select>
+              </div>
+            </div>
+            <div class="panel__body panel__body--flush">
+              <div class="table-wrapper" style="border: none;">
+                <table class="table" id="table-users">
+                  <thead>
+                    <tr>
+                      <th>Nama Pengguna</th>
+                      <th>Peran</th>
+                      <th>Kontak</th>
+                      <th>Status Akun</th>
+                      <th>Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="users-table-body"><tr><td colspan="5">Memuat akun…</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="panel" style="margin-top:24px"><div class="panel__header"><h2 class="panel__title">Tambah Pengguna</h2></div><div class="panel__body"><div class="settings-form-grid">
+            <label class="form-group">Nama<input class="form-input" id="new-user-name" maxlength="120"></label><label class="form-group">Email<input class="form-input" id="new-user-email" type="email"></label><label class="form-group">Kata sandi (minimal 12 karakter)<input class="form-input" id="new-user-password" type="password" minlength="12"></label><label class="form-group">Role<select class="form-input" id="new-user-role"></select></label><label class="form-group">Grup<select class="form-input" id="new-user-group"><option value="">Tanpa grup</option></select></label>
+          </div><button class="btn btn--primary" type="button" onclick="createAdminUser()">Buat Akun</button><button class="btn btn--outline" type="button" onclick="createUserGroup()">Tambah Grup</button></div></div>
+          <div class="panel" style="margin-top:24px"><div class="panel__header"><h2 class="panel__title">Matriks Permission per Role</h2></div><div class="panel__body" id="role-permission-matrix">Memuat matriks…</div></div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 3: VERIFIKASI GURU
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-verifikasi"><div class="panel"><div class="panel__header"><h2 class="panel__title">Antrian Pendaftaran Pengajar</h2><span class="badge badge--accent" id="verification-count-badge">Memuat pendaftaran…</span></div><div class="panel__body panel__body--flush" id="verification-list"><div class="data-empty-state">Memuat pendaftaran tutor…</div></div></div></div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 4: PAKET & HARGA
+             ═══════════════════════════════════════════════════ -->
+        
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW: VALIDASI PRESENSI & SESI MENGAJAR
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-presensi">
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">Pengesahan Presensi GPS & Foto Bukti Sesi</h2>
+              <span class="badge badge--accent" id="presensi-pending-badge">1 Presensi Menunggu Validasi</span>
+            </div>
+            <div class="panel__body panel__body--flush">
+              <div class="table-wrapper" style="border: none;">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Pengajar & Siswa</th>
+                      <th>Mata Pelajaran & Waktu</th>
+                      <th>Verifikasi GPS Geolocation</th>
+                      <th>Foto Dokumentasi</th>
+                      <th>Status Presensi</th>
+                      <th>Tindakan Admin</th>
+                    </tr>
+                  </thead>
+                  <tbody id="attendance-verification-tbody"><tr><td colspan="6">Memuat data presensi…</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-view" id="view-paket">
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">Katalog Paket Belajar platform</h2>
+              <button class="btn btn--sm btn--primary" onclick="openAddPackageModal()">+ Tambah Paket Baru</button>
+            </div>
+            <div class="panel__body">
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4);" id="admin-packages-grid"><p>Memuat paket…</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 4.5: KEUANGAN & CHART OF ACCOUNTS (COA)
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-keuangan">
+          <div class="panel" style="margin-bottom:var(--sp-5); border-left:4px solid var(--clr-primary-600);">
+            <div class="panel__body" style="padding:var(--sp-4);">
+              <strong style="color:var(--clr-primary-800);">Ringkasan aktivitas keuangan</strong>
+              <p style="font-size:var(--fs-sm); color:var(--text-secondary); margin:6px 0 0; line-height:1.6;">Angka di bawah menghitung transaksi sukses dan simulasi development dari catatan server. Angka ini bukan saldo bank atau laba akuntansi; buku besar, neraca, dan laporan laba rugi belum tersedia.</p>
+            </div>
+          </div>
+          <!-- Ringkasan dihitung dari pembayaran sukses dan simulasi development. -->
+          <div class="finance-summary-grid" id="finance-summary-grid" aria-live="polite">
+            <article class="stat-card"><div class="stat-card__label">Pembayaran sukses tercatat</div><div class="stat-card__value" id="finance-total-payments">Memuat…</div><div class="stat-card__meta">Termasuk simulasi development</div></article>
+            <article class="stat-card"><div class="stat-card__label">Pembayaran sukses bulan ini</div><div class="stat-card__value" id="finance-month-payments">Memuat…</div><div class="stat-card__meta">Bukan saldo bank atau laba akuntansi</div></article>
+            <article class="stat-card"><div class="stat-card__label">Presensi menunggu validasi</div><div class="stat-card__value" id="finance-pending-attendance">Memuat…</div><div class="stat-card__meta" id="finance-pending-honor">Honor menunggu tinjauan</div></article>
+            <article class="stat-card"><div class="stat-card__label">Penarikan menunggu keputusan</div><div class="stat-card__value" id="finance-pending-withdrawals">Memuat…</div><div class="stat-card__meta" id="finance-pending-withdrawal-amount">Permintaan penarikan</div></article>
+          </div>
+
+          <!-- Education Banner: Kaidah Akuntansi Standar platform -->
+          <div style="background: #f8fafc; border: 1px solid var(--clr-neutral-200); border-left: 4px solid var(--clr-primary-600); border-radius: var(--radius-lg); padding: var(--sp-4); margin-bottom: var(--sp-5);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
+              <div>
+              <strong style="font-size: var(--fs-sm); color: var(--clr-primary-800);">Contoh alur pencatatan:</strong>
+                <div style="font-size: var(--fs-xs); color: var(--text-secondary); margin-top: 4px; line-height: 1.5;">
+                  1. Pembayaran paket untuk sesi yang belum diberikan dicatat sebagai <em>Pendapatan diterima di muka</em> (liabilitas).<br>
+                  2. Saat layanan diberikan, bagian terkait dipindahkan menjadi <em>Pendapatan jasa</em>. Honor yang sudah menjadi hak pengajar dicatat sebagai <em>Beban honor</em> dan <em>Utang honor</em>.<br>
+                  3. Saat honor dibayar, debit <em>Utang honor</em> dan kredit <em>Kas/Bank</em>. Biaya gateway dan pengembalian dana perlu dicatat terpisah sesuai bukti transaksi.
+                </div>
+              </div>
+              <span class="badge badge--primary">Pencatatan berpasangan</span>
+            </div>
+          </div>
+
+          <!-- Subnav for Accounting Sections -->
+          <div class="coa-subnav">
+            <button class="coa-subnav-btn active" id="btn-subnav-coa" onclick="switchCoaSubView('coa')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="9" x2="9" y1="21" y2="9"/></svg>
+              Bagan Akun (Chart of Accounts / COA)
+            </button>
+            <button class="coa-subnav-btn" id="btn-subnav-journal" onclick="switchCoaSubView('journal')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><polyline points="10 2 10 10 13 7 16 10 16 2"/></svg>
+              Jurnal Umum Berpasangan (General Journal)
+            </button>
+            <button class="coa-subnav-btn" id="btn-subnav-pnl" onclick="switchCoaSubView('pnl')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg>
+              Laporan Laba Rugi (Income Statement)
+            </button>
+            <button class="coa-subnav-btn" id="btn-subnav-balance" onclick="switchCoaSubView('balance')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              Posisi Keuangan (Balance Sheet)
+            </button>
+          </div>
+
+          <!-- ════ SUBVIEW 1: CHART OF ACCOUNTS (COA) ════ -->
+          <div id="subview-coa" class="coa-content-view"><section class="panel data-empty-state"><h2>Bagan Akun belum tersedia</h2><p>Akun dan saldo belum dikelola di database. Tidak ada saldo bank atau buku besar yang dapat ditampilkan.</p></section></div>
+
+          <!-- ════ SUBVIEW 2: GENERAL JOURNAL (DOUBLE ENTRY) ════ -->
+          <div id="subview-journal" class="coa-content-view" style="display:none;">
+            <div class="panel">
+              <div class="panel__header">
+                <div>
+                  <h2 class="panel__title">Rangkuman Transaksi Berpasangan (Draf)</h2>
+                  <div style="font-size: var(--fs-xs); color: var(--text-tertiary);">Klasifikasi otomatis dari transaksi; belum merupakan buku besar atau jurnal akuntansi.</div>
+                </div>
+                <button class="btn btn--sm btn--outline" onclick="exportJournalCSV()">Download Jurnal CSV</button>
+              </div>
+              <div class="panel__body panel__body--flush">
+                <div class="table-wrapper" style="border:none;">
+                  <table class="table" id="table-general-journal">
+                    <thead>
+                      <tr>
+                        <th style="width:110px;">Tanggal / No. Bukti</th>
+                        <th>Keterangan / Transaksi Platform</th>
+                        <th>Kode & Nama Akun COA</th>
+                        <th style="text-align:right; width:130px;">Debit (Rp)</th>
+                        <th style="text-align:right; width:130px;">Kredit (Rp)</th>
+                      </tr>
+                    </thead>
+                    <tbody id="journal-entries-body"><tr><td colspan="5">Memuat jurnal dari server…</td></tr></tbody>
+                  </table>
+                </div>
+
+                <!-- Balance Status Bar -->
+                <div class="coa-balance-bar" style="margin: var(--sp-4);">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--clr-success-600)" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <strong style="color:var(--clr-success-700); font-size:var(--fs-sm);">Rangkuman berpasangan simulasi; belum diverifikasi sebagai jurnal akuntansi</strong>
+                  </div>
+                  <div style="font-size:var(--fs-sm);">
+                    <span style="color:var(--text-secondary);">Nilai sisi debit (simulasi): </span><strong style="font-family:var(--font-mono); color:var(--clr-primary-700);" id="journal-total-debit">Memuat…</strong>
+                    <span style="margin: 0 8px; color:var(--clr-neutral-300);">|</span>
+                    <span style="color:var(--text-secondary);">Nilai sisi kredit (simulasi): </span><strong style="font-family:var(--font-mono); color:var(--clr-success-700);" id="journal-total-credit">Memuat…</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ════ SUBVIEW 3: PROFIT & LOSS (INCOME STATEMENT) ════ -->
+          <div id="subview-pnl" class="coa-content-view" style="display:none;"><section class="panel data-empty-state"><h2>Laporan laba rugi belum tersedia</h2><p>Laporan ini belum dapat dihitung dari data tersimpan. Ringkasan pembayaran simulasi tersedia di atas, tetapi bukan pendapatan akuntansi atau laba.</p></section></div>
+
+          <!-- ════ SUBVIEW 4: BALANCE SHEET SUMMARY ════ -->
+          <div id="subview-balance" class="coa-content-view" style="display:none;"><section class="panel data-empty-state"><h2>Posisi keuangan belum tersedia</h2><p>Belum ada jurnal akuntansi dan saldo akun yang tersimpan untuk membentuk neraca.</p></section></div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 5: TRANSAKSI & MUTASI (TERHUBUNG KE COA)
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-transaksi">
+          <div class="panel">
+            <div class="panel__header">
+              <div>
+                <h2 class="panel__title">Catatan Mutasi Transaksi & Integrasi Akuntansi</h2>
+                <div style="font-size: var(--fs-xs); color: var(--text-tertiary);">Setiap mutasi kas masuk/keluar terpetakan ke kode akun Bagan Akun (COA)</div>
+              </div>
+              <button class="btn btn--sm btn--outline" onclick="exportDataCSV()">Download CSV</button>
+            </div>
+            <div class="panel__body panel__body--flush">
+              <div class="table-wrapper" style="border:none;">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Waktu & ID Transaksi</th>
+                      <th>Keterangan Transaksi</th>
+                      <th>Pemetaan Akun COA</th>
+                      <th>Kanal / Gateway</th>
+                      <th style="text-align:right;">Nominal Mutasi</th>
+                      <th>Status Jurnal</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-tx-table-body"><tr><td colspan="6">Memuat transaksi dari server…</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 6: PAYROLL GURU
+             ═══════════════════════════════════════════════════ -->
+                <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 6: PAYROLL & PENARIKAN SALDO GURU
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-payroll">
+          <!-- Section 1: Pengajuan Penarikan Saldo Pengajar -->
+          <div class="panel" style="margin-bottom: var(--sp-6);">
+            <div class="panel__header">
+              <h2 class="panel__title">Pengajuan Penarikan Saldo Guru (Persetujuan Disbursement)</h2>
+              <span class="badge badge--accent">1 Menunggu Persetujuan</span>
+            </div>
+            <div class="panel__body panel__body--flush">
+              <div class="table-wrapper" style="border: none;">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Pengajar</th>
+                      <th>Bank & Nomor Rekening Tujuan</th>
+                      <th>Nominal Penarikan</th>
+                      <th>Dasar Sesi Terverifikasi</th>
+                      <th>Status Pengajuan</th>
+                      <th>Tindakan Transfer Admin</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-withdrawal-requests"><tr><td colspan="6">Memuat pengajuan penarikan…</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Rekapitulasi Sesi Terverifikasi -->
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">Rekapitulasi Honor & Payroll Berdasarkan Sesi Sah</h2>
+              <span class="badge badge--teal" id="admin-standard-rate-label">Tarif per sesi: memuat…</span>
+            </div>
+            <div class="panel__body panel__body--flush">
+              <div class="table-wrapper" style="border: none;">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Nama Pengajar</th>
+                      <th>Sesi Disahkan Admin</th>
+                      <th>Total Honor Terbentuk</th>
+                      <th>Status Payroll</th>
+                    </tr>
+                  </thead>
+                  <tbody><tr><td colspan="4" class="data-empty-state">Rekap honor per tutor belum tersedia; gunakan daftar pengajuan penarikan dan transaksi yang tercatat di server.</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 7: PAYMENT GATEWAY CONFIG (MIDTRANS VS XENDIT)
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-gateway">
+          <div class="panel" style="margin-bottom: var(--sp-6);">
+            <div class="panel__header">
+              <h2 class="panel__title">Provider Payment Gateway</h2>
+              <span class="badge badge--primary" id="active-gateway-badge">Midtrans</span>
+            </div>
+            <div class="panel__body">
+              <p style="font-size: var(--fs-sm); color: var(--text-secondary); margin-bottom: var(--sp-5);">
+                Pilih provider dan mode checkout. Pembayaran sungguhan diproses di halaman hosted checkout setelah kredensial dan webhook dikonfigurasi.
+              </p>
+
+              <!-- Gateway Selector Cards -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5); margin-bottom: var(--sp-6);">
+                <!-- Midtrans Card -->
+                <div class="gateway-card active" id="card-gateway-midtrans" onclick="selectGatewayOption('midtrans')">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--sp-3);">
+                    <div>
+                      <div style="font-weight: var(--fw-bold); font-size: var(--fs-md);">Midtrans Payment Gateway</div>
+                      <div style="font-size: var(--fs-xs); color: var(--text-tertiary);">Hosted Snap checkout</div>
+                    </div>
+                    <span class="gateway-badge gateway-badge--active" id="badge-midtrans">Aktif</span>
+                  </div>
+                  <p style="font-size: var(--fs-xs); color: var(--text-secondary); line-height: 1.5; margin-bottom: var(--sp-4);">
+                    Mendukung Virtual Account BCA, Mandiri Bill, BNI, BRI, Permata, QRIS GoPay, ShopeePay, dan Kartu Kredit.
+                  </p>
+                  <div style="font-size: var(--fs-xs); font-family: var(--font-mono); color: var(--clr-primary-700); background: rgba(99,102,241,0.08); padding: 4px 8px; border-radius: var(--radius-sm);">
+                    Menggunakan Server Key dan notifikasi Midtrans terverifikasi
+                  </div>
+                </div>
+
+                <!-- Xendit Card -->
+                <div class="gateway-card" id="card-gateway-xendit" onclick="selectGatewayOption('xendit')">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--sp-3);">
+                    <div>
+                      <div style="font-weight: var(--fw-bold); font-size: var(--fs-md);">Xendit Payment Session</div>
+                      <div style="font-size: var(--fs-xs); color: var(--text-tertiary);">Hosted Payment Session checkout</div>
+                    </div>
+                    <span class="gateway-badge gateway-badge--inactive" id="badge-xendit">Nonaktif</span>
+                  </div>
+                  <p style="font-size: var(--fs-xs); color: var(--text-secondary); line-height: 1.5; margin-bottom: var(--sp-4);">
+                    Mendukung Virtual Account Multi-Bank, QRIS Real-time, OVO, DANA, LinkAja, AstraPay, dan Direct Debit.
+                  </p>
+                  <div style="font-size: var(--fs-xs); font-family: var(--font-mono); color: var(--text-secondary); background: var(--clr-neutral-100); padding: 4px 8px; border-radius: var(--radius-sm);">
+                    Menggunakan Payment Session dan callback token Xendit
+                  </div>
+                </div>
+              </div>
+
+              <!-- Gateway Parameters Form -->
+              <div style="border-top: 1px solid var(--clr-neutral-200); padding-top: var(--sp-5);">
+                <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-bold); margin-bottom: var(--sp-2);">Integrasi checkout</h3>
+                <p style="font-size:var(--fs-sm); color:var(--text-secondary); line-height:1.6;">Order dibuat dari server, kuota baru ditambahkan setelah webhook provider terverifikasi. Simulator pembayaran hanya aktif di development saat kredensial belum dipasang.</p>
+
+                <div style="display: flex; gap: var(--sp-3); margin-top: var(--sp-5);">
+                  <button type="button" class="btn btn--primary" onclick="saveGatewayConfig()">
+                    Simpan Provider
+                  </button>
+                  <button type="button" class="btn btn--outline" onclick="testGatewayConnection()">
+                    Periksa Konfigurasi
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 8: PENGATURAN UMUM
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-pengaturan">
+          <div class="panel">
+            <div class="panel__header"><h2 class="panel__title">Pengaturan Platform</h2></div>
+            <div class="panel__body">
+              <div class="settings-tabs" role="tablist" aria-label="Tab pengaturan">
+                <button class="btn btn--sm btn--primary" type="button" data-settings-tab="branding">Branding</button>
+                <button class="btn btn--sm btn--outline" type="button" data-settings-tab="general">Umum</button>
+                <button class="btn btn--sm btn--outline" type="button" data-settings-tab="payment">Payment Gateway</button>
+                <button class="btn btn--sm btn--outline" type="button" data-settings-tab="security">Keamanan</button>
+                <button class="btn btn--sm btn--outline" type="button" data-settings-tab="operations">Tarif & Operasional</button>
+                <button class="btn btn--sm btn--outline" type="button" data-settings-tab="notifications">Notifikasi</button>
+                <button class="btn btn--sm btn--outline" type="button" data-settings-tab="finance">Keuangan</button>
+              </div>
+              <section class="settings-pane active" data-settings-pane="branding">
+                <h3>Branding</h3><div class="settings-form-grid">
+                  <label class="form-group">Nama platform<input class="form-input" id="setting-platform-name" maxlength="100"></label>
+                  <label class="form-group">Tagline<input class="form-input" id="setting-tagline" maxlength="180"></label>
+                  <label class="form-group">Warna utama<input class="form-input" id="setting-primary-color" type="color" value="#4f46e5"></label>
+                  <label class="form-group">Logo (PNG, JPG, SVG, WebP; maks. 2 MB)<input class="form-input" id="setting-logo" type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp"></label>
+                  <label class="form-group">Favicon (PNG, JPG, SVG, WebP; maks. 2 MB)<input class="form-input" id="setting-favicon" type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp"></label>
+                </div><img id="setting-logo-preview" alt="Pratinjau logo" hidden style="max-width:180px;max-height:90px;object-fit:contain;margin:8px 0"><button class="btn btn--primary" type="button" onclick="saveTenantSettings('branding')">Simpan Branding</button>
+              </section>
+              <section class="settings-pane" data-settings-pane="general"><h3>Umum</h3><div class="settings-form-grid">
+                <label class="form-group">Email kontak<input class="form-input" id="setting-contact-email" type="email"></label><label class="form-group">Telepon kontak<input class="form-input" id="setting-contact-phone"></label><label class="form-group">Alamat<textarea class="form-input" id="setting-address"></textarea></label><label class="form-group">Zona waktu<select class="form-input" id="setting-timezone"><option>Asia/Jakarta</option><option>Asia/Makassar</option><option>Asia/Jayapura</option><option>UTC</option></select></label><label class="form-group">Mata uang<select class="form-input" id="setting-currency"><option>IDR</option><option>USD</option></select></label><label class="form-group">Bahasa<select class="form-input" id="setting-language"><option value="id">Indonesia</option><option value="en">English</option></select></label>
+              </div><button class="btn btn--primary" type="button" onclick="saveTenantSettings('general')">Simpan Umum</button></section>
+              <section class="settings-pane" data-settings-pane="payment"><h3>Payment Gateway</h3><p>Secret key dienkripsi di server dan tidak dapat dibaca kembali. Checkout sungguhan aktif setelah key dan webhook terpasang.</p><div class="settings-form-grid">
+                <label class="form-group">Provider aktif<select class="form-input" id="setting-provider" onchange="selectGatewayOption(this.value)"><option value="midtrans">Midtrans Snap</option><option value="xendit">Xendit Payment Session</option></select></label><label class="form-group">Mode<select class="form-input" id="setting-payment-mode"><option value="simulator">Simulator (development saja)</option><option value="sandbox">Sandbox / Test</option><option value="production">Production / Live</option></select></label><label class="form-group">Midtrans Merchant ID<input class="form-input" id="setting-merchant-id"></label><label class="form-group">Midtrans Snap Client Key (informasi)<input class="form-input" id="setting-client-key"></label><label class="form-group">Midtrans Snap Server Key<input class="form-input" id="setting-server-key" type="password" autocomplete="new-password" placeholder="Kosongkan agar key tersimpan tetap dipakai"></label><label class="form-group">Xendit Secret API Key<input class="form-input" id="setting-secret-key" type="password" autocomplete="new-password" placeholder="Kosongkan agar key tersimpan tetap dipakai"></label><label class="form-group">Xendit Public Key (informasi)<input class="form-input" id="setting-public-key"></label><label class="form-group">Xendit Webhook Verification Token<input class="form-input" id="setting-webhook-token" type="password" autocomplete="new-password" placeholder="Token dari pengaturan webhook Xendit"></label>
+              </div>
+              <div class="bisnap-settings">
+                <h4>Midtrans BI-SNAP Core API</h4>
+                <p>Konfigurasi ini terpisah dari Midtrans Snap checkout. Field BI-SNAP disimpan terenkripsi, tetapi transaksi BI-SNAP belum diaktifkan di checkout Trevy.</p>
+                <div class="settings-form-grid">
+                  <label class="form-group">BI-SNAP Environment<select class="form-input" id="setting-bisnap-mode"><option value="sandbox">Sandbox</option><option value="staging">Staging</option><option value="production">Production</option></select></label>
+                  <label class="form-group">BI-SNAP Client ID<input class="form-input" id="setting-bisnap-client-id" autocomplete="off"></label>
+                  <label class="form-group">BI-SNAP Partner ID<input class="form-input" id="setting-bisnap-partner-id" autocomplete="off"></label>
+                  <label class="form-group">BI-SNAP Channel ID (5 digit)<input class="form-input" id="setting-bisnap-channel-id" inputmode="numeric" maxlength="5"></label>
+                  <label class="form-group">BI-SNAP Client Secret<input class="form-input" id="setting-bisnap-client-secret" type="password" autocomplete="new-password" placeholder="Kosongkan agar secret tersimpan tetap dipakai"></label>
+                  <label class="form-group">Merchant Private Key (PKCS#8 PEM)<textarea class="form-input" id="setting-bisnap-private-key" rows="5" spellcheck="false" placeholder="Kosongkan agar private key tersimpan tetap dipakai"></textarea></label>
+                  <label class="form-group">Merchant Public Key yang didaftarkan ke Midtrans<textarea class="form-input" id="setting-bisnap-merchant-public-key" rows="5" spellcheck="false"></textarea></label>
+                  <label class="form-group">Midtrans Public Key untuk verifikasi notifikasi<textarea class="form-input" id="setting-bisnap-notification-public-key" rows="5" spellcheck="false"></textarea></label>
+                </div>
+                <p id="setting-bisnap-status" aria-live="polite">Kredensial BI-SNAP belum lengkap.</p>
+                <p class="bisnap-hint">Midtrans perlu mengaktifkan BI-SNAP untuk akun merchant. Minta Client ID, Client Secret, Partner ID, dan Channel ID melalui proses credential exchange; daftarkan Merchant Public Key. Gunakan API HTTPS dan IP server yang diizinkan Midtrans.</p>
+              </div>
+              <div class="gateway-setup-note"><strong>Status koneksi</strong><p id="setting-gateway-status" aria-live="polite">Memeriksa konfigurasi…</p><p>Pasang URL webhook ini di dashboard provider setelah deploy dengan HTTPS:</p><code id="setting-gateway-webhook-url"></code><p>Atur <code>TREVY_PUBLIC_URL</code> ke alamat publik aplikasi. Secret Midtrans atau Xendit dan token webhook harus berasal dari environment yang sama dengan mode yang dipilih. Untuk Xendit, gunakan API key test atau live sesuai mode.</p><label class="gateway-webhook-confirm"><input type="checkbox" id="setting-webhook-ready"> Saya sudah memasang URL webhook di dashboard provider</label></div><p id="setting-secret-status" aria-live="polite">Secret gateway ditampilkan tersamarkan setelah disimpan.</p><button class="btn btn--primary" type="button" onclick="saveTenantSettings('payment')">Simpan Payment Gateway</button></section>
+              <section class="settings-pane" data-settings-pane="security"><h3>Keamanan</h3><div class="settings-form-grid"><label class="form-group">Panjang minimum sandi<input class="form-input" id="setting-password-min" type="number" min="12" max="128"></label><label class="form-group">Timeout sesi (menit)<input class="form-input" id="setting-session-timeout" type="number" min="5" max="1440"></label></div><button class="btn btn--primary" type="button" onclick="saveTenantSettings('security')">Simpan Keamanan</button></section>
+              <section class="settings-pane" data-settings-pane="operations"><h3>Tarif & Operasional</h3><div class="settings-form-grid"><label class="form-group">Tarif standar per sesi (Rp)<input class="form-input" id="setting-standard-rate" type="number" min="0"></label><label class="form-group">Kuota free trial<input class="form-input" id="setting-trial-quota" type="number" min="0"></label><label class="form-group">Durasi sesi (menit)<input class="form-input" id="setting-session-duration" type="number" min="15"></label></div><button class="btn btn--primary" type="button" onclick="saveTenantSettings('operations')">Simpan Operasional</button></section>
+              <section class="settings-pane" data-settings-pane="notifications"><h3>Notifikasi</h3><div class="settings-form-grid"><label class="form-group">Template pesan<input class="form-input" id="setting-notification-template"></label><label><input type="checkbox" id="setting-notification-enabled"> Notifikasi aktif</label></div><button class="btn btn--primary" type="button" onclick="saveTenantSettings('notifications')">Simpan Notifikasi</button></section>
+              <section class="settings-pane" data-settings-pane="finance"><h3>Keuangan</h3><div class="settings-form-grid"><label class="form-group">Bagan akun / COA<input class="form-input" id="setting-coa"></label><label class="form-group">Periode akuntansi<input class="form-input" id="setting-accounting-period" placeholder="Bulanan"></label></div><button class="btn btn--primary" type="button" onclick="saveTenantSettings('finance')">Simpan Keuangan</button></section>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       ADMIN MODALS: Document Review & Add Package
+       ═══════════════════════════════════════════════════ -->
+  <div class="modal-backdrop" id="admin-modal-backdrop"></div>
+
+  <!-- Modal Review Berkas Guru -->
+  
+
+  
+  <!-- Modal Tinjau Presensi GPS & Foto Bukti Sesi -->
+  
+
+
+  <!-- Modal Tambah Paket Baru -->
+  <div class="modal" id="modal-add-package" style="max-width: 480px;">
+    <div class="modal__header">
+      <h3 style="font-size: var(--fs-md); font-weight: var(--fw-bold);">Tambah Paket Layanan Baru</h3>
+      <button onclick="closeAdminModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;" aria-label="Tutup">&times;</button>
+    </div>
+    <div class="modal__body">
+      <div class="form-group">
+        <label class="form-label">Nama Paket</label>
+        <input type="text" class="form-input" id="pkg-name" value="Paket Intensif UTBK">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Harga Paket (Rp)</label>
+        <input type="number" class="form-input" id="pkg-price" value="1200000">
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3);">
+        <div class="form-group">
+          <label class="form-label">Jumlah Sesi</label>
+          <input type="number" class="form-input" id="pkg-sessions" value="16">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Durasi per Sesi</label>
+          <input type="text" class="form-input" id="pkg-duration" value="90 menit">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Label Promosi (Opsional)</label>
+        <input type="text" class="form-input" id="pkg-badge" value="Spesial Persiapan Ujian">
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--ghost" onclick="closeAdminModal()">Batal</button>
+      <button class="btn btn--primary" onclick="saveNewPackage()">Publikasikan Paket</button>
+    </div>
+  </div>
+
+  <section class="modal admin-form-modal" id="modal-standard-form" role="dialog" aria-modal="true" aria-labelledby="standard-form-title" aria-hidden="true">
+    <form id="standard-form">
+      <header class="modal__header"><div><h3 id="standard-form-title" style="font-size:var(--fs-md);font-weight:var(--fw-bold)"></h3><p id="standard-form-description" class="text-muted" style="margin-top:4px;font-size:var(--fs-sm)"></p></div><button type="button" class="admin-form-modal__close" aria-label="Tutup" onclick="closeStandardForm()">&times;</button></header>
+      <div class="modal__body" id="standard-form-fields"></div>
+      <p class="admin-form-modal__error" id="standard-form-error" role="alert" hidden></p>
+      <footer class="modal__footer"><button type="button" class="btn btn--ghost" onclick="closeStandardForm()">Batal</button><button type="submit" class="btn btn--primary" id="standard-form-submit">Simpan</button></footer>
+    </form>
+  </section>
+
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    /* ── Admin Tab Switcher & Dynamic Gateway Scripts ── */
+
+    let currentActiveGateway = 'midtrans';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const signedInUser = await TrevyAPI.requireRole('admin');
+      if (!signedInUser) return;
+      document.querySelector('.sidebar__user-name').textContent = signedInUser.name;
+      document.querySelector('.sidebar__user-role').textContent = signedInUser.email;
+      initSidebar();
+      initAdminGatewayUI();
+      handleHashNavigation();
+      renderConnectedAdminData();
+      renderUsersAndRoles();
+      renderAdminPackages();
+      loadAdminOverview();
+    });
+
+    // Hash navigation & tab switching
+    function handleHashNavigation() {
+      const hash = window.location.hash.replace('#', '') || 'dashboard';
+      switchTab(hash);
+    }
+    window.addEventListener('hashchange', handleHashNavigation);
+
+    function switchCoaSubView(view) {
+      const allowed = ['coa', 'journal', 'pnl', 'balance'];
+      if (!allowed.includes(view)) return;
+      for (const name of allowed) {
+        const panel = document.getElementById(`subview-${name}`);
+        const tab = document.getElementById(`btn-subnav-${name}`);
+        if (panel) panel.style.display = name === view ? '' : 'none';
+        if (tab) { tab.classList.toggle('active', name === view); tab.setAttribute('aria-selected', String(name === view)); }
+      }
+    }
+
+    function exportJournalCSV() {
+      const rows = [...document.querySelectorAll('#journal-entries-body tr')]
+        .filter(row => !row.querySelector('.data-empty-state'))
+        .map(row => [...row.cells].map(cell => `"${cell.innerText.replace(/"/g, '""').replace(/\s+/g, ' ').trim()}"`).join(','));
+      if (!rows.length) { showToast('Belum ada transaksi untuk diekspor.', 'info'); return; }
+      const csv = ['Tanggal / Bukti,Keterangan,Akun,Debit,Kredit', ...rows].join('\r\n');
+      const url = URL.createObjectURL(new Blob(['\ufeff', csv], { type: 'text/csv;charset=utf-8' }));
+      const link = document.createElement('a'); link.href = url; link.download = 'ringkasan-transaksi-trevy.csv'; link.click(); URL.revokeObjectURL(url);
+      showToast('Ringkasan transaksi berhasil diunduh.', 'success');
+    }
+
+    function switchTab(tabId) {
+      const targetView = document.getElementById('view-' + tabId);
+      if (!targetView) return;
+
+      document.querySelectorAll('.sidebar__link').forEach(link => {
+        link.classList.toggle('active', link.dataset.tab === tabId);
+      });
+
+      document.querySelectorAll('.tab-view').forEach(view => {
+        view.classList.remove('active');
+      });
+      targetView.classList.add('active');
+
+      const titles = {
+        dashboard: { title: "Dashboard Monitoring", sub: "Pusat kendali dan status operasional platform real-time" },
+        pengguna: { title: "Manajemen Pengguna", sub: "Direktori akun siswa dan guru les terdaftar" },
+        verifikasi: { title: "Verifikasi Pengajar", sub: "Pemeriksaan berkas CV, ijazah, dan kualifikasi calon guru" },
+        presensi: { title: "Validasi Presensi & Sesi", sub: "Pemeriksaan koordinat GPS, foto bukti, dan jurnal mengajar untuk membentuk payroll" },
+        paket: { title: "Katalog Paket & Harga", sub: "Pengaturan paket sesi les privat siswa" },
+        keuangan: { title: "Keuangan & Akuntansi", sub: "Ringkasan pembayaran simulasi, presensi, dan pengajuan penarikan dari server" },
+        transaksi: { title: "Riwayat Transaksi", sub: "Arsip pembayaran masuk dan mutasi dana" },
+        payroll: { title: "Payroll & Penarikan Saldo Guru", sub: "Persetujuan transfer penarikan honor guru berdasarkan sesi sah" },
+        gateway: { title: "Payment Gateway", sub: "Pengaturan checkout hosted Midtrans Snap dan Xendit Payment Session" },
+        pengaturan: { title: "Pengaturan Sistem", sub: "Parameter platform dan preferensi operasional" }
+      };
+
+      if (titles[tabId]) {
+        document.getElementById('page-title').textContent = titles[tabId].title;
+        document.getElementById('page-subtitle').textContent = titles[tabId].sub;
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('.sidebar__link[data-tab]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const tabId = link.dataset.tab;
+        window.location.hash = tabId;
+      });
+    });
+
+    // Notification dropdown
+    function toggleAdminNotifs(e) {
+      e.stopPropagation();
+      document.getElementById('admin-notif-dropdown')?.classList.toggle('show');
+    }
+    document.addEventListener('click', () => {
+      document.getElementById('admin-notif-dropdown')?.classList.remove('show');
+    });
+    function markAllAdminNotifsRead() {
+      document.querySelectorAll('#admin-notif-dropdown .notification-item').forEach(i => i.classList.remove('unread'));
+      const badge = document.querySelector('.main-content__actions [style*="border-radius: 50%"]');
+      if (badge) badge.style.display = 'none';
+      showToast('Semua notifikasi admin telah dibaca.', 'info');
+    }
+
+    // Modal Helpers
+    function openAdminModalById(id) {
+      document.getElementById('admin-modal-backdrop').classList.add('active');
+      document.getElementById(id).classList.add('active');
+    }
+    function closeAdminModal() {
+      document.getElementById('admin-modal-backdrop').classList.remove('active');
+      document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+      document.getElementById('modal-standard-form')?.setAttribute('aria-hidden', 'true');
+      if (standardFormResolver) { const resolve = standardFormResolver; standardFormResolver = null; resolve(null); }
+    }
+    document.getElementById('admin-modal-backdrop')?.addEventListener('click', closeAdminModal);
+
+    let standardFormResolver = null;
+    function closeStandardForm() { closeAdminModal(); }
+    function showStandardForm({ title, description = '', submitLabel = 'Simpan', fields = [] }) {
+      if (standardFormResolver) closeAdminModal();
+      const modal = document.getElementById('modal-standard-form');
+      const form = document.getElementById('standard-form');
+      const container = document.getElementById('standard-form-fields');
+      const error = document.getElementById('standard-form-error');
+      document.getElementById('standard-form-title').textContent = title;
+      document.getElementById('standard-form-description').textContent = description;
+      document.getElementById('standard-form-submit').textContent = submitLabel;
+      container.replaceChildren(); error.hidden = true; error.textContent = '';
+      for (const field of fields) {
+        const group = document.createElement('label'); group.className = 'form-group admin-form-modal__field';
+        const caption = document.createElement('span'); caption.className = 'form-label'; caption.textContent = field.label; group.append(caption);
+        const input = document.createElement(field.type === 'textarea' ? 'textarea' : 'input');
+        input.className = 'form-input'; input.name = field.name;
+        if (field.type !== 'textarea') input.type = field.type || 'text'; else input.rows = 3;
+        input.value = field.value ?? ''; input.placeholder = field.placeholder || '';
+        if (field.min != null && field.type === 'number') input.min = field.min;
+        if (field.max != null && field.type === 'number') input.max = field.max;
+        if (field.max != null && field.type !== 'number') input.maxLength = field.max;
+        if (field.required) input.dataset.required = 'true';
+        group.append(input); container.append(group);
+      }
+      modal.classList.add('active'); modal.setAttribute('aria-hidden', 'false');
+      document.getElementById('admin-modal-backdrop').classList.add('active');
+      requestAnimationFrame(() => container.querySelector('input,textarea')?.focus());
+      return new Promise(resolve => {
+        standardFormResolver = resolve;
+        form.onsubmit = event => {
+          event.preventDefault();
+          const values = Object.fromEntries([...form.querySelectorAll('[name]')].map(input => [input.name, input.type === 'number' ? (input.value === '' ? '' : Number(input.value)) : input.value.trim()]));
+          let message = '';
+          for (const field of fields) {
+            const value = values[field.name];
+            if (field.required && !String(value).trim()) { message = `${field.label} wajib diisi.`; break; }
+            if (field.type === 'number' && (!Number.isFinite(value) || (field.min != null && value < field.min) || (field.max != null && value > field.max))) { message = `${field.label} harus ${field.min != null ? `minimal ${field.min}` : 'berupa angka'}${field.max != null ? ` dan maksimal ${field.max}` : ''}.`; break; }
+            if (field.max != null && field.type !== 'number' && String(value).length > field.max) { message = `${field.label} maksimal ${field.max} karakter.`; break; }
+          }
+          if (message) { error.textContent = message; error.hidden = false; return; }
+          const done = standardFormResolver; standardFormResolver = null; closeAdminModal(); done(values);
+        };
+      });
+    }
+    document.addEventListener('keydown', event => { if (event.key === 'Escape' && standardFormResolver) closeStandardForm(); });
+
+    function setAdminBadge(id, count) {
+      const badge = document.getElementById(id);
+      if (!badge) return;
+      badge.textContent = Number(count).toLocaleString('id-ID');
+      badge.hidden = Number(count) === 0;
+    }
+
+    function renderFinanceSummary(transactions, attendance, withdrawals) {
+      const successfulPayments = transactions.filter(item => item.kind === 'payment_simulation' && item.status === 'simulated_success' || item.kind === 'payment_gateway' && item.status === 'paid');
+      const currentMonth = new Date().toISOString().slice(0, 7);
+      const money = rows => rows.reduce((total, item) => total + Number(item.amount || 0), 0);
+      const pendingAttendance = attendance.filter(item => item.status === 'pending_review');
+      const pendingWithdrawals = withdrawals.filter(item => item.status === 'pending_admin');
+      document.getElementById('finance-total-payments').textContent = formatIDR(money(successfulPayments));
+      document.getElementById('finance-month-payments').textContent = formatIDR(money(successfulPayments.filter(item => String(item.date).slice(0, 7) === currentMonth)));
+      document.getElementById('finance-pending-attendance').textContent = pendingAttendance.length.toLocaleString('id-ID');
+      document.getElementById('finance-pending-honor').textContent = `Nilai honor: ${formatIDR(money(pendingAttendance))}`;
+      document.getElementById('finance-pending-withdrawals').textContent = pendingWithdrawals.length.toLocaleString('id-ID');
+      document.getElementById('finance-pending-withdrawal-amount').textContent = `Nilai permintaan: ${formatIDR(money(pendingWithdrawals))}`;
+      setAdminBadge('sidebar-transactions-badge', transactions.length);
+      setAdminBadge('sidebar-presensi-badge', pendingAttendance.length);
+      setAdminBadge('sidebar-verify-badge', document.querySelectorAll('#verification-list .verification-item__actions .btn--success').length);
+    }
+
+    async function renderConnectedAdminData() {
+      const txBody = document.getElementById('admin-tx-table-body');
+      const journalBody = document.getElementById('journal-entries-body');
+      const attendanceBody = document.getElementById('attendance-verification-tbody');
+      const withdrawalsBody = document.getElementById('admin-withdrawal-requests');
+      const verificationList = document.getElementById('verification-list');
+      [txBody, journalBody, attendanceBody, withdrawalsBody, verificationList].forEach(body => {
+        if (body) { const loading = document.createElement(body === verificationList ? 'div' : 'tr'); loading.className = 'data-empty-state'; loading.textContent = 'Memuat data…'; if (loading.tagName === 'TR') { const cell = document.createElement('td'); cell.colSpan = 8; cell.append(loading.textContent); loading.replaceChildren(cell); } body.replaceChildren(loading); }
+      });
+      try {
+        const [transactions, attendance, withdrawals, tutorRegistrations] = await Promise.all([
+          TrevyAPI.request('/api/admin/transactions'),
+          TrevyAPI.request('/api/admin/attendance'),
+          TrevyAPI.request('/api/admin/withdrawals'),
+          TrevyAPI.request('/api/admin/tutor-registrations')
+        ]);
+        txBody.replaceChildren(); journalBody.replaceChildren();
+        if (!transactions.length) {
+          for (const body of [txBody, journalBody]) { const row = document.createElement('tr'); const cell = document.createElement('td'); cell.colSpan = 8; cell.className = 'data-empty-state'; cell.textContent = 'Belum ada transaksi tercatat.'; row.append(cell); body.append(row); }
+        }
+        let journalTotal = 0;
+        transactions.forEach(tx => {
+          const date = new Date(tx.date).toLocaleString('id-ID');
+          const isWithdrawal = tx.kind === 'withdrawal';
+          const amount = Number(tx.amount);
+          const entryAmount = Math.abs(amount);
+          const mapping = isWithdrawal ? 'Debit: 2-1100 Utang Honor / Kredit: 1-1110 Kas/Bank' : tx.kind === 'honor_accrual' ? 'Debit: 5-1100 Beban Honor / Kredit: 2-1100 Utang Honor' : 'Debit: akun kliring / Kredit: 2-1200 Pendapatan Diterima di Muka';
+          const cells = [`${date} • ${tx.id}`, `${tx.description} • ${tx.user}`, mapping, tx.gateway, formatIDR(amount), tx.status];
+          const row = document.createElement('tr');
+          cells.forEach(value => { const cell = document.createElement('td'); cell.textContent = value || '—'; row.appendChild(cell); });
+          txBody.appendChild(row);
+          const isPayment=tx.kind==='payment_simulation'||tx.kind==='payment_gateway';
+          const paymentSucceeded=tx.kind==='payment_simulation'&&tx.status==='simulated_success'||tx.kind==='payment_gateway'&&tx.status==='paid';
+          if(isPayment&&!paymentSucceeded)return;
+          const debit = tx.kind === 'honor_accrual' ? '5-1100 Beban Honor Guru' : isWithdrawal ? '2-1100 Utang Honor Guru' : isPayment ? `1-${tx.gateway === 'xendit' ? '1130' : '1120'} Kliring Gateway` : '1-1110 Kas/Bank Operasional';
+          const credit = tx.kind === 'honor_accrual' ? '2-1100 Utang Honor Guru' : isWithdrawal ? '1-1110 Kas/Bank Operasional' : isPayment ? '2-1200 Pendapatan Diterima di Muka' : '2-1100 Utang Honor Guru';
+          [[debit, entryAmount, '-'], [credit, '-', entryAmount]].forEach((line, index) => {
+            const journalRow = document.createElement('tr');
+            const values = [index ? '' : `${date} • ${tx.id}`, index ? '' : tx.description, line[0], typeof line[1] === 'number' ? formatIDR(line[1]) : line[1], typeof line[2] === 'number' ? formatIDR(line[2]) : line[2]];
+            values.forEach(value => { const cell = document.createElement('td'); cell.textContent = value; journalRow.appendChild(cell); });
+            journalBody.appendChild(journalRow);
+          });
+          journalTotal += entryAmount;
+        });
+        ['journal-total-debit','journal-total-credit'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = formatIDR(journalTotal); });
+
+        attendanceBody.replaceChildren();
+        if (!attendance.length) { const row = document.createElement('tr'); const cell = document.createElement('td'); cell.colSpan = 6; cell.className = 'data-empty-state'; cell.textContent = 'Belum ada presensi. Presensi akan muncul setelah tutor check-out dari sesi yang dijadwalkan.'; row.append(cell); attendanceBody.append(row); }
+        attendance.forEach(item => {
+          const row = document.createElement('tr');
+          [`${item.tutor} • ${item.student}`, `${item.subject} • ${new Date(item.date).toLocaleString('id-ID')}`, item.latitude != null && item.longitude != null ? `GPS tercatat ${Number(item.latitude).toFixed(5)}, ${Number(item.longitude).toFixed(5)} (belum diverifikasi)` : 'GPS tidak tersedia; verifikasi manual diperlukan', `Materi: ${item.topic} • Foto bukti belum tersedia`].forEach(value => { const cell = document.createElement('td'); cell.textContent = value; row.appendChild(cell); });
+          if(item.hasEvidence){const evidenceLink=document.createElement('a');evidenceLink.href=`/api/admin/attendance/${encodeURIComponent(item.id)}/evidence`;evidenceLink.target='_blank';evidenceLink.rel='noopener';evidenceLink.textContent='Lihat foto bukti';evidenceLink.className='btn btn--xs btn--outline';row.children[3].append(document.createElement('br'),evidenceLink);}else row.children[3].textContent=`Materi: ${item.topic} • Foto bukti belum diunggah`;
+          const statusCell = document.createElement('td'); const badge = document.createElement('span');
+          badge.className = `badge ${item.status === 'approved' ? 'badge--success' : item.status === 'rejected' ? 'badge--danger' : 'badge--accent'}`;
+          badge.textContent = item.status === 'approved' ? 'Disahkan' : item.status === 'rejected' ? 'Ditolak' : 'Menunggu Validasi'; statusCell.appendChild(badge); row.appendChild(statusCell);
+          const actionCell = document.createElement('td');
+          if (item.status === 'pending_review') {
+            const approve = document.createElement('button'); approve.className = 'btn btn--sm btn--success'; approve.textContent = 'Sahkan & Rilis Honor'; approve.onclick = () => reviewAttendance(item.id, 'approve');
+            const reject = document.createElement('button'); reject.className = 'btn btn--sm btn--ghost'; reject.textContent = 'Tolak'; reject.style.marginLeft = '6px'; reject.onclick = () => reviewAttendance(item.id, 'reject');
+            actionCell.append(approve, reject);
+          } else actionCell.textContent = 'Selesai';
+          row.appendChild(actionCell); attendanceBody.appendChild(row);
+        });
+
+        withdrawalsBody.replaceChildren();
+        if (!withdrawals.length) { const row = document.createElement('tr'); const cell = document.createElement('td'); cell.colSpan = 6; cell.className = 'data-empty-state'; cell.textContent = 'Belum ada pengajuan penarikan.'; row.append(cell); withdrawalsBody.append(row); }
+        withdrawals.forEach(item => {
+          const row = document.createElement('tr');
+          [`${item.tutor} • ${item.email}`, `${item.bank} • ${item.account}`, formatIDR(item.amount), 'Saldo tersedia telah dicadangkan', item.status === 'pending_admin' ? 'Menunggu Admin' : item.status === 'rejected' ? 'Ditolak • saldo dikembalikan' : 'Transfer simulasi selesai'].forEach(value => { const cell = document.createElement('td'); cell.textContent = value; row.appendChild(cell); });
+          const action = document.createElement('td');
+          if (item.status === 'pending_admin') {
+            const transfer = document.createElement('button'); transfer.className = 'btn btn--sm btn--success'; transfer.textContent = 'Setujui & Transfer'; transfer.onclick = () => reviewWithdrawal(item.id, 'transfer');
+            const reject = document.createElement('button'); reject.className = 'btn btn--sm btn--ghost'; reject.textContent = 'Tolak'; reject.style.marginLeft = '6px'; reject.onclick = () => reviewWithdrawal(item.id, 'reject');
+            action.append(transfer, reject);
+          } else action.textContent = 'Selesai';
+          row.appendChild(action); withdrawalsBody.appendChild(row);
+        });
+
+        verificationList.replaceChildren();
+        if (!tutorRegistrations.length) { const empty = document.createElement('div'); empty.className = 'data-empty-state'; empty.textContent = 'Tidak ada pendaftaran tutor yang menunggu verifikasi.'; verificationList.append(empty); }
+        tutorRegistrations.forEach(item => {
+          const card = document.createElement('div'); card.className = 'verification-item'; card.dataset.serverRegistration = item.id;
+          const info = document.createElement('div'); info.className = 'verification-item__info';
+          const name = document.createElement('div'); name.className = 'verification-item__name'; name.textContent = item.name;
+          const meta = document.createElement('div'); meta.className = 'verification-item__meta'; meta.textContent = `${item.email} • Pendaftaran ${new Date(item.date).toLocaleString('id-ID')} • ${item.documents.length} berkas`;
+          info.append(name, meta);
+          item.documents.forEach(document=>{const link=document.createElement('a');link.href=`/api/account/uploads/${encodeURIComponent(document.id)}`;link.target='_blank';link.rel='noopener';link.textContent=`Pratinjau ${document.name}`;link.className='btn btn--xs btn--outline';info.append(link);});
+          const actions = document.createElement('div'); actions.className = 'verification-item__actions';
+          const approve = document.createElement('button'); approve.className = 'btn btn--sm btn--success'; approve.textContent = 'Verifikasi identitas'; approve.onclick = () => reviewTutorRegistration(item.id, 'approve');
+          const reject = document.createElement('button'); reject.className = 'btn btn--sm btn--ghost'; reject.textContent = 'Tolak'; reject.onclick = () => reviewTutorRegistration(item.id, 'reject');
+          actions.append(approve, reject); card.append(info, actions); verificationList.appendChild(card);
+        });
+        const verificationBadge=document.getElementById('verification-count-badge');if(verificationBadge)verificationBadge.textContent=`${tutorRegistrations.length} pendaftaran menunggu`;
+        setAdminBadge('sidebar-verify-badge', tutorRegistrations.length);
+        renderFinanceSummary(transactions, attendance, withdrawals);
+      } catch (error) {
+        for (const body of [txBody, journalBody, attendanceBody, withdrawalsBody, verificationList]) if (body) { body.replaceChildren(); const row = document.createElement(body === verificationList ? 'div' : 'tr'); row.className = 'data-empty-state'; row.textContent = `Data belum dapat dimuat: ${error.message}`; if (row.tagName === 'TR') { const cell = document.createElement('td'); cell.colSpan = 8; cell.append(row.textContent); row.replaceChildren(cell); } body.append(row); }
+        for (const id of ['sidebar-verify-badge','sidebar-presensi-badge','sidebar-transactions-badge']) setAdminBadge(id, 0);
+        for (const id of ['finance-total-payments','finance-month-payments','finance-pending-attendance','finance-pending-withdrawals']) document.getElementById(id).textContent = 'Tidak tersedia';
+        document.getElementById('finance-pending-honor').textContent = 'Data belum dapat dimuat'; document.getElementById('finance-pending-withdrawal-amount').textContent = 'Data belum dapat dimuat';
+        showToast(error.message, 'danger');
+      }
+    }
+    async function loadAdminOverview(){
+      try{const data=await TrevyAPI.request('/api/admin/overview');document.getElementById('admin-student-count').textContent=data.students.toLocaleString('id-ID');document.getElementById('admin-tutor-count').textContent=data.tutors.toLocaleString('id-ID');document.getElementById('admin-revenue-month').textContent=formatIDR(data.revenue);const list=document.getElementById('admin-revenue-summary');list.replaceChildren();if(!data.monthly.length){list.textContent='Belum ada transaksi simulasi.';return;}data.monthly.forEach(item=>{const card=document.createElement('div');card.className='staff-card';const month=document.createElement('strong');month.textContent=item.month;const amount=document.createElement('p');amount.textContent=formatIDR(item.total);card.append(month,amount);list.append(card);});}catch(error){showToast(error.message,'danger');}
+    }
+
+    async function reviewTutorRegistration(id, decision) {
+      try { await TrevyAPI.request(`/api/admin/tutor-registrations/${encodeURIComponent(id)}/review`, { method: 'POST', body: { decision } }); await renderConnectedAdminData(); showToast(decision === 'approve' ? 'Akun pengajar diaktifkan. Verifikasi berkas identitas masih diperlukan.' : 'Pendaftaran pengajar ditolak.', decision === 'approve' ? 'success' : 'warning'); }
+      catch (error) { showToast(error.message, 'danger'); }
+    }
+
+    async function reviewAttendance(id, decision) {
+      try { await TrevyAPI.request(`/api/admin/attendance/${encodeURIComponent(id)}/review`, { method: 'POST', body: { decision } }); await renderConnectedAdminData(); showToast(decision === 'approve' ? 'Presensi disahkan; honor tercatat di saldo server.' : 'Presensi ditolak.', decision === 'approve' ? 'success' : 'warning'); }
+      catch (error) { showToast(error.message, 'danger'); }
+    }
+
+    async function reviewWithdrawal(id, decision) {
+      try { await TrevyAPI.request(`/api/admin/withdrawals/${encodeURIComponent(id)}/review`, { method: 'POST', body: { decision } }); await renderConnectedAdminData(); showToast(decision === 'transfer' ? 'Transfer simulasi tercatat; dana nyata belum dikirim.' : 'Pengajuan ditolak dan saldo dikembalikan.', decision === 'transfer' ? 'success' : 'warning'); }
+      catch (error) { showToast(error.message, 'danger'); }
+    }
+
+    // Add Package
+    function openAddPackageModal() {
+      openAdminModalById('modal-add-package');
+    }
+    async function saveNewPackage() {
+      const name = document.getElementById('pkg-name').value || 'Paket Baru';
+      const price = parseInt(document.getElementById('pkg-price').value) || 0;
+      const sessions = parseInt(document.getElementById('pkg-sessions').value) || 8;
+      const duration = document.getElementById('pkg-duration').value || '90 menit';
+      const durationMinutes=parseInt(duration,10);
+      try { await TrevyAPI.request('/api/packages',{method:'POST',body:{name,price,sessions,durationMinutes}});closeAdminModal();await renderAdminPackages();showToast(`Paket '${name}' berhasil dipublikasikan.`,'success'); }
+      catch(error){showToast(error.message,'danger');}
+    }
+
+    async function renderAdminPackages() {
+      try {
+        const packages=await TrevyAPI.request('/api/public/packages');
+        const grid=document.getElementById('admin-packages-grid');grid.replaceChildren();
+        packages.forEach(item=>{const card=document.createElement('article');card.className='package-card';card.innerHTML=`<div class="package-card__header"><span class="package-card__name"></span><span class="badge badge--success">Aktif</span></div><div class="package-card__price"></div><div class="package-card__details"><div class="package-card__detail"><span>Durasi</span><span class="package-card__detail-value duration"></span></div><div class="package-card__detail"><span>Jumlah Sesi</span><span class="package-card__detail-value sessions"></span></div></div><button class="btn btn--sm btn--outline btn--full" type="button">Edit Konfigurasi</button>`;card.querySelector('.package-card__name').textContent=item.name;card.querySelector('.package-card__price').textContent=formatIDR(item.price)+' / paket';card.querySelector('.duration').textContent=`${item.durationMinutes} menit`;card.querySelector('.sessions').textContent=`${item.sessions} sesi`;card.querySelector('button').addEventListener('click',()=>editAdminPackage(item));grid.append(card);});
+      } catch(error){showToast(error.message,'danger');}
+    }
+    async function editAdminPackage(item) {
+      const values = await showStandardForm({ title: 'Edit paket belajar', description: 'Perbarui nama, harga, dan detail sesi paket.', submitLabel: 'Simpan perubahan', fields: [
+        { name: 'name', label: 'Nama paket', value: item.name, required: true, max: 100 },
+        { name: 'price', label: 'Harga (Rp)', type: 'number', value: item.price, min: 0, required: true },
+        { name: 'sessions', label: 'Jumlah sesi', type: 'number', value: item.sessions, min: 1, required: true },
+        { name: 'durationMinutes', label: 'Durasi sesi (menit)', type: 'number', value: item.durationMinutes, min: 15, max: 360, required: true }
+      ] });
+      if (!values) return;
+      if (!Number.isSafeInteger(values.price) || !Number.isSafeInteger(values.sessions) || !Number.isSafeInteger(values.durationMinutes)) return showToast('Harga dan jumlah sesi harus berupa bilangan bulat.', 'warning');
+      try{await TrevyAPI.request(`/api/packages/${encodeURIComponent(item.recordId)}`,{method:'PUT',body:{...values,active:true}});await renderAdminPackages();showToast('Paket diperbarui.','success');}catch(error){showToast(error.message,'danger');}
+    }
+
+    // Payroll Approval
+    function approvePayroll(btn) {
+      showToast('Data payroll contoh tidak memproses transfer. Gunakan pengajuan penarikan yang tercatat di server.', 'warning');
+    }
+
+    // Filter Users Table
+    function filterUsersTable() {
+      const query = document.getElementById('user-search-input').value.toLowerCase();
+      const roleFilter = document.getElementById('user-role-filter').value.toLowerCase();
+      const rows = document.querySelectorAll('#table-users tbody tr');
+
+      rows.forEach(r => {
+        const text = r.textContent.toLowerCase();
+        const roleCell = r.children[1].textContent.toLowerCase();
+        const matchText = text.includes(query);
+        const matchRole = !roleFilter || roleCell.includes(roleFilter);
+        r.style.display = (matchText && matchRole) ? '' : 'none';
+      });
+    }
+
+    // Export CSV Data
+    async function exportDataCSV() {
+      try {
+      const [transactions,branding] = await Promise.all([TrevyAPI.request('/api/admin/transactions'),fetch('/api/tenant/branding',{cache:'no-store'}).then(response=>response.json())]);
+      const escapeCSV = value => `"${String(value ?? "").replace(/"/g, '""')}"`;
+      const rows = [[branding.platformName||'Platform',"Laporan Transaksi"],["Tanggal", "ID", "Jenis", "Keterangan", "Pengguna", "Kanal", "Nominal", "Status"], ...transactions.map(tx => [tx.date, tx.id, tx.kind, tx.description, tx.user, tx.gateway, tx.amount, tx.status])];
+      const csvContent = rows.map(row => row.map(escapeCSV).join(",")).join("\r\n");
+      const blob = new Blob(["\uFEFF", csvContent], { type: 'text/csv;charset=utf-8' });
+      const encodedUri = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "laporan_transaksi_" + new Date().toISOString().slice(0, 10) + ".csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(encodedUri);
+
+      showToast("Laporan transaksi CSV berhasil diexport!", "success");
+      } catch (error) { showToast(error.message, 'danger'); }
+    }
+
+    /* ── Payment Gateway Configuration Logic (Midtrans & Xendit) ── */
+    let currentWebhookReadiness = { midtrans: false, xendit: false };
+    function selectGatewayOption(gateway) {
+      currentActiveGateway = gateway;
+      initAdminGatewayUI();
+    }
+
+    function initAdminGatewayUI() {
+      const cardMid = document.getElementById('card-gateway-midtrans');
+      const cardXnd = document.getElementById('card-gateway-xendit');
+      const badgeMid = document.getElementById('badge-midtrans');
+      const badgeXnd = document.getElementById('badge-xendit');
+      const navBadge = document.getElementById('nav-gateway-status');
+      const statGateway = document.getElementById('stat-active-gateway');
+      const activeBadge = document.getElementById('active-gateway-badge');
+      const providerSelect=document.getElementById('setting-provider');if(providerSelect)providerSelect.value=currentActiveGateway;
+      const webhookConfirm=document.getElementById('setting-webhook-ready');if(webhookConfirm)webhookConfirm.checked=Boolean(currentWebhookReadiness[currentActiveGateway]);
+
+      if (currentActiveGateway === 'midtrans') {
+        cardMid?.classList.add('active');
+        cardXnd?.classList.remove('active');
+        if (badgeMid) { badgeMid.className = 'gateway-badge gateway-badge--active'; badgeMid.textContent = 'Dipilih'; }
+        if (badgeXnd) { badgeXnd.className = 'gateway-badge gateway-badge--inactive'; badgeXnd.textContent = 'Tidak dipilih'; }
+        if (navBadge) navBadge.textContent = 'Midtrans';
+        if (statGateway) statGateway.textContent = 'Midtrans';
+        if (activeBadge) activeBadge.textContent = 'Midtrans';
+
+      } else {
+        cardXnd?.classList.add('active');
+        cardMid?.classList.remove('active');
+        if (badgeXnd) { badgeXnd.className = 'gateway-badge gateway-badge--active'; badgeXnd.textContent = 'Dipilih'; }
+        if (badgeMid) { badgeMid.className = 'gateway-badge gateway-badge--inactive'; badgeMid.textContent = 'Tidak dipilih'; }
+        if (navBadge) navBadge.textContent = 'Xendit';
+        if (statGateway) statGateway.textContent = 'Xendit';
+        if (activeBadge) activeBadge.textContent = 'Xendit';
+
+      }
+    }
+
+    async function saveGatewayConfig() {
+      const name = currentActiveGateway === 'midtrans' ? 'Midtrans Snap' : 'Xendit Payment Session';
+      try {
+        await TrevyAPI.request('/api/admin/settings/payment', { method: 'PUT', body: { data: { provider: currentActiveGateway, mode: document.getElementById('setting-payment-mode').value } } });
+        await refreshPaymentGatewayStatus();
+        showToast("Provider tersimpan: " + name, "success");
+      } catch (error) { showToast(error.message, 'danger'); }
+    }
+
+    async function refreshPaymentGatewayStatus() {
+      const urls=document.getElementById('setting-gateway-webhook-url');
+      if(urls)urls.textContent=`${location.origin}/api/payments/webhooks/${currentActiveGateway}`;
+      try {
+        const state=await TrevyAPI.request('/api/tenant/payment-provider');
+        const status=document.getElementById('setting-gateway-status');
+        if(status)status.textContent=state.configured?`${state.provider} siap • mode ${state.mode}`:state.simulator?'Simulator development aktif. Tidak ada tagihan sungguhan.':'Kredensial atau token webhook belum lengkap. Checkout sungguhan belum aktif.';
+        const bisnap=document.getElementById('setting-bisnap-status');if(bisnap)bisnap.textContent=state.biSnapConfigured?'Kredensial BI-SNAP tersimpan. Checkout BI-SNAP belum dihubungkan ke aplikasi.':'Kredensial BI-SNAP belum lengkap.';
+      } catch(error) { const status=document.getElementById('setting-gateway-status');if(status)status.textContent=error.message; }
+    }
+
+    async function testGatewayConnection() {
+      await refreshPaymentGatewayStatus();
+      const text=document.getElementById('setting-gateway-status')?.textContent||'';
+      showToast(text, text.includes('siap') ? 'success' : 'warning');
+    }
+
+    async function loadTenantSettings() {
+      try {
+        const settings = await TrevyAPI.request('/api/admin/settings');
+        const put = (id, value) => { const node = document.getElementById(id); if (node && value !== undefined && value !== null) node.value = value; };
+        put('setting-platform-name', settings.branding.platformName); put('setting-tagline', settings.branding.tagline); put('setting-primary-color', settings.branding.primaryColor);
+        put('setting-contact-email', settings.general.contactEmail); put('setting-contact-phone', settings.general.contactPhone); put('setting-address', settings.general.address);
+        put('setting-timezone', settings.general.timezone); put('setting-currency', settings.general.currency); put('setting-language', settings.general.language);
+        put('setting-provider', settings.payment.provider); put('setting-payment-mode', settings.payment.mode || 'sandbox'); currentWebhookReadiness=typeof settings.payment.webhookReady==='object'?settings.payment.webhookReady:{midtrans:Boolean(settings.payment.webhookReady),xendit:false};
+        currentActiveGateway=settings.payment.provider||'midtrans';initAdminGatewayUI();
+        put('setting-merchant-id', settings.payment.merchantId); put('setting-client-key', settings.payment.clientKey); put('setting-public-key', settings.payment.publicKey);
+        put('setting-bisnap-mode', settings.payment.biSnapMode || 'sandbox'); put('setting-bisnap-client-id', settings.payment.biSnapClientId); put('setting-bisnap-partner-id', settings.payment.biSnapPartnerId); put('setting-bisnap-channel-id', settings.payment.biSnapChannelId); put('setting-bisnap-merchant-public-key', settings.payment.biSnapMerchantPublicKey); put('setting-bisnap-notification-public-key', settings.payment.biSnapNotificationPublicKey);
+        const bisnapSecrets=settings.payment.secretStatus?.midtrans||{}; document.getElementById('setting-bisnap-status').textContent=settings.payment.merchantId&&settings.payment.biSnapClientId&&settings.payment.biSnapPartnerId&&settings.payment.biSnapChannelId&&bisnapSecrets.biSnapClientSecret&&bisnapSecrets.biSnapPrivateKey&&settings.payment.biSnapMerchantPublicKey&&settings.payment.biSnapNotificationPublicKey?'Kredensial BI-SNAP tersimpan. Checkout BI-SNAP Trevy belum aktif.':'Lengkapi Merchant ID, Client ID, Client Secret, Partner ID, Channel ID, kunci merchant, dan Midtrans public key.';
+        const secretCount=Object.values(settings.payment.secretStatus||{}).flatMap(provider=>Object.values(provider)).length;
+        document.getElementById('setting-secret-status').textContent=secretCount?'Secret tersimpan: '+Object.values(settings.payment.secretStatus).flatMap(provider=>Object.entries(provider).map(([key,masked])=>`${key}: ${masked}`)).join(' • '):'Belum ada secret gateway yang disimpan.';
+        put('setting-password-min', settings.security.minimumPasswordLength || 12); put('setting-session-timeout', settings.security.sessionTimeoutMinutes || 480);
+        const standardRate = settings.operations.standardRate ?? 100000;
+        put('setting-standard-rate', standardRate); put('setting-trial-quota', settings.operations.freeTrialQuota ?? 1); put('setting-session-duration', settings.operations.sessionDurationMinutes || 90);
+        const rateLabel=document.getElementById('admin-standard-rate-label');if(rateLabel)rateLabel.textContent=`Tarif standar: ${formatIDR(standardRate)} / sesi`;
+        put('setting-notification-template', settings.notifications.template || ''); document.getElementById('setting-notification-enabled').checked = Boolean(settings.notifications.enabled);
+        put('setting-coa', settings.finance.coa || ''); put('setting-accounting-period', settings.finance.accountingPeriod || 'Bulanan');
+        const preview = document.getElementById('setting-logo-preview'); if (settings.branding.logoUrl) { preview.src = settings.branding.logoUrl; preview.hidden = false; }
+        await refreshPaymentGatewayStatus();
+      } catch (error) { showToast(error.message, 'danger'); }
+    }
+    function htmlSafe(value) { return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
+    async function renderUsersAndRoles() {
+      try {
+        const [users, roleData, groups] = await Promise.all([TrevyAPI.request('/api/admin/users'),TrevyAPI.request('/api/admin/roles'),TrevyAPI.request('/api/admin/groups')]);
+        window.adminRoleData = roleData;
+        const roleOptions = roleData.roles.map(role => `<option value="${htmlSafe(role.key)}">${htmlSafe(role.name)}</option>`).join('');
+        const groupOptions = '<option value="">Tanpa grup</option>'+groups.map(group=>`<option value="${htmlSafe(group.id)}">${htmlSafe(group.name)}</option>`).join('');
+        document.getElementById('new-user-role').innerHTML = roleOptions;
+        document.getElementById('new-user-group').innerHTML = groupOptions;
+        document.getElementById('users-table-body').innerHTML = users.map(user=>`<tr data-user-row="${htmlSafe(user.id)}"><td><strong>${htmlSafe(user.name)}</strong><div>${htmlSafe(user.email)}</div></td><td><select class="form-input" data-role>${roleData.roles.map(role=>`<option value="${htmlSafe(role.key)}" ${user.role===role.key?'selected':''}>${htmlSafe(role.name)}</option>`).join('')}</select></td><td><select class="form-input" data-group>${groups.map(group=>`<option value="${htmlSafe(group.id)}" ${user.groupId===group.id?'selected':''}>${htmlSafe(group.name)}</option>`).join('')}<option value="" ${!user.groupId?'selected':''}>Tanpa grup</option></select></td><td><select class="form-input" data-status><option value="active" ${user.status==='active'?'selected':''}>Aktif</option><option value="inactive" ${user.status!=='active'?'selected':''}>Nonaktif</option></select></td><td><button class="btn btn--xs btn--primary" onclick="saveAdminUser('${htmlSafe(user.id)}')">Simpan</button> <button class="btn btn--xs btn--outline" onclick="deactivateAdminUser('${htmlSafe(user.id)}')">Nonaktifkan</button></td></tr>`).join('') || '<tr><td colspan="5">Belum ada pengguna.</td></tr>';
+        document.getElementById('role-permission-matrix').innerHTML = roleData.roles.map(role=>`<fieldset class="permission-role"><legend>${htmlSafe(role.name)} <code>${htmlSafe(role.key)}</code></legend><div class="permission-list">${roleData.permissions.map(permission=>`<label><input type="checkbox" data-permission="${htmlSafe(permission.key)}" ${role.permissions.includes(permission.key)?'checked':''}> ${htmlSafe(permission.description)}</label>`).join('')}</div><button class="btn btn--sm btn--primary" type="button" onclick="saveRolePermissions('${htmlSafe(role.key)}')">Simpan Permission</button></fieldset>`).join('');
+      } catch(error) { showToast(error.message,'danger'); }
+    }
+    async function createAdminUser() {
+      const data={name:document.getElementById('new-user-name').value,email:document.getElementById('new-user-email').value,password:document.getElementById('new-user-password').value,role:document.getElementById('new-user-role').value,groupId:document.getElementById('new-user-group').value||null};
+      try { await TrevyAPI.request('/api/admin/users',{method:'POST',body:data}); showToast('Pengguna berhasil dibuat.','success'); document.getElementById('new-user-password').value=''; await renderUsersAndRoles(); } catch(error) { showToast(error.message,'danger'); }
+    }
+    async function createUserGroup() {
+      const values = await showStandardForm({ title: 'Buat grup pengguna', description: 'Kelompokkan pengguna agar lebih mudah dikelola.', submitLabel: 'Buat grup', fields: [
+        { name: 'name', label: 'Nama grup', required: true, max: 80 },
+        { name: 'description', label: 'Deskripsi (opsional)', type: 'textarea', max: 240 }
+      ] });
+      if (!values) return;
+      try { await TrevyAPI.request('/api/admin/groups',{method:'POST',body:values}); showToast('Grup berhasil dibuat.','success'); await renderUsersAndRoles(); } catch(error) { showToast(error.message,'danger'); }
+    }
+    async function saveAdminUser(userId) {
+      const row=document.querySelector(`[data-user-row="${CSS.escape(userId)}"]`);
+      try { await TrevyAPI.request(`/api/admin/users/${encodeURIComponent(userId)}`,{method:'PATCH',body:{role:row.querySelector('[data-role]').value,status:row.querySelector('[data-status]').value,groupId:row.querySelector('[data-group]').value||null}}); showToast('Akun pengguna diperbarui.','success'); await renderUsersAndRoles(); } catch(error) { showToast(error.message,'danger'); }
+    }
+    async function deactivateAdminUser(userId){const answer=await showStandardForm({title:'Nonaktifkan akun?',description:'Sesi aktif pengguna ini akan ditutup. Tindakan ini dapat dibatalkan dengan mengaktifkan akun kembali.',submitLabel:'Nonaktifkan akun',fields:[]});if(!answer)return;try{await TrevyAPI.request(`/api/admin/users/${encodeURIComponent(userId)}`,{method:'DELETE'});showToast('Akun dinonaktifkan.','success');await renderUsersAndRoles();}catch(error){showToast(error.message,'danger');}}
+    async function saveRolePermissions(roleKey) {
+      const form=document.querySelector(`.permission-role:has(button[onclick*="${roleKey}"])`);
+      const permissions=[...form.querySelectorAll('[data-permission]:checked')].map(input=>input.dataset.permission);
+      try { await TrevyAPI.request(`/api/admin/roles/${encodeURIComponent(roleKey)}/permissions`,{method:'PUT',body:{permissions}}); showToast('Matriks permission diperbarui.','success'); } catch(error) { showToast(error.message,'danger'); }
+    }
+    async function saveTenantSettings(section) {
+      const value = id => document.getElementById(id)?.value;
+      const forms = {
+        branding: { platformName: value('setting-platform-name'), tagline: value('setting-tagline'), primaryColor: value('setting-primary-color') },
+        general: { contactEmail: value('setting-contact-email'), contactPhone: value('setting-contact-phone'), address: value('setting-address'), timezone: value('setting-timezone'), currency: value('setting-currency'), language: value('setting-language') },
+        payment: { provider: value('setting-provider'), mode: value('setting-payment-mode'), merchantId: value('setting-merchant-id'), clientKey: value('setting-client-key'), serverKey: value('setting-server-key'), secretKey: value('setting-secret-key'), publicKey: value('setting-public-key'), webhookVerificationToken: value('setting-webhook-token'), webhookReady: { ...currentWebhookReadiness, [value('setting-provider')]: document.getElementById('setting-webhook-ready').checked }, biSnapMode: value('setting-bisnap-mode'), biSnapClientId: value('setting-bisnap-client-id'), biSnapPartnerId: value('setting-bisnap-partner-id'), biSnapChannelId: value('setting-bisnap-channel-id'), biSnapClientSecret: value('setting-bisnap-client-secret'), biSnapPrivateKey: value('setting-bisnap-private-key'), biSnapMerchantPublicKey: value('setting-bisnap-merchant-public-key'), biSnapNotificationPublicKey: value('setting-bisnap-notification-public-key') },
+        security: { minimumPasswordLength: Number(value('setting-password-min')), sessionTimeoutMinutes: Number(value('setting-session-timeout')) },
+        operations: { standardRate: Number(value('setting-standard-rate')), freeTrialQuota: Number(value('setting-trial-quota')), sessionDurationMinutes: Number(value('setting-session-duration')) },
+        notifications: { template: value('setting-notification-template'), enabled: document.getElementById('setting-notification-enabled').checked },
+        finance: { coa: value('setting-coa'), accountingPeriod: value('setting-accounting-period') }
+      };
+      try {
+        const saved=await TrevyAPI.request(`/api/admin/settings/${section}`, { method: 'PUT', body: { data: forms[section] } });
+        if (section === 'payment') { ['setting-server-key','setting-secret-key','setting-webhook-token','setting-bisnap-client-secret','setting-bisnap-private-key'].forEach(id => document.getElementById(id).value = ''); currentWebhookReadiness=forms.payment.webhookReady; currentActiveGateway=forms.payment.provider; initAdminGatewayUI(); await refreshPaymentGatewayStatus(); }
+        if (section === 'branding') {
+          for(const [inputId,purpose] of [['setting-logo','branding_logo'],['setting-favicon','branding_favicon']]){
+          const file = document.getElementById(inputId).files[0];
+          if (file) {
+            if (!['image/png','image/jpeg','image/svg+xml','image/webp'].includes(file.type) || file.size > 2 * 1024 * 1024) throw new Error('Logo harus PNG, JPG, SVG, atau WebP maksimal 2 MB.');
+            const base64 = await new Promise((resolve,reject) => { const reader = new FileReader(); reader.onload = () => resolve(String(reader.result).split(',')[1]); reader.onerror = () => reject(new Error('File tidak dapat dibaca.')); reader.readAsDataURL(file); });
+            const uploaded = await TrevyAPI.request('/api/admin/branding/logo', { method: 'POST', body: { name: file.name, mimeType: file.type, data: base64,purpose } });
+            if(purpose==='branding_logo'){const preview = document.getElementById('setting-logo-preview'); preview.src = uploaded.url; preview.hidden = false;window.TenantBranding.logoUrl=uploaded.url;}else window.TenantBranding.faviconUrl=uploaded.url;
+          }
+          }
+          window.applyTenantBranding?.({...window.TenantBranding,...forms.branding});
+        }
+        showToast('Pengaturan berhasil disimpan.', 'success');
+      } catch (error) { showToast(error.message, 'danger'); }
+    }
+    document.querySelectorAll('[data-settings-tab]').forEach(button => button.addEventListener('click', () => {
+      document.querySelectorAll('[data-settings-tab]').forEach(tab => { tab.className = tab === button ? 'btn btn--sm btn--primary' : 'btn btn--sm btn--outline'; });
+      document.querySelectorAll('[data-settings-pane]').forEach(pane => pane.classList.toggle('active', pane.dataset.settingsPane === button.dataset.settingsTab));
+    }));
+    ['setting-logo','setting-favicon'].forEach(id=>document.getElementById(id)?.addEventListener('change', event => {
+      const file = event.target.files[0]; if (!file) return;
+      if(id==='setting-logo'){const preview = document.getElementById('setting-logo-preview'); preview.src = URL.createObjectURL(file); preview.hidden = false;}
+    }));
+    document.addEventListener('DOMContentLoaded', loadTenantSettings);
+  </script>
+</body>
+</html>

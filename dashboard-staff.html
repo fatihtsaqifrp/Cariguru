@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard Staf</title>
+  <link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/layout.css"><link rel="stylesheet" href="css/dashboard.css">
+  <script src="js/branding.js" defer></script>
+  <script src="js/profile-photo.js" defer></script>
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body class="staff-dashboard">
+  <div class="staff-shell">
+    <aside class="staff-sidebar"><a class="sidebar__brand" href="index.html"><span class="sidebar__logo">P</span><strong class="sidebar__name">Portal Les Privat Semarang</strong></a><nav id="staff-navigation" aria-label="Navigasi staf"></nav><div class="staff-account"><strong id="staff-name"></strong><span id="staff-role"></span><button type="button" class="btn btn--outline" data-logout>Keluar</button></div></aside>
+    <main class="staff-main"><header><div><span class="badge badge--primary" id="staff-role-badge">Staf</span><h1 id="staff-title">Dashboard Staf</h1><p id="staff-subtitle">Ringkasan sesuai akses akun Anda.</p></div></header><section id="staff-content" class="staff-content"><p role="status">Memuat data…</p></section></main>
+  </div>
+  <script src="js/api.js"></script>
+  <script>
+    const staffLabels={keuangan:'Keuangan',marketing:'Marketing',front_office:'Front Office',back_office:'Back Office'};
+    const staffMenus=[
+      ['transaction.manage','Transaksi','Data transaksi dan ringkasan nilai'],['accounting.manage','Keuangan & akuntansi','Ringkasan proses dan laporan keuangan'],['payroll.manage','Payroll','Pengelolaan honor pengajar'],['withdrawal.manage','Penarikan','Permintaan penarikan honor'],['package.manage','Paket & harga','Katalog paket belajar'],['promo.manage','Promosi','Pengelolaan promosi'],['enrollment.report','Laporan pendaftaran','Ringkasan pendaftaran terbaru'],['people.manage','Data siswa & pengajar','Direktori pengguna aktif'],['booking.manage','Booking & jadwal','Pengelolaan permintaan dan jadwal'],['documents.basic_verify','Verifikasi berkas dasar','Pemeriksaan berkas pengguna'],['tutor.verify','Verifikasi pengajar','Antrean pengajar yang perlu ditinjau'],['attendance.manage','Presensi','Sesi yang menunggu tinjauan'],['operations.manage','Operasional','Ringkasan operasional']
+    ];
+    async function loadStaffDashboard(){
+      try{
+        const context=await TrevyAPI.request('/api/staff/context');
+        document.getElementById('staff-name').textContent=context.user.name;document.getElementById('staff-role').textContent=context.user.email;
+        document.getElementById('staff-role-badge').textContent=staffLabels[context.user.role]||context.user.role;
+        document.getElementById('staff-title').textContent=`Dashboard ${staffLabels[context.user.role]||'Staf'}`;
+        const allowed=new Set(context.permissions);const visible=staffMenus.filter(item=>allowed.has(item[0]));
+        document.getElementById('staff-navigation').innerHTML=visible.map((item,i)=>`<a href="#bagian-${i}" class="staff-nav-link">${item[1]}</a>`).join('');
+        document.getElementById('staff-content').innerHTML=visible.length?visible.map((item,i)=>`<article class="staff-card" id="bagian-${i}"><h2>${item[1]}</h2><p>${item[2]}</p><strong>${context.metrics.pendingAttendance!==undefined&&item[0]==='attendance.manage'?context.metrics.pendingAttendance:context.metrics.registrations!==undefined&&item[0]==='enrollment.report'?context.metrics.registrations:context.metrics.people!==undefined&&item[0]==='people.manage'?context.metrics.people:'—'}</strong></article>`).join(''):'<div class="empty-state">Belum ada permission yang diberikan untuk akun ini.</div>';
+      }catch(error){document.getElementById('staff-content').innerHTML=`<p role="alert">${error.message}</p>`;}
+    }
+    loadStaffDashboard();
+  </script>
+</body>
+</html>

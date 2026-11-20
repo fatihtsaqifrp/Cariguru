@@ -1,0 +1,31 @@
+{
+  "name": "trevy-web",
+  "version": "1.0.0",
+  "description": "Trevy — Hub Guru Les Privat #1 di Semarang. Platform pencocokan otomatis siswa & guru les privat.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "all": "npm install && npm run dev",
+    "dev": "NODE_ENV=development node server.js",
+    "verify": "node scripts/verify.js",
+    "test": "npm run verify"
+  },
+  "keywords": [
+    "trevy",
+    "les-privat",
+    "semarang",
+    "tutor",
+    "education"
+  ],
+  "author": "Trevy Team",
+  "license": "UNLICENSED",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.2.0",
+    "express": "^4.21.0",
+    "open": "^10.1.0"
+  }
+}

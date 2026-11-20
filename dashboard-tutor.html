@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Pengajar</title>
+  <meta name="description" content="Dashboard guru les privat platform Semarang. Kelola jadwal mengajar, presensi GPS, jurnal pembelajaran, dan honor.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2'><path d='M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z'/></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <script src="js/branding.js" defer></script>
+  <script src="js/profile-photo.js" defer></script>
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__header">
+        <a href="index.html" class="sidebar__brand">
+          <div class="sidebar__logo">T</div>
+          <div>
+            <div class="sidebar__name">platform</div>
+            <div class="sidebar__label">Portal Pengajar</div>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar__nav">
+        <div class="sidebar__section-title">Menu Utama</div>
+        <a href="#beranda" class="sidebar__link active" data-tab="beranda">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </span>
+          Beranda
+        </a>
+        <a href="#jadwal" class="sidebar__link" data-tab="jadwal">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+          </span>
+          Jadwal Mengajar
+          <span class="sidebar__link-badge" id="tutor-schedule-badge">3</span>
+        </a>
+        <a href="#ketersediaan" class="sidebar__link" data-tab="ketersediaan">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </span>
+          Atur Ketersediaan
+        </a>
+        <a href="#checkin" class="sidebar__link" data-tab="checkin">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </span>
+          Check-in Sesi
+        </a>
+
+        <div class="sidebar__section-title">Keuangan & Payroll</div>
+        <a href="#keuangan" class="sidebar__link" data-tab="keuangan">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </span>
+          Dompet & Honor
+        </a>
+        <a href="#riwayat" class="sidebar__link" data-tab="riwayat">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg>
+          </span>
+          Riwayat Pertemuan
+        </a>
+
+        <div class="sidebar__section-title">Akun & Kualifikasi</div>
+        <a href="#profil" class="sidebar__link" data-tab="profil">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          Profil Pengajar
+        </a>
+        <a href="#berkas" class="sidebar__link" data-tab="berkas">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </span>
+          Berkas Kualifikasi
+        </a>
+        <a href="#pengaturan" class="sidebar__link" data-tab="pengaturan">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          </span>
+          Pengaturan
+        </a>
+      </nav>
+
+      <div class="sidebar__footer">
+        <a href="login.html" class="sidebar__link" data-logout style="color: var(--clr-danger-400);">
+          <span class="sidebar__link-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+          </span>
+          Keluar
+        </a>
+        <div class="sidebar__user">
+          <div class="avatar" style="background: linear-gradient(135deg, var(--clr-accent-400), #e879f9);">BW</div>
+          <div class="sidebar__user-info">
+            <div class="sidebar__user-name">Budi Wicaksono, S.Pd</div>
+            <div class="sidebar__user-role">Fisika • Terverifikasi</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="main-content__header">
+        <div style="display: flex; align-items: center; gap: var(--sp-4);">
+          <button class="sidebar-toggle" aria-label="Toggle Menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+          </button>
+          <div class="main-content__title-group">
+            <h1 class="main-content__title" id="tutor-page-title">Dashboard Pengajar</h1>
+            <p class="main-content__subtitle" id="tutor-page-subtitle">Sabtu, 1 November 2026 — Wilayah Semarang</p>
+          </div>
+        </div>
+        <div class="main-content__actions">
+          <button class="btn btn--icon btn--ghost" style="position: relative;" onclick="toggleTutorNotifs(event)" title="Notifikasi">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            <span style="position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; background: var(--clr-danger-500); border-radius: 50%; border: 2px solid white;"></span>
+          </button>
+
+          <!-- Notification Dropdown -->
+          <div class="notif-dropdown" id="tutor-notif-dropdown">
+            <div style="padding: var(--sp-4); border-bottom: 1px solid var(--clr-neutral-100); display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: var(--fw-bold); font-size: var(--fs-sm);">Notifikasi Pengajar</span>
+              <button onclick="markAllTutorNotifsRead()" style="background: none; border: none; font-size: var(--fs-xs); color: var(--clr-primary-600); cursor: pointer;">Tandai dibaca</button>
+            </div>
+            <div style="max-height: 280px; overflow-y: auto;">
+              <div class="notification-item unread">
+                <div class="notification-item__icon" style="background: rgba(34,197,94,0.1); color: var(--clr-success-600);">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <div class="notification-item__content">
+                  <div class="notification-item__text"><strong>Gaji Ditransfer:</strong> Payroll periode Oktober Rp2.200.000 telah diproses ke rekening Anda.</div>
+                  <div class="notification-item__time">Hari ini, 09:30 WIB</div>
+                </div>
+              </div>
+              <div class="notification-item unread">
+                <div class="notification-item__icon" style="background: var(--clr-primary-100); color: var(--clr-primary-600);">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                </div>
+                <div class="notification-item__content">
+                  <div class="notification-item__text"><strong>Jadwal Baru:</strong> Dina Fauziah dijadwalkan sesi Fisika hari Senin pukul 14:00.</div>
+                  <div class="notification-item__time">Kemarin, 14:15 WIB</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="avatar" style="background: linear-gradient(135deg, var(--clr-accent-400), #e879f9);">BW</div>
+        </div>
+      </header>
+
+      <div class="main-content__body">
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 1: BERANDA PENGAJAR (DEFAULT)
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view active" id="view-beranda">
+          <!-- Wallet Card -->
+          <div class="wallet-card">
+            <div class="wallet-card__label">Saldo Dompet Honor Mengajar</div>
+            <div class="wallet-card__balance" id="tutor-balance-val">Rp2.400.000</div>
+            <div class="wallet-card__meta">24 sesi pertemuan terverifikasi × Rp100.000 / sesi</div>
+            <div class="wallet-card__actions">
+              <button class="btn btn--glass" onclick="openWithdrawModal()">
+                Tarik Saldo Rekening
+              </button>
+              <button class="btn btn--glass" onclick="switchTutorTab('keuangan')">
+                Riwayat Honor
+              </button>
+            </div>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-card__label">Sesi Bulan Ini</div>
+              <div class="stat-card__value" id="tutor-session-month-val">18</div>
+              <div class="stat-card__meta" style="color: var(--clr-success-600);">+5 sesi dari bulan lalu</div>
+              <div class="stat-card__icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card__label">Siswa Aktif Dibina</div>
+              <div class="stat-card__value">12</div>
+              <div class="stat-card__meta" style="color: var(--clr-primary-700);">Wilayah Tembalang & Banyumanik</div>
+              <div class="stat-card__icon" style="background: var(--clr-secondary-50); color: var(--clr-secondary-600);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card__label">Rating Pengajar</div>
+              <div class="stat-card__value">4.9 / 5.0</div>
+              <div class="stat-card__meta" style="color: #d97706;">Berdasarkan 156 ulasan siswa</div>
+              <div class="stat-card__icon" style="background: rgba(245,158,11,0.1); color: #d97706;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card__label">Honor Terakumulasi</div>
+              <div class="stat-card__value" style="font-size: var(--fs-2xl);">Rp1.800.000</div>
+              <div class="stat-card__meta">Periode November 2026</div>
+              <div class="stat-card__icon" style="background: rgba(34,197,94,0.1); color: var(--clr-success-600);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Schedule & Checkin Dashboard Grid -->
+          <div class="dashboard-grid">
+            <!-- Schedule Panel -->
+            <div class="panel">
+              <div class="panel__header">
+                <h2 class="panel__title">Agenda Mengajar Hari Ini</h2>
+                <span class="badge badge--teal">3 Sesi Dijadwalkan</span>
+              </div>
+              <div class="panel__body" style="padding-top: 0;">
+                <div class="schedule-item schedule-item--completed">
+                  <div class="schedule-item__time">
+                    <div class="schedule-item__time-value">08:00</div>
+                    <div class="schedule-item__time-label">Selesai</div>
+                  </div>
+                  <div class="schedule-item__info">
+                    <div class="schedule-item__subject">Fisika — Kinematika Gerak Lurus</div>
+                    <div class="schedule-item__meta">
+                      Ahmad Rizky • SMA Kelas 11 • Banyumanik (Tatap Muka)
+                    </div>
+                  </div>
+                  <span class="badge badge--success">Terverifikasi</span>
+                </div>
+
+                <div class="schedule-item schedule-item--upcoming" id="tutor-active-session-card">
+                  <div class="schedule-item__time">
+                    <div class="schedule-item__time-value">14:00</div>
+                    <div class="schedule-item__time-label">Sesi Aktif</div>
+                  </div>
+                  <div class="schedule-item__info">
+                    <div class="schedule-item__subject">Fisika — Hukum Newton & Dinamika</div>
+                    <div class="schedule-item__meta">
+                      Sari Dewi • SMA Kelas 10 • Tembalang (Tatap Muka)
+                    </div>
+                  </div>
+                  <div class="schedule-item__actions" id="tutor-schedule-actions">
+                    <button class="btn btn--sm btn--success" onclick="handleCheckin()">Mulai Check-in</button>
+                  </div>
+                </div>
+
+                <div class="schedule-item">
+                  <div class="schedule-item__time">
+                    <div class="schedule-item__time-value">16:00</div>
+                    <div class="schedule-item__time-label">Nanti</div>
+                  </div>
+                  <div class="schedule-item__info">
+                    <div class="schedule-item__subject">Matematika — Integral & Turunan</div>
+                    <div class="schedule-item__meta">
+                      Dina Fauziah • SMA Kelas 11 • Tembalang (Tatap Muka)
+                    </div>
+                  </div>
+                  <span class="badge">Belum Mulai</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Check-in Action Box -->
+            <div style="display: flex; flex-direction: column; gap: var(--sp-6);">
+              <div class="panel">
+                <div class="panel__header">
+                  <h2 class="panel__title">Presensi Kehadiran di Lokasi</h2>
+                </div>
+                <div class="panel__body">
+                  <div class="checkin-btn" onclick="handleCheckin()">
+                    <div class="checkin-btn__icon">
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--clr-success-600);"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    <div class="checkin-btn__title">Presensi Check-in Sesi</div>
+                    <div class="checkin-btn__desc">Fisika — Sari Dewi (Tembalang) • 14:00 WIB</div>
+                  </div>
+                  <p style="font-size: var(--fs-xs); color: var(--text-tertiary); margin-top: var(--sp-3); text-align: center;">
+                    Sistem mendeteksi koordinat lokasi pengajar secara otomatis saat tiba di rumah siswa
+                  </p>
+                </div>
+              </div>
+
+              <!-- Quick Recap -->
+              <div class="panel">
+                <div class="panel__header">
+                  <h2 class="panel__title">Rekapitulasi Honor Terbaru</h2>
+                </div>
+                <div class="panel__body panel__body--flush">
+                  <div class="payroll-item">
+                    <div>
+                      <div class="payroll-item__period">Oktober 2026</div>
+                      <div class="payroll-item__sessions">22 sesi selesai</div>
+                    </div>
+                    <div>
+                      <div class="payroll-item__amount">Rp2.200.000</div>
+                      <span class="badge badge--success" style="font-size: 0.6rem;">Ditransfer</span>
+                    </div>
+                  </div>
+                  <div class="payroll-item">
+                    <div>
+                      <div class="payroll-item__period">September 2026</div>
+                      <div class="payroll-item__sessions">19 sesi selesai</div>
+                    </div>
+                    <div>
+                      <div class="payroll-item__amount">Rp1.900.000</div>
+                      <span class="badge badge--success" style="font-size: 0.6rem;">Ditransfer</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Students List with Search -->
+          <div class="panel" style="margin-top: var(--sp-6);">
+            <div class="panel__header">
+              <h2 class="panel__title">Daftar Siswa Bimbingan</h2>
+              <div style="display:flex; gap: var(--sp-2); align-items:center;">
+                <input type="text" id="student-search-input" placeholder="Cari siswa atau mapel..." class="form-input" style="padding: 4px 10px; font-size: var(--fs-xs); width: 180px;" onkeyup="filterTutorStudents()">
+                <span class="badge" id="student-count-badge">12 siswa</span>
+              </div>
+            </div>
+            <div class="panel__body panel__body--flush">
+              <div class="table-wrapper" style="border: none;">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Nama Siswa</th>
+                      <th>Mata Pelajaran</th>
+                      <th>Kecamatan</th>
+                      <th>Total Pertemuan</th>
+                      <th>Status Pembelajaran</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Dina Fauziah</strong><div style="font-size: var(--fs-xs); color: var(--text-tertiary);">SMA Kelas 11</div></td>
+                      <td><span class="badge badge--teal">Matematika</span></td>
+                      <td>Tembalang</td>
+                      <td>12 sesi</td>
+                      <td><span class="badge badge--success">Aktif</span></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Ahmad Rizky</strong><div style="font-size: var(--fs-xs); color: var(--text-tertiary);">SMA Kelas 11</div></td>
+                      <td><span class="badge badge--teal">Fisika</span></td>
+                      <td>Banyumanik</td>
+                      <td>8 sesi</td>
+                      <td><span class="badge badge--success">Aktif</span></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Sari Dewi</strong><div style="font-size: var(--fs-xs); color: var(--text-tertiary);">SMA Kelas 10</div></td>
+                      <td><span class="badge badge--teal">Fisika</span></td>
+                      <td>Tembalang</td>
+                      <td>4 sesi</td>
+                      <td><span class="badge badge--success">Aktif</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 2: JADWAL MENGAJAR LENGKAP
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-jadwal">
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">Jadwal Sesi Mengajar Mendatang</h2>
+              <button class="btn btn--sm btn--primary" onclick="switchTutorTab('ketersediaan')">Atur Ketersediaan Hari</button>
+            </div>
+            <div class="panel__body panel__body--flush">
+              <div class="table-wrapper" style="border: none;">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Waktu & Tanggal</th>
+                      <th>Siswa</th>
+                      <th>Mata Pelajaran</th>
+                      <th>Alamat Lokasi</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tutor-schedule-table"><tr><td colspan="5">Memuat jadwal…</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 3: ATUR KETERSEDIAAN
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-ketersediaan">
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">Pengaturan Jam Ketersediaan Mengajar Mingguan</h2>
+              <button class="btn btn--sm btn--primary" onclick="openAvailabilityModal()">Edit Slot Jadwal</button>
+            </div>
+            <div class="panel__body">
+              <p style="font-size: var(--fs-sm); color: var(--text-secondary); margin-bottom: var(--sp-4);">
+                Slot waktu yang Anda aktifkan akan digunakan oleh algoritma pencocokan otomatis saat siswa di Semarang memesan sesi les.
+              </p>
+
+              <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: var(--sp-3); text-align: center;">
+                <div>
+                  <div style="font-size: var(--fs-xs); font-weight: var(--fw-semibold); color: var(--text-secondary); margin-bottom: var(--sp-2);">Senin</div>
+                  <div class="chip chip--selected" style="display: block; margin-bottom: 4px;">08:00 - 12:00</div>
+                  <div class="chip chip--selected" style="display: block;">14:00 - 17:00</div>
+                </div>
+                <div>
+                  <div style="font-size: var(--fs-xs); font-weight: var(--fw-semibold); color: var(--text-secondary); margin-bottom: var(--sp-2);">Selasa</div>
+                  <div class="chip chip--selected" style="display: block; margin-bottom: 4px;">09:00 - 12:00</div>
+                  <div class="chip chip--selected" style="display: block;">15:00 - 19:00</div>
+                </div>
+                <div>
+                  <div style="font-size: var(--fs-xs); font-weight: var(--fw-semibold); color: var(--text-secondary); margin-bottom: var(--sp-2);">Rabu</div>
+                  <div class="chip chip--selected" style="display: block;">08:00 - 12:00</div>
+                </div>
+                <div>
+                  <div style="font-size: var(--fs-xs); font-weight: var(--fw-semibold); color: var(--text-secondary); margin-bottom: var(--sp-2);">Kamis</div>
+                  <div class="chip chip--selected" style="display: block; margin-bottom: 4px;">08:00 - 12:00</div>
+                  <div class="chip chip--selected" style="display: block;">14:00 - 18:00</div>
+                </div>
+                <div>
+                  <div style="font-size: var(--fs-xs); font-weight: var(--fw-semibold); color: var(--text-secondary); margin-bottom: var(--sp-2);">Jumat</div>
+                  <div class="chip chip--selected" style="display: block;">13:00 - 17:00</div>
+                </div>
+                <div>
+                  <div style="font-size: var(--fs-xs); font-weight: var(--fw-semibold); color: var(--text-secondary); margin-bottom: var(--sp-2);">Sabtu</div>
+                  <div class="chip chip--selected" style="display: block;">08:00 - 16:00</div>
+                </div>
+                <div>
+                  <div style="font-size: var(--fs-xs); font-weight: var(--fw-semibold); color: var(--text-secondary); margin-bottom: var(--sp-2);">Minggu</div>
+                  <div class="chip" style="display: block; opacity: 0.5;">Libur</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 4: CHECKIN / PRESENSI
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-checkin">
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">Presensi Lokasi & Pelaporan Sesi</h2>
+            </div>
+            <div class="panel__body">
+              <div style="background: var(--clr-neutral-50); border: 1px solid var(--clr-neutral-200); border-radius: var(--radius-xl); padding: var(--sp-6); text-align: center;">
+                <div style="margin-bottom: var(--sp-3);">
+                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--clr-primary-600);"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <h3 style="font-weight: var(--fw-bold); font-size: var(--fs-lg); margin-bottom: 6px;">Sesi Mendatang: Fisika (Sari Dewi)</h3>
+                <p style="font-size: var(--fs-sm); color: var(--text-secondary); margin-bottom: var(--sp-5);">
+                  Tembalang, Semarang • Durasi: 90 Menit • Jadwal: 14:00 WIB
+                </p>
+                <button class="btn btn--primary btn--lg" onclick="handleCheckin()">Mulai Check-in Sesi Ini</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 5: DOMPET & KEUANGAN
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-keuangan">
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">Manajemen Saldo Honor & Penarikan</h2>
+              <button class="btn btn--sm btn--primary" onclick="openWithdrawModal()">Tarik Saldo Rekening</button>
+            </div>
+            <div class="panel__body">
+              <div style="background: var(--clr-primary-50); border: 1px solid var(--clr-primary-200); border-radius: var(--radius-xl); padding: var(--sp-6); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--sp-4);">
+                <div>
+                  <div style="font-size: var(--fs-xs); color: var(--clr-primary-700);">Saldo Siap Ditarik</div>
+                  <div style="font-size: var(--fs-3xl); font-weight: var(--fw-bold); color: var(--clr-primary-800);" id="tab-wallet-balance-val">Rp2.400.000</div>
+                  <div style="font-size: var(--fs-xs); color: var(--text-secondary); margin-top: 4px;">Tarif: Rp100.000 per sesi terverifikasi</div>
+                </div>
+                <button class="btn btn--success" onclick="openWithdrawModal()">Tarik Saldo ke Rekening</button>
+              </div>
+            </div>
+          </div>
+          <div class="panel" style="margin-top:var(--sp-5);">
+            <div class="panel__header"><h2 class="panel__title">Riwayat Penarikan Honor</h2></div>
+            <div class="panel__body panel__body--flush">
+              <div class="table-wrapper" style="border:none;">
+                <table class="table"><thead><tr><th>Tanggal</th><th>Nominal</th><th>Rekening</th><th>Status</th></tr></thead><tbody id="tutor-withdrawal-history"></tbody></table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 6: RIWAYAT PERTEMUAN
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-riwayat">
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">Arsip Seluruh Sesi Selesai</h2>
+            </div>
+            <div class="panel__body panel__body--flush">
+              <div class="table-wrapper" style="border: none;">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Tanggal</th>
+                      <th>Siswa</th>
+                      <th>Mata Pelajaran</th>
+                      <th>Materi</th>
+                      <th>Honor Sesi</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>31 Okt 2026</td>
+                      <td>Ahmad Rizky</td>
+                      <td>Fisika</td>
+                      <td>Kinematika Gerak Lurus</td>
+                      <td>Rp100.000</td>
+                      <td><span class="badge badge--success">Terverifikasi</span></td>
+                    </tr>
+                    <tr>
+                      <td>29 Okt 2026</td>
+                      <td>Dina Fauziah</td>
+                      <td>Matematika</td>
+                      <td>Integral Parsial</td>
+                      <td>Rp100.000</td>
+                      <td><span class="badge badge--success">Terverifikasi</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 7: PROFIL PENGAJAR
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-profil">
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">Data Profil Pengajar</h2>
+            <button class="btn btn--sm btn--primary" onclick="saveTutorProfile()">Simpan Rekening & Kontak</button>
+            </div>
+            <div class="panel__body">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4);">
+                <div class="form-group">
+                  <label class="form-label">Nama Lengkap & Gelar</label>
+                  <input type="text" class="form-input" value="Budi Wicaksono, S.Pd">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Almamater / Universitas</label>
+                  <input type="text" class="form-input" value="S1 Pendidikan Fisika — Universitas Diponegoro (UNDIP)">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-input" value="guru@platform.id" disabled style="background:var(--clr-neutral-100);">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Nomor WhatsApp</label>
+                    <input type="tel" class="form-input" id="profile-phone" autocomplete="tel" placeholder="Nomor WhatsApp">
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                  <label class="form-label">Rekening Pencairan Honor</label>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-3);">
+                    <select class="form-select" id="profile-bank" aria-label="Nama bank">
+                      <option value="">Pilih bank</option><option>BCA</option><option>BNI</option><option>BRI</option><option>MANDIRI</option><option>BSI</option><option>CIMB</option><option>PERMATA</option><option>DANAMON</option><option>BTN</option><option>JAGO</option>
+                    </select>
+                    <input type="text" class="form-input" id="profile-account-number" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="Nomor rekening">
+                    <input type="text" class="form-input" id="profile-account-name" autocomplete="name" maxlength="100" placeholder="Nama pemilik sesuai rekening" style="grid-column:1/-1;">
+                  </div>
+                  <small style="color:var(--text-tertiary);">Data rekening disimpan privat dan dipakai otomatis pada pengajuan pencairan. Periksa kembali sebelum menyimpan.</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 8: BERKAS SAYA
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-berkas">
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">Dokumen Sertifikasi & Kualifikasi</h2>
+              <label class="btn btn--sm btn--primary">Unggah berkas<input type="file" id="tutor-document-input" accept="application/pdf,image/png,image/jpeg,image/webp" hidden onchange="uploadTutorDocument(event)"></label>
+            </div>
+            <div class="panel__body">
+              <p>Dokumen tersimpan privat dan hanya dapat dilihat oleh Anda serta Admin.</p><div id="tutor-document-list">Memuat dokumen…</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             TAB VIEW 9: PENGATURAN
+             ═══════════════════════════════════════════════════ -->
+        <div class="tab-view" id="view-pengaturan">
+          <div class="panel">
+            <div class="panel__header">
+              <h2 class="panel__title">Pengaturan Akun Pengajar</h2>
+            </div>
+            <div class="panel__body">
+              <div class="form-group">
+                <label class="form-label" for="current-password">Kata Sandi Saat Ini</label>
+                <input type="password" class="form-input" id="current-password" autocomplete="current-password">
+              </div>
+              <div class="form-group"><label class="form-label" for="new-password">Kata Sandi Baru (minimal 12 karakter)</label><input type="password" class="form-input" id="new-password" autocomplete="new-password" minlength="12"></div>
+              <button class="btn btn--primary" onclick="changeTutorPassword()">Ubah Kata Sandi</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       TUTOR MODALS: Withdraw, Lesson Report, Availability
+       ═══════════════════════════════════════════════════ -->
+  <div class="modal-backdrop" id="tutor-modal-backdrop"></div>
+
+  <!-- Modal Tarik Saldo -->
+  <div class="modal" id="modal-withdraw" style="max-width: 480px;">
+    <div class="modal__header">
+      <h3 style="font-size: var(--fs-md); font-weight: var(--fw-bold);">Pencairan Saldo Honor Pengajar</h3>
+      <button onclick="closeTutorModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;" aria-label="Tutup">&times;</button>
+    </div>
+    <div class="modal__body">
+
+      <div style="background: var(--clr-primary-50); border-radius: var(--radius-lg); padding: var(--sp-4); margin-bottom: var(--sp-4); text-align: center;">
+        <div style="font-size: var(--fs-xs); color: var(--clr-primary-700);">Saldo Honor Terverifikasi Siap Ditarik</div>
+        <div style="font-size: var(--fs-3xl); font-weight: var(--fw-bold); color: var(--clr-primary-800);" id="modal-wallet-balance">Rp2.400.000</div>
+        <div style="font-size: var(--fs-xs); color: var(--text-tertiary); margin-top: 4px;">Pencairan memerlukan verifikasi dan persetujuan Administrator</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Rekening Bank Tujuan:</label>
+        <div id="withdraw-destination" class="form-input" style="height:auto;min-height:44px;">Atur rekening pada Profil Pengajar terlebih dahulu.</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Nominal Penarikan (Rp):</label>
+        <div style="display: flex; gap: var(--sp-2);">
+          <input type="number" class="form-input" id="withdraw-amount" min="100000" max="2400000" value="1000000">
+          <button class="btn btn--outline" type="button" onclick="setWithdrawAll()">Tarik Semua</button>
+        </div>
+        <span style="font-size: var(--fs-xs); color: var(--text-tertiary);">Minimal penarikan Rp100.000. Admin akan memverifikasi sebelum transfer diproses.</span>
+      </div>
+
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--ghost" onclick="closeTutorModal()">Batal</button>
+      <button class="btn btn--success" id="btn-confirm-withdraw" onclick="processWithdrawal()">Konfirmasi Pencairan</button>
+    </div>
+  </div>
+
+    <!-- Modal Jurnal Mengajar / Lesson Report dengan GPS & Foto Bukti -->
+  <div class="modal" id="modal-lesson-report" style="max-width: 560px;">
+    <div class="modal__header">
+      <h3 style="font-size: var(--fs-md); font-weight: var(--fw-bold);">Laporan Presensi & Sesi Pembelajaran</h3>
+      <button onclick="closeTutorModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;" aria-label="Tutup">&times;</button>
+    </div>
+    <div class="modal__body">
+      <!-- GPS Geolocation Card -->
+      <div class="gps-box">
+        <div class="gps-header">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--clr-primary-600);"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+            <strong style="font-size: var(--fs-sm);">Verifikasi Lokasi GPS Presensi</strong>
+          </div>
+          <span class="badge badge--accent" id="gps-status">Belum diambil</span>
+        </div>
+        <div class="gps-coords">
+          <div>Koordinat Guru: <strong id="gps-coordinates">Belum ada data lokasi</strong></div>
+          <div>Lokasi dipakai sebagai bukti pemeriksaan Admin; sistem belum menghitung radius alamat.</div>
+        </div>
+      </div>
+
+      <!-- Photo Proof of Attendance -->
+      <div class="form-group">
+        <label class="form-label">Foto Bukti Kegiatan Belajar Mengajar:</label>
+        <div class="photo-upload-zone" id="photo-upload-container">
+          <div id="photo-placeholder-ui">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--clr-neutral-400); margin-bottom:6px;"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            <div style="font-size: var(--fs-sm); font-weight: var(--fw-semibold);">Unggah foto belum tersedia</div>
+            <div style="font-size: var(--fs-xs); color: var(--text-tertiary);" id="photo-upload-status">Foto PNG, JPG, atau WebP maksimal 2 MB.</div>
+            <button type="button" class="btn btn--xs btn--outline" onclick="triggerPhotoUpload()">Pilih foto bukti</button>
+            <input type="file" id="tutor-photo-input" accept="image/png,image/jpeg,image/webp" hidden onchange="handlePhotoSelected(event)">
+          </div>
+          <img id="photo-preview-element" class="photo-preview-img" style="display:none;" src="images/hero-illustration.jpg" alt="Bukti Mengajar">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Siswa & Mata Pelajaran</label>
+        <input type="text" class="form-input" value="Sari Dewi • Fisika (SMA Kelas 10)" disabled style="background: var(--clr-neutral-100);">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Materi Pokok yang Diajarkan</label>
+        <input type="text" class="form-input" id="report-topic" value="Hukum Newton II & III (Dinamika Gerak)">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Tingkat Pemahaman Siswa</label>
+        <select class="form-select" id="report-comprehension">
+          <option value="sangat-baik" selected>Sangat Baik (Mampu menyelesaikan soal mandiri)</option>
+          <option value="baik">Baik (Memahami konsep inti dengan baik)</option>
+          <option value="cukup">Cukup (Perlu latihan soal lanjutan)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Catatan & Pekerjaan Rumah (PR) Siswa</label>
+        <textarea class="form-input" id="report-notes" rows="2">Latihan bab 3 halaman 45 nomor 1-5 dikerjakan untuk sesi berikutnya.</textarea>
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--ghost" onclick="closeTutorModal()">Batal</button>
+      <button class="btn btn--primary" id="btn-submit-report" onclick="submitLessonReport()">Check-out & Ajukan Tinjauan</button>
+    </div>
+  </div>
+
+  <!-- Modal Edit Ketersediaan -->
+  <div class="modal" id="modal-availability" style="max-width: 520px;">
+    <div class="modal__header">
+      <h3 style="font-size: var(--fs-md); font-weight: var(--fw-bold);">Konfigurasi Jadwal Ketersediaan</h3>
+      <button onclick="closeTutorModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;" aria-label="Tutup">&times;</button>
+    </div>
+    <div class="modal__body">
+      <p style="font-size: var(--fs-xs); color: var(--text-secondary); margin-bottom: var(--sp-4);">
+        Klik slot waktu untuk mengaktifkan atau menonaktifkan ketersediaan Anda pada sistem matching otomatis.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: var(--sp-3);">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid var(--clr-neutral-100);">
+          <span style="font-weight: var(--fw-semibold); font-size: var(--fs-sm);">Senin</span>
+          <div style="display: flex; gap: 6px;">
+            <span class="chip chip--selected" onclick="this.classList.toggle('chip--selected')">08:00 - 12:00</span>
+            <span class="chip chip--selected" onclick="this.classList.toggle('chip--selected')">14:00 - 17:00</span>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid var(--clr-neutral-100);">
+          <span style="font-weight: var(--fw-semibold); font-size: var(--fs-sm);">Selasa</span>
+          <div style="display: flex; gap: 6px;">
+            <span class="chip chip--selected" onclick="this.classList.toggle('chip--selected')">09:00 - 12:00</span>
+            <span class="chip chip--selected" onclick="this.classList.toggle('chip--selected')">15:00 - 19:00</span>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px;">
+          <span style="font-weight: var(--fw-semibold); font-size: var(--fs-sm);">Sabtu</span>
+          <div style="display: flex; gap: 6px;">
+            <span class="chip chip--selected" onclick="this.classList.toggle('chip--selected')">08:00 - 16:00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--ghost" onclick="closeTutorModal()">Batal</button>
+      <button class="btn btn--primary" onclick="saveAvailability()">Simpan Jadwal</button>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    /* ── Tutor Dashboard Logic & SPA Navigation ── */
+
+    let tutorBalance = 0;
+    let isSessionInProgress = false;
+    let selectedLearningSessionId = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const signedInUser = await TrevyAPI.requireRole('tutor');
+      if (!signedInUser) return;
+      document.querySelector('.sidebar__user-name').textContent = signedInUser.name;
+      initSidebar();
+      handleTutorHashNav();
+      await restoreTutorState();
+    });
+
+    // Hash navigation
+    function handleTutorHashNav() {
+      const hash = window.location.hash.replace('#', '') || 'beranda';
+      switchTutorTab(hash);
+    }
+    window.addEventListener('hashchange', handleTutorHashNav);
+
+    function switchTutorTab(tabId) {
+      const targetView = document.getElementById('view-' + tabId);
+      if (!targetView) return;
+
+      document.querySelectorAll('.sidebar__link').forEach(link => {
+        link.classList.toggle('active', link.dataset.tab === tabId);
+      });
+
+      document.querySelectorAll('.tab-view').forEach(view => {
+        view.classList.remove('active');
+      });
+      targetView.classList.add('active');
+
+      const titles = {
+        beranda: { title: 'Dashboard Pengajar', sub: 'Sabtu, 1 November 2026 — Wilayah Semarang' },
+        jadwal: { title: 'Jadwal Mengajar', sub: 'Agenda sesi les tatap muka dan online' },
+        ketersediaan: { title: 'Atur Ketersediaan', sub: 'Kelola slot hari dan jam mengajar mingguan' },
+        checkin: { title: 'Presensi Kehadiran', sub: 'Validasi kedatangan di lokasi siswa' },
+        keuangan: { title: 'Dompet & Honor', sub: 'Klaim honor mengajar dan pencairan dana' },
+        riwayat: { title: 'Riwayat Sesi', sub: 'Arsip sesi pembelajaran terverifikasi' },
+        profil: { title: 'Profil Pengajar', sub: 'Informasi biodata dan rekening pencairan' },
+        berkas: { title: 'Berkas Kualifikasi', sub: 'Status verifikasi CV dan ijazah BAN-PT' },
+        pengaturan: { title: 'Pengaturan Akun', sub: 'Keamanan dan preferensi notifikasi' }
+      };
+
+      if (titles[tabId]) {
+        document.getElementById('tutor-page-title').textContent = titles[tabId].title;
+        document.getElementById('tutor-page-subtitle').textContent = titles[tabId].sub;
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('.sidebar__link[data-tab]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.hash = link.dataset.tab;
+      });
+    });
+
+    // Notifications
+    function toggleTutorNotifs(e) {
+      e.stopPropagation();
+      document.getElementById('tutor-notif-dropdown')?.classList.toggle('show');
+    }
+    document.addEventListener('click', () => {
+      document.getElementById('tutor-notif-dropdown')?.classList.remove('show');
+    });
+    function markAllTutorNotifsRead() {
+      document.querySelectorAll('#tutor-notif-dropdown .notification-item').forEach(i => i.classList.remove('unread'));
+      const badge = document.querySelector('.main-content__actions [style*="border-radius: 50%"]');
+      if (badge) badge.style.display = 'none';
+      showToast('Semua notifikasi pengajar telah dibaca.', 'info');
+    }
+
+    // Modal Helpers
+    function openTutorModalById(id) {
+      document.getElementById('tutor-modal-backdrop').classList.add('active');
+      document.getElementById(id).classList.add('active');
+    }
+    function closeTutorModal() {
+      document.getElementById('tutor-modal-backdrop').classList.remove('active');
+      document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+    }
+    document.getElementById('tutor-modal-backdrop')?.addEventListener('click', closeTutorModal);
+
+    // Withdraw Modal
+    function openWithdrawModal() {
+      document.getElementById('modal-wallet-balance').textContent = formatIDR(tutorBalance);
+      document.getElementById('withdraw-amount').max = tutorBalance;
+      document.getElementById('withdraw-amount').value = Math.min(1000000, tutorBalance);
+      const bank = document.getElementById('profile-bank')?.value;
+      const account = document.getElementById('profile-account-number')?.value;
+      const name = document.getElementById('profile-account-name')?.value;
+      document.getElementById('withdraw-destination').textContent = bank && account && name ? `${bank} •••• ${account.slice(-4)} a.n. ${name}` : 'Atur rekening pada Profil Pengajar terlebih dahulu.';
+      document.getElementById('btn-confirm-withdraw').disabled = !(bank && account && name);
+      openTutorModalById('modal-withdraw');
+    }
+    function setWithdrawAll() {
+      document.getElementById('withdraw-amount').value = tutorBalance;
+    }
+    // Availability Modal
+    function openAvailabilityModal() {
+      openTutorModalById('modal-availability');
+    }
+    async function saveAvailability() {
+      const slots = [...document.querySelectorAll('#modal-availability .chip--selected')].map(chip => ({ day: chip.parentElement.previousElementSibling.textContent.trim(), time: chip.textContent.trim() }));
+      try {
+        await TrevyAPI.request('/api/tutor/availability', { method: 'PUT', body: { slots } });
+        closeTutorModal();
+        showToast('Jadwal ketersediaan tersimpan.', 'success');
+      } catch (error) { showToast(error.message, 'danger'); }
+    }
+
+    // Check-In & Check-Out Flow
+    async function handleCheckin(sessionId) {
+      const bigBtn = document.querySelector('.checkin-btn');
+      const scheduleAction = document.getElementById('tutor-schedule-actions');
+
+      if (!isSessionInProgress) {
+        let coords = {};
+        if (navigator.geolocation) {
+          try {
+            const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }));
+            coords = { latitude: position.coords.latitude, longitude: position.coords.longitude };
+          } catch (_) { showToast('Lokasi tidak tersedia. Check-in dicatat tanpa GPS dan perlu verifikasi manual.', 'warning'); }
+        }
+        try { await TrevyAPI.request('/api/tutor/checkin', { method: 'POST', body: { ...coords, sessionId: sessionId || selectedLearningSessionId } }); }
+        catch (error) { showToast(error.message, 'danger'); return; }
+        isSessionInProgress = true;
+        const gpsStatus = document.getElementById('gps-status');
+        const gpsCoordinates = document.getElementById('gps-coordinates');
+        if (gpsStatus) { gpsStatus.textContent = coords.latitude ? 'Lokasi direkam' : 'GPS tidak tersedia'; gpsStatus.className = `badge ${coords.latitude ? 'badge--success' : 'badge--accent'}`; }
+        if (gpsCoordinates) gpsCoordinates.textContent = coords.latitude ? `${coords.latitude.toFixed(6)}, ${coords.longitude.toFixed(6)}` : 'Tidak tersedia';
+        const checkinPageButton = document.querySelector('#view-checkin button[onclick="handleCheckin()"]');
+        if (checkinPageButton) { checkinPageButton.textContent = 'Check-out & Selesai'; checkinPageButton.classList.replace('btn--primary', 'btn--success'); }
+        if (bigBtn) {
+          bigBtn.innerHTML = `
+            <div class="checkin-btn__icon" style="color: var(--clr-primary-600);">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="checkin-btn__title" style="color: var(--clr-primary-700);">Sesi Sedang Berlangsung</div>
+            <div class="checkin-btn__desc">Fisika — Sari Dewi • Klik untuk Check-out</div>
+          `;
+          bigBtn.style.borderColor = 'var(--clr-primary-500)';
+          bigBtn.style.background = 'rgba(99, 102, 241, 0.08)';
+        }
+        if (scheduleAction) {
+          scheduleAction.innerHTML = '<button class="btn btn--sm btn--primary" onclick="openLessonReportModal()">Check-out & Selesai</button>';
+        }
+        showToast(coords.latitude ? 'Check-in tercatat dengan lokasi GPS.' : 'Check-in tercatat; GPS belum terverifikasi.', coords.latitude ? 'success' : 'warning');
+      } else {
+        openLessonReportModal();
+      }
+    }
+
+    function openLessonReportModal() {
+      openTutorModalById('modal-lesson-report');
+    }
+
+    
+    // Photo upload simulation
+    function triggerPhotoUpload() {
+      const input = document.getElementById("tutor-photo-input");
+      if (input) input.click();
+    }
+    async function handlePhotoSelected(e) {
+      const file = e.target.files[0];
+      if (file) {
+        if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>2*1024*1024){showToast('Foto bukti harus PNG, JPG, atau WebP maksimal 2 MB.','warning');e.target.value='';return;}
+        try{
+          const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('Foto tidak dapat dibaca.'));reader.readAsDataURL(file);});
+          const uploaded=await TrevyAPI.request('/api/tutor/evidence',{method:'POST',body:{name:file.name,mimeType:file.type,data}});
+          const img=document.getElementById('photo-preview-element');img.src=uploaded.previewUrl;img.style.display='block';document.getElementById('photo-placeholder-ui').style.display='none';document.getElementById('photo-upload-status').textContent='Foto bukti tersimpan dan akan dilampirkan saat check-out.';showToast('Foto bukti berhasil diunggah.','success');
+        }catch(error){showToast(error.message,'danger');}finally{e.target.value='';}
+      }
+    }
+
+    // Submit Lesson Report -> goes to Pending Admin Review
+    function submitLessonReport() {
+      const btn = document.getElementById("btn-submit-report");
+      btn.innerHTML = "Mengirim data presensi...";
+      btn.disabled = true;
+      (async () => {
+        btn.innerHTML = "Check-out & Ajukan Tinjauan";
+        try {
+          await TrevyAPI.request('/api/tutor/checkout', { method: 'POST', body: { topic: document.getElementById('report-topic')?.value || '' } });
+        } catch (error) { btn.disabled = false; showToast(error.message, 'danger'); return; }
+        btn.disabled = false;
+        closeTutorModal();
+
+        // Status becomes "Menunggu Validasi Admin"
+        const upItem = document.getElementById("tutor-active-session-card");
+        if (upItem) {
+          upItem.classList.remove("schedule-item--upcoming");
+          const actions = document.getElementById("tutor-schedule-actions");
+          if (actions) actions.innerHTML = '<span class="badge badge--accent">Menunggu Validasi Admin</span>';
+        }
+
+        const bigBtn = document.querySelector(".checkin-btn");
+        if (bigBtn) {
+          bigBtn.innerHTML = `
+            <div class="checkin-btn__icon" style="color: var(--clr-warning-600);">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+            </div>
+            <div class="checkin-btn__title" style="color: var(--clr-warning-700);">Presensi Menunggu Verifikasi Admin</div>
+            <div class="checkin-btn__desc">Jurnal tercatat dan menunggu tinjauan Admin. GPS dan foto bukti belum diunggah; honor belum otomatis dicairkan.</div>
+          `;
+          bigBtn.style.borderColor = "var(--clr-warning-500)";
+          bigBtn.style.background = "rgba(245, 158, 11, 0.08)";
+          bigBtn.onclick = null;
+        }
+
+        await restoreTutorState();
+        isSessionInProgress = false;
+        const checkinPageButton = document.querySelector('#view-checkin button[onclick="handleCheckin()"]');
+        if (checkinPageButton) { checkinPageButton.textContent = 'Mulai Check-in Sesi Ini'; checkinPageButton.classList.replace('btn--success', 'btn--primary'); }
+        showToast("Check-out tercatat dan menunggu tinjauan Admin.", "info");
+      })();
+    }
+
+    // Process Withdrawal -> goes to Pending Admin Disbursement
+    async function processWithdrawal() {
+      const amount = parseInt(document.getElementById("withdraw-amount").value);
+      if (!amount || amount < 100000) {
+        showToast("Minimal penarikan adalah Rp100.000", "warning");
+        return;
+      }
+      if (amount > tutorBalance) {
+        showToast("Saldo tidak mencukupi.", "danger");
+        return;
+      }
+
+      const btn = document.getElementById("btn-confirm-withdraw");
+      btn.innerHTML = "Mengirim pengajuan...";
+      btn.disabled = true;
+
+      (async () => {
+        try {
+          await TrevyAPI.request('/api/tutor/withdrawals', { method: 'POST', body: { amount } });
+          closeTutorModal();
+          await restoreTutorState();
+          showToast("Pengajuan penarikan tercatat dan menunggu Admin.", "success");
+        } catch (error) { showToast(error.message, 'danger'); }
+        finally { btn.innerHTML = "Konfirmasi Pencairan"; btn.disabled = false; }
+      })();
+    }
+
+    async function saveTutorProfile() {
+      try {
+        const profile = await TrevyAPI.request('/api/tutor/profile', { method: 'PUT', body: {
+          bank: document.getElementById('profile-bank').value,
+          accountNumber: document.getElementById('profile-account-number').value,
+          accountName: document.getElementById('profile-account-name').value,
+          phone: document.getElementById('profile-phone').value
+        }});
+        showToast(`Profil dan rekening ${profile.bank} berhasil disimpan.`, 'success');
+      } catch (error) { showToast(error.message, 'danger'); }
+    }
+
+    async function changeTutorPassword() {
+      try {
+        await TrevyAPI.request('/api/account/password', { method: 'PUT', body: {
+          currentPassword: document.getElementById('current-password').value,
+          newPassword: document.getElementById('new-password').value
+        }});
+        document.getElementById('current-password').value = '';
+        document.getElementById('new-password').value = '';
+        showToast('Kata sandi berhasil diubah.', 'success');
+      } catch (error) { showToast(error.message, 'danger'); }
+    }
+
+    async function restoreTutorState() {
+      const state = await TrevyAPI.request('/api/tutor/financial');
+      await renderTutorDocuments();
+      if (state.profile) {
+        document.getElementById('profile-bank').value = state.profile.bank || '';
+        document.getElementById('profile-account-number').value = state.profile.accountNumber || '';
+        document.getElementById('profile-account-name').value = state.profile.accountName || '';
+        document.getElementById('profile-phone').value = state.profile.phone || '';
+        const savedSlots = new Set((state.profile.availability || []).map(slot => `${slot.day}|${slot.time}`));
+        document.querySelectorAll('#modal-availability .chip').forEach(chip => {
+          const day = chip.parentElement.previousElementSibling.textContent.trim();
+          chip.classList.toggle('chip--selected', savedSlots.has(`${day}|${chip.textContent.trim()}`));
+        });
+      }
+      isSessionInProgress = Boolean(state.activeSession);
+      const checkinButton = document.querySelector('.checkin-btn');
+      const checkinPageButton = document.querySelector('#view-checkin button[onclick="handleCheckin()"]');
+      if (isSessionInProgress) {
+        const title = checkinButton?.querySelector('.checkin-btn__title');
+        const desc = checkinButton?.querySelector('.checkin-btn__desc');
+        if (title) title.textContent = 'Sesi Sedang Berlangsung';
+        if (desc) desc.textContent = `${state.activeSession.subject} — ${state.activeSession.student} • Klik untuk Check-out`;
+        if (checkinPageButton) { checkinPageButton.textContent = 'Check-out & Selesai'; checkinPageButton.classList.replace('btn--primary', 'btn--success'); }
+        const scheduleAction = document.getElementById('tutor-schedule-actions');
+        if (scheduleAction) scheduleAction.innerHTML = '<button class="btn btn--sm btn--primary" onclick="openLessonReportModal()">Check-out & Selesai</button>';
+        const checkinPageButton = document.querySelector('#view-checkin button[onclick="handleCheckin()"]');
+        if (checkinPageButton) { checkinPageButton.textContent = 'Check-out & Selesai'; checkinPageButton.classList.replace('btn--primary', 'btn--success'); }
+      }
+      const scheduled=await TrevyAPI.request('/api/tutor/sessions');
+      const scheduleBody=document.getElementById('tutor-schedule-table');
+      scheduleBody.replaceChildren();
+      scheduled.forEach(lesson=>{
+        const row=document.createElement('tr');
+        const when=document.createElement('td');when.textContent=new Date(lesson.scheduledAt).toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Jakarta'});
+        const student=document.createElement('td');student.textContent=lesson.student;
+        const subject=document.createElement('td');subject.textContent=lesson.subject||'—';
+        const location=document.createElement('td');location.textContent='Semarang';
+        const action=document.createElement('td');
+        const button=document.createElement('button');button.className='btn btn--xs btn--primary';button.type='button';button.textContent=lesson.status==='ongoing'?'Sesi berlangsung':'Check-in';button.disabled=lesson.status==='ongoing';button.addEventListener('click',()=>{selectedLearningSessionId=lesson.id;handleCheckin(lesson.id);});action.append(button);
+        row.append(when,student,subject,location,action);scheduleBody.append(row);
+      });
+      if(!scheduled.length){const row=document.createElement('tr');row.innerHTML='<td colspan="5">Belum ada jadwal booking yang ditugaskan kepada Anda.</td>';scheduleBody.append(row);}
+      tutorBalance = Number(state.wallet.available || 0);
+      ["tutor-balance-val", "tab-wallet-balance-val"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = formatIDR(tutorBalance);
+      });
+      const historyBody = document.querySelector("#view-riwayat tbody");
+      historyBody.replaceChildren();
+      const sessions = state.attendance;
+      sessions.forEach(session => {
+        const row = document.createElement("tr");
+        const values = [new Date(session.date).toLocaleDateString("id-ID"), session.student, session.subject, session.topic, formatIDR(session.honor), session.status === "approved" ? "Terverifikasi" : session.status === "rejected" ? "Ditolak" : "Menunggu verifikasi"];
+        values.forEach((value, index) => {
+          const cell = document.createElement("td");
+          if (index === values.length - 1) {
+            const badge = document.createElement("span");
+            badge.className = "badge " + (session.status === "approved" ? "badge--success" : session.status === "rejected" ? "badge--danger" : "badge--accent");
+            badge.textContent = value;
+            cell.appendChild(badge);
+          } else cell.textContent = value;
+          row.appendChild(cell);
+        });
+        historyBody.prepend(row);
+      });
+      const withdrawalBody = document.getElementById("tutor-withdrawal-history");
+      withdrawalBody.replaceChildren();
+      const withdrawals = state.withdrawals;
+      withdrawals.forEach(request => {
+        const row = document.createElement("tr"); row.dataset.withdrawalId = request.id;
+        [request.date, formatIDR(request.amount), `${request.bank} • ${request.account}`].forEach(value => { const cell = document.createElement("td"); cell.textContent = value; row.appendChild(cell); });
+        const statusCell = document.createElement("td"); const badge = document.createElement("span");
+        badge.className = "badge " + (request.status === "transferred" ? "badge--success" : request.status === "rejected" ? "badge--danger" : "badge--accent");
+        badge.textContent = request.status === "transferred" ? "Ditransfer" : request.status === "rejected" ? "Ditolak • saldo kembali" : "Menunggu Admin";
+        statusCell.appendChild(badge); row.appendChild(statusCell); withdrawalBody.prepend(row);
+      });
+    }
+
+    async function renderTutorDocuments(){
+      const documents=await TrevyAPI.request('/api/account/uploads');const list=document.getElementById('tutor-document-list');list.replaceChildren();
+      const items=documents.filter(item=>item.purpose==='tutor_document');
+      if(!items.length){list.textContent='Belum ada dokumen yang diunggah.';return;}
+      items.forEach(item=>{const link=document.createElement('a');link.className='doc-preview-card';link.href=`/api/account/uploads/${encodeURIComponent(item.id)}`;link.target='_blank';link.rel='noopener';link.textContent=`${item.name} • ${(item.size/1024/1024).toFixed(2)} MB`;list.append(link);});
+    }
+    async function uploadTutorDocument(event){
+      const file=event.target.files?.[0];if(!file)return;
+      if(!['application/pdf','image/png','image/jpeg','image/webp'].includes(file.type)||file.size>5*1024*1024){showToast('Dokumen harus PDF, PNG, JPG, atau WebP maksimal 5 MB.','warning');event.target.value='';return;}
+      try{const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('File tidak dapat dibaca.'));reader.readAsDataURL(file);});await TrevyAPI.request('/api/account/uploads',{method:'POST',body:{purpose:'tutor_document',name:file.name,mimeType:file.type,data}});await renderTutorDocuments();showToast('Dokumen berhasil diunggah.','success');}
+      catch(error){showToast(error.message,'danger');}finally{event.target.value='';}
+    }
+
+
+    function filterTutorStudents() {
+      const query = document.getElementById('student-search-input').value.toLowerCase();
+      const rows = document.querySelectorAll('.table tbody tr');
+      let count = 0;
+      rows.forEach(r => {
+        const text = r.textContent.toLowerCase();
+        if (text.includes(query)) {
+          r.style.display = '';
+          count++;
+        } else {
+          r.style.display = 'none';
+        }
+      });
+      document.getElementById('student-count-badge').textContent = count + ' siswa';
+    }
+  </script>
+</body>
+</html>
