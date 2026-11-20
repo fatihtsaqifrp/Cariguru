@@ -12,6 +12,21 @@ try {
   }
 } catch (_) {}
 
+function resolveAppPath(...segments) {
+  const candidates = [
+    path.join(__dirname, ...segments),
+    path.join(process.cwd(), ...segments),
+    path.join(__dirname, '..', ...segments),
+    path.join(__dirname, '..', '..', ...segments),
+    path.join('/var/task', ...segments),
+    path.join('/var/task/netlify/functions', ...segments)
+  ];
+  for (const c of candidates) {
+    if (fs.existsSync(c)) return c;
+  }
+  return path.join(__dirname, ...segments);
+}
+
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
 const IS_PRODUCTION = process.env.NODE_ENV !== 'development';
@@ -48,13 +63,18 @@ db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
 function runMigrations() {
   db.exec(`CREATE TABLE IF NOT EXISTS schema_migrations (version TEXT PRIMARY KEY, applied_at TEXT NOT NULL)`);
-  const migrationDir = path.join(__dirname, 'migrations');
+  const migrationDir = resolveAppPath('migrations');
+  if (!fs.existsSync(migrationDir)) {
+    console.warn('Migration directory not found:', migrationDir);
+    return;
+  }
   const applied = new Set(db.prepare('SELECT version FROM schema_migrations').all().map(row => row.version));
-  for (const filename of require('node:fs').readdirSync(migrationDir).filter(name => /\.(sql|js)$/.test(name)).sort()) {
+  for (const filename of fs.readdirSync(migrationDir).filter(name => /\.(sql|js)$/.test(name)).sort()) {
     if (applied.has(filename)) continue;
     db.transaction(() => {
-      if(filename.endsWith('.sql')) db.exec(require('node:fs').readFileSync(path.join(migrationDir, filename), 'utf8'));
-      else require(path.join(migrationDir,filename))(db);
+      const fullPath = path.join(migrationDir, filename);
+      if (filename.endsWith('.sql')) db.exec(fs.readFileSync(fullPath, 'utf8'));
+      else require(fullPath)(db);
       db.prepare('INSERT INTO schema_migrations(version,applied_at) VALUES(?,?)').run(filename, new Date().toISOString());
     })();
   }
@@ -1242,18 +1262,18 @@ app.use((error, _req, res, _next) => {
 });
 
 // Role dashboards are never served by the public static-file middleware.
-app.get('/dashboard-student.html', requireAuth('student'), requirePermission('student.dashboard'), (req, res) => res.sendFile(path.join(__dirname, 'dashboard-student.html')));
-app.get('/dashboard-tutor.html', requireAuth('tutor'), requirePermission('tutor.dashboard'), (req, res) => res.sendFile(path.join(__dirname, 'dashboard-tutor.html')));
-app.get('/dashboard-admin.html', requireAuth('admin'), requirePermission('admin.manage'), (req, res) => res.sendFile(path.join(__dirname, 'dashboard-admin.html')));
-app.get('/dashboard-staff.html', requireAuth(), (req,res) => ['keuangan','marketing','front_office','back_office'].includes(req.user.role) ? res.sendFile(path.join(__dirname,'dashboard-staff.html')) : res.redirect(req.user.role==='guru'?'/dashboard-tutor.html':req.user.role==='student'?'/dashboard-student.html':'/dashboard-admin.html'));
-app.get('/dashboard-student', requireAuth('student'), requirePermission('student.dashboard'), (req, res) => res.sendFile(path.join(__dirname, 'dashboard-student.html')));
-app.get('/dashboard-tutor', requireAuth('tutor'), requirePermission('tutor.dashboard'), (req, res) => res.sendFile(path.join(__dirname, 'dashboard-tutor.html')));
-app.get('/dashboard-admin', requireAuth('admin'), requirePermission('admin.manage'), (req, res) => res.sendFile(path.join(__dirname, 'dashboard-admin.html')));
+app.get('/dashboard-student.html', requireAuth('student'), requirePermission('student.dashboard'), (req, res) => res.sendFile(resolveAppPath('dashboard-student.html')));
+app.get('/dashboard-tutor.html', requireAuth('tutor'), requirePermission('tutor.dashboard'), (req, res) => res.sendFile(resolveAppPath('dashboard-tutor.html')));
+app.get('/dashboard-admin.html', requireAuth('admin'), requirePermission('admin.manage'), (req, res) => res.sendFile(resolveAppPath('dashboard-admin.html')));
+app.get('/dashboard-staff.html', requireAuth(), (req,res) => ['keuangan','marketing','front_office','back_office'].includes(req.user.role) ? res.sendFile(resolveAppPath('dashboard-staff.html')) : res.redirect(req.user.role==='guru'?'/dashboard-tutor.html':req.user.role==='student'?'/dashboard-student.html':'/dashboard-admin.html'));
+app.get('/dashboard-student', requireAuth('student'), requirePermission('student.dashboard'), (req, res) => res.sendFile(resolveAppPath('dashboard-student.html')));
+app.get('/dashboard-tutor', requireAuth('tutor'), requirePermission('tutor.dashboard'), (req, res) => res.sendFile(resolveAppPath('dashboard-tutor.html')));
+app.get('/dashboard-admin', requireAuth('admin'), requirePermission('admin.manage'), (req, res) => res.sendFile(resolveAppPath('dashboard-admin.html')));
 
 // The remaining front-end prototype is public. Never put secrets in these files.
 app.use(['/data', '/server.js', '/package.json', '/package-lock.json', '/README.md', '/STANDARDS_ALIGNMENT.md'], (_req, res) => res.sendStatus(404));
-app.use(express.static(__dirname, { extensions: ['html', 'htm'], dotfiles: 'deny', index: 'index.html' }));
-app.get('*', (_req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.use(express.static(resolveAppPath(''), { extensions: ['html', 'htm'], dotfiles: 'deny', index: 'index.html' }));
+app.get('*', (_req, res) => res.sendFile(resolveAppPath('index.html')));
 
 async function start() {
   await seedDevelopmentUsers();
