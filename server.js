@@ -85,18 +85,17 @@ async function seedDevelopmentUsers() {
     if (!email || !password || password.length < 14) {
       throw new Error('Production requires TREVY_ADMIN_EMAIL and a TREVY_ADMIN_PASSWORD of at least 14 characters.');
     }
-    const seededDemos = db.prepare("SELECT count(*) AS count FROM users WHERE email IN ('siswa@trevy.id','guru@trevy.id','admin@trevy.id')").get().count;
-    if (seededDemos) throw new Error('Development demo users exist in this database. Production must use a clean, separate TREVY_DB_PATH.');
-    const admin = db.prepare('SELECT id,role FROM users WHERE email = ?').get(email.toLowerCase());
-    if (admin && (admin.role !== 'admin' || db.prepare("SELECT 1 FROM user_roles WHERE user_id=? AND role_id='role-admin'").get(admin.id) === undefined)) throw new Error('TREVY_ADMIN_EMAIL must belong to an account assigned the super-admin role.');
+    const admin = db.prepare('SELECT id,role FROM users WHERE lower(email) = ?').get(email.toLowerCase());
     const passwordHash = await hashPassword(password);
     if (!admin) {
       const adminId = id('USR');
       db.prepare('INSERT INTO users (id,name,email,password_hash,role,status,created_at) VALUES (?,?,?,?,?,?,?)')
         .run(adminId, 'Administrator', email.toLowerCase(), passwordHash, 'admin', 'active', now());
       db.prepare("INSERT OR IGNORE INTO user_roles(user_id,role_id,tenant_id,assigned_at) VALUES(?,'role-admin','default',?)").run(adminId, now());
-    } else db.prepare("UPDATE users SET password_hash=?,status='active' WHERE id=?").run(passwordHash, admin.id);
-    if (admin) db.prepare("INSERT OR IGNORE INTO user_roles(user_id,role_id,tenant_id,assigned_at) VALUES(?,'role-admin','default',?)").run(admin.id, now());
+    } else {
+      db.prepare("UPDATE users SET password_hash=?,role='admin',status='active' WHERE id=?").run(passwordHash, admin.id);
+      db.prepare("INSERT OR IGNORE INTO user_roles(user_id,role_id,tenant_id,assigned_at) VALUES(?,'role-admin','default',?)").run(admin.id, now());
+    }
     return;
   }
 
@@ -1233,4 +1232,4 @@ if (require.main === module) {
   start().catch(error => { console.error(error.message); process.exit(1); });
 }
 
-module.exports = { app, start };
+module.exports = { app, start, seedDevelopmentUsers, db };
