@@ -414,7 +414,7 @@ INSERT INTO subjects(id, tenant_id, name) VALUES
  ('sub-economics', 'default', 'Ekonomi')
 ON CONFLICT (tenant_id, name) DO NOTHING;
 
--- Super Admin User Bootstrap (admin@trevy.id / AdminTrevySemarang2026!)
+-- Super Admin User Bootstrap (admin@trevy.id)
 INSERT INTO users (id, name, email, password_hash, role, status) VALUES
  ('USR-ADMIN-PROD', 'Administrator', 'admin@trevy.id', 'scrypt$125aa92bca8f3d77a8615b5671086931$444b10796d17ee6c9c62d5f871d62d5aeb87e210349febd47ebe94569af2de0c9c70d304c061c018e7a670e0616fdfc76f012923350dd59e0c44f622e83c5141', 'admin', 'active')
 ON CONFLICT (email) DO UPDATE SET role = 'admin', status = 'active';

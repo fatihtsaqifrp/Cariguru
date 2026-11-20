@@ -11,8 +11,8 @@
   NODE_VERSION = "22"
   NODE_ENV = "production"
   # Mengabaikan non-secret env vars dari secrets scanner Netlify
-  SECRETS_SCAN_OMIT_KEYS = "TREVY_PUBLIC_URL,TREVY_DB_PATH,TREVY_UPLOAD_DIR,TREVY_ADMIN_EMAIL"
-  SECRETS_SCAN_OMIT_PATHS = ".env.example,README.md,netlify.toml,server.js,scripts/verify.js"
+  SECRETS_SCAN_OMIT_KEYS = "TREVY_PUBLIC_URL,TREVY_DB_PATH,TREVY_UPLOAD_DIR,TREVY_ADMIN_EMAIL,TREVY_ADMIN_PASSWORD"
+  SECRETS_SCAN_OMIT_PATHS = ".env.example,README.md,netlify.toml,server.js,scripts/verify.js,schema-postgres.sql"
   # ─────────────────────────────────────────────────────────────────
   #  Netlify Database (Netlify DB / Serverless Postgres):
   #  Ketika Anda mengaktifkan Netlify DB di dashboard (Tab "Database"):
