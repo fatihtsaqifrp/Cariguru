@@ -400,10 +400,11 @@ app.get('/api/tenant/payment-provider', (_req,res)=>{
   const mode=payment.mode||'sandbox';
   res.json({provider,mode,configured:mode!=='simulator'&&keyConfigured&&webhookConfigured,simulator:!IS_PRODUCTION&&(mode==='simulator'||!keyConfigured),biSnapConfigured});
 });
-app.get('/api/admin/settings', requireAuth('admin'), requirePermission('admin.manage'), (_req, res) => {
+app.get('/api/admin/settings', requireAuth('admin'), requirePermission('admin.manage'), asyncRoute(async (_req, res) => {
+  await pgSync.syncTable(db, 'tenant_settings');
   res.json(publicSettings(db.prepare("SELECT * FROM tenant_settings WHERE tenant_id='default'").get()));
-});
-app.put('/api/admin/settings/:section', requireAuth('admin'), requirePermission('admin.manage'), requireCsrf, (req, res) => {
+}));
+app.put('/api/admin/settings/:section', requireAuth('admin'), requirePermission('admin.manage'), requireCsrf, asyncRoute(async (req, res) => {
   const section = String(req.params.section);
   const data = req.body?.data;
   if (!data || typeof data !== 'object' || Array.isArray(data)) return res.status(400).json({ error: 'Data pengaturan tidak valid.' });
@@ -415,12 +416,14 @@ app.put('/api/admin/settings/:section', requireAuth('admin'), requirePermission(
     const name = String(data.platformName || '').trim(); const tagline = String(data.tagline || '').trim(); const color = String(data.primaryColor || '');
     if (!name || name.length > 100 || tagline.length > 180 || !/^#[0-9a-f]{6}$/i.test(color)) return res.status(400).json({ error: 'Nama (1–100), tagline (maksimal 180), dan warna hex valid wajib diisi.' });
     db.prepare("UPDATE tenant_settings SET platform_name=?,tagline=?,primary_color=?,updated_by=?,updated_at=? WHERE tenant_id='default'").run(name, tagline, color, req.user.id, now());
+    await pgSync.replicateWrite("UPDATE tenant_settings SET platform_name=?,tagline=?,primary_color=?,updated_by=?,updated_at=? WHERE tenant_id='default'", [name, tagline, color, req.user.id, now()]);
     updated.platformName = name; updated.tagline = tagline; updated.primaryColor = color;
   } else if (section === 'general') {
     const email = String(data.contactEmail || '').trim(); const phone = String(data.contactPhone || '').trim(); const address = String(data.address || '').trim();
     const timezone = String(data.timezone || 'Asia/Jakarta'); const currency = String(data.currency || 'IDR'); const language = String(data.language || 'id');
     if ((email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) || email.length > 160 || phone.length > 30 || address.length > 500 || !['Asia/Jakarta','Asia/Makassar','Asia/Jayapura','UTC'].includes(timezone) || !['IDR','USD'].includes(currency) || !['id','en'].includes(language)) return res.status(400).json({ error: 'Kontak, alamat, zona waktu, mata uang, atau bahasa tidak valid.' });
     db.prepare("UPDATE tenant_settings SET contact_email=?,contact_phone=?,address=?,timezone=?,currency=?,language=?,updated_by=?,updated_at=? WHERE tenant_id='default'").run(email,phone,address,timezone,currency,language,req.user.id,now());
+    await pgSync.replicateWrite("UPDATE tenant_settings SET contact_email=?,contact_phone=?,address=?,timezone=?,currency=?,language=?,updated_by=?,updated_at=? WHERE tenant_id='default'", [email,phone,address,timezone,currency,language,req.user.id,now()]);
   } else {
     const column = { payment:'payment_settings', security:'security_settings', operations:'operations_settings', notifications:'notification_settings', finance:'finance_settings' }[section];
     let stored = JSON.parse(current[column] || '{}');
@@ -448,10 +451,11 @@ app.put('/api/admin/settings/:section', requireAuth('admin'), requirePermission(
       stored = { ...stored, ...data };
     }
     db.prepare(`UPDATE tenant_settings SET ${column}=?,updated_by=?,updated_at=? WHERE tenant_id='default'`).run(JSON.stringify(stored), req.user.id, now());
+    await pgSync.replicateWrite(`UPDATE tenant_settings SET ${column}=?,updated_by=?,updated_at=? WHERE tenant_id='default'`, [JSON.stringify(stored), req.user.id, now()]);
   }
   audit(req.user.id, `settings.${section}.updated`, 'tenant_settings', 'default', { fields: Object.keys(data) });
   res.json({ section, data: updated, message: 'Pengaturan berhasil disimpan.' });
-});
+}));
 
 app.post('/api/admin/branding/logo', requireAuth('admin'), requirePermission('admin.manage'), requireCsrf, (req, res) => {
   const { name, mimeType, data } = req.body || {};
@@ -905,6 +909,7 @@ function finalizeGatewayPayment(transaction, externalAmount) {
 }
 
 app.post('/api/payments/create', requireAuth('student'), requirePermission('student.dashboard'), requireCsrf, asyncRoute(async (req,res)=>{
+  await pgSync.syncTable(db, 'tenant_settings');
   const payment=paymentSettings(); const provider=['midtrans','xendit'].includes(payment.provider)?payment.provider:null;
   if(payment.mode==='simulator')return res.status(503).json({error:'Mode simulator tidak membuat checkout provider.'});
   const secret=provider&&providerSecret(payment,provider,provider==='midtrans'?'serverKey':'secretKey');
@@ -1018,6 +1023,7 @@ app.post('/api/payments/bisnap/notify', (req, res) => {
 });
 
 app.post('/api/admin/payments/bridge/midtrans-verify', requireAuth('admin'), requirePermission('admin.manage'), requireCsrf, asyncRoute(async (_req, res) => {
+  await pgSync.syncTable(db, 'tenant_settings');
   const payment = paymentSettings();
   const serverKey = providerSecret(payment, 'midtrans', 'serverKey');
   if (!serverKey) {
@@ -1084,6 +1090,7 @@ app.post('/api/admin/payments/bridge/midtrans-simulate-webhook', requireAuth('ad
 });
 
 app.post('/api/admin/payments/bridge/bisnap-verify', requireAuth('admin'), requirePermission('admin.manage'), requireCsrf, asyncRoute(async (_req, res) => {
+  await pgSync.syncTable(db, 'tenant_settings');
   const payment = paymentSettings();
   const clientId = payment.biSnapClientId;
   const partnerId = payment.biSnapPartnerId;
