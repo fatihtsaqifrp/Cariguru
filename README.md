@@ -51,8 +51,32 @@ Platform ini dilengkapi dengan portal khusus multi-peran (**Siswa**, **Guru/Tuto
 ## 🚀 Panduan Menjalankan Sistem Secara Lokal
 
 ### Prasyarat
-- **Node.js** versi 20.x atau 22.x LTS
+- **Node.js** versi 22.x LTS
 - **npm** versi 10.x ke atas
+- **Visual Studio Code** untuk memasang extension editor (opsional; aplikasi tidak membutuhkannya).
+
+### Setup satu kali di laptop baru
+Kalau Node.js belum ada, bootstrap mencoba memasangnya lalu meneruskan setup:
+
+**macOS** (perlu Homebrew):
+```sh
+bash scripts/bootstrap-macos.sh
+```
+
+**Windows** (PowerShell dan WinGet):
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\bootstrap-windows.ps1
+```
+
+Jika tidak memakai Homebrew/WinGet, pasang Node.js LTS dari [nodejs.org](https://nodejs.org/en/download), buka ulang terminal, lalu jalankan `npm run setup:laptop`.
+
+Setelah Node.js tersedia, jalankan dari folder proyek:
+```sh
+npm run setup:laptop
+```
+Perintah ini memasang dependency, membuat `.env` lokal dan encryption key acak jika `.env` belum ada, memasang extension VS Code jika perintah `code` tersedia, lalu menjalankan server development. File `.env` yang sudah ada tidak ditimpa. Extension yang dipakai tercatat di `.vscode/extensions.json`.
+
+Extension VS Code yang direkomendasikan: Prettier, ESLint, SQLite Viewer, dan PostgreSQL. Jika `code` tidak dikenali, buka Command Palette VS Code, jalankan **Shell Command: Install 'code' command in PATH**, lalu jalankan setup lagi; atau pasang extension dari panel Extensions.
 
 ### 1. Kloning Repositori & Install Dependensi
 ```sh

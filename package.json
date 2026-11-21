@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "all": "npm install && npm run dev",
-    "dev": "NODE_ENV=development node server.js",
+    "dev": "node scripts/dev.js",
+    "setup:laptop": "node scripts/setup-laptop.js",
     "verify": "node scripts/verify.js",
     "test": "npm run verify",
     "netlify:build": "mkdir -p netlify/functions/migrations && cp -r migrations/* netlify/functions/migrations/ && node -e 'console.log(\"Trevy build for Netlify completed\")'"
