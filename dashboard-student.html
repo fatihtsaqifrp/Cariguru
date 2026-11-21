@@ -181,8 +181,8 @@
           <div class="stats-grid">
             <div class="stat-card stat-card--gradient" onclick="openPackageModal()" style="cursor: pointer;" title="Klik untuk tambah kuota belajar">
               <div class="stat-card__label">Sisa Kuota Belajar (Klik untuk Tambah)</div>
-              <div class="stat-card__value" id="quota-display-value">6 / 8</div>
-              <div class="stat-card__meta" style="color: rgba(255,255,255,0.8);">Tersisa 2 sesi • Top up kuota &rarr;</div>
+              <div class="stat-card__value" id="quota-display-value">0 / 0</div>
+              <div class="stat-card__meta" id="quota-meta-text" style="color: rgba(255,255,255,0.8);">Memuat kuota belajar...</div>
               <div class="stat-card__icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
               </div>
@@ -509,8 +509,8 @@
               <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--sp-4);">
                 <div>
                   <div style="font-size: var(--fs-xs); color: var(--text-tertiary);">Jenis Langganan</div>
-                  <div style="font-size: var(--fs-xl); font-weight: var(--fw-bold); color: var(--clr-primary-700);">Paket Bulanan (8 Pertemuan)</div>
-                  <div style="font-size: var(--fs-sm); color: var(--text-secondary); margin-top: 2px;">Tersisa 2 sesi • Aktif hingga 28 November 2026</div>
+                  <div style="font-size: var(--fs-xl); font-weight: var(--fw-bold); color: var(--clr-primary-700);" id="active-package-title">Paket Belajar</div>
+                  <div style="font-size: var(--fs-sm); color: var(--text-secondary); margin-top: 2px;" id="active-package-meta">Memuat data paket...</div>
                 </div>
                 <div style="display: flex; gap: var(--sp-3);">
                   <button class="btn btn--outline" onclick="openPackageModal()">Tambah Kuota Sesi</button>
@@ -1284,9 +1284,9 @@
       btn.disabled = true;
 
       try {
-        const res = await TrevyAPI.request('/api/admin/payments/bridge/midtrans-simulate-webhook', {
+        const res = await TrevyAPI.request('/api/payments/simulate-sandbox', {
           method: 'POST',
-          body: { orderId: data.orderId, transactionStatus: 'settlement' }
+          body: { orderId: data.orderId }
         });
         if (paymentPollInterval) clearInterval(paymentPollInterval);
         closeGatewayScreen();
@@ -1294,20 +1294,7 @@
         await restoreStudentFinancialState();
         showToast('🎉 ' + (res.message || 'Pembayaran berhasil disimulasikan!'), 'success');
       } catch (error) {
-        try {
-          const result = await TrevyAPI.request('/api/payments/simulate', {
-            method: 'POST',
-            headers: { 'Idempotency-Key': data.orderId },
-            body: { packageId: data.packageId, gateway: data.gw }
-          });
-          if (paymentPollInterval) clearInterval(paymentPollInterval);
-          closeGatewayScreen();
-          pendingPaymentData = null;
-          await restoreStudentFinancialState();
-          showToast(`Simulasi tercatat sebesar ${formatIDR(result.transaction.amount)}. Paket belajar aktif.`, 'success');
-        } catch (err2) {
-          showToast(err2.message, 'danger');
-        }
+        showToast(error.message || 'Gagal menjalankan simulasi pembayaran.', 'danger');
       } finally {
         btn.innerHTML = "Simulasikan Bayar Berhasil (Sandbox)";
         btn.disabled = false;
@@ -1318,12 +1305,32 @@
     async function restoreStudentFinancialState() {
       try {
         const state = await TrevyAPI.request('/api/student/financial');
-        const subscription = state.subscription;
+        const subscription = state.subscription || { remaining: 0, total: 0 };
+
+        // 1. Update Beranda card
         const quota = document.getElementById("quota-display-value");
         if (quota) quota.textContent = `${subscription.remaining} / ${subscription.total}`;
+        const quotaMeta = document.getElementById("quota-meta-text");
+        if (quotaMeta) quotaMeta.innerHTML = `Tersisa ${subscription.remaining} sesi • Top up kuota &rarr;`;
+
+        // 2. Update Pembayaran & Paket tab active package card
+        const pkgTitle = document.getElementById("active-package-title");
+        if (pkgTitle) {
+          pkgTitle.textContent = state.activePackage?.name 
+            ? `${state.activePackage.name} (${state.activePackage.total || subscription.total} Sesi)`
+            : (subscription.total > 0 ? `Paket Aktif (${subscription.total} Sesi)` : 'Belum Memiliki Paket Aktif');
+        }
+        const pkgMeta = document.getElementById("active-package-meta");
+        if (pkgMeta) {
+          pkgMeta.textContent = subscription.remaining > 0
+            ? `Tersisa ${subscription.remaining} sesi dari total ${subscription.total} sesi • Status Aktif`
+            : `Sesi telah habis (0/${subscription.total}). Silakan beli paket baru.`;
+        }
+
+        // 3. Update payment history list
         const history = document.getElementById("payment-history-container");
         if (history) history.replaceChildren();
-        state.transactions.forEach(tx => {
+        (state.transactions || []).forEach(tx => {
           const item = document.createElement("div");
           item.className = "transaction-item";
           const info = document.createElement("div");
@@ -1339,7 +1346,7 @@
           amount.className = "transaction-item__amount transaction-item__amount--out";
           amount.textContent = formatIDR(tx.amount);
           item.append(info, amount);
-          history?.prepend(item);
+          history?.append(item);
         });
       } catch (error) {
         console.error("Gagal memuat data pembayaran siswa", error);

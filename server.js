@@ -887,31 +887,70 @@ app.post('/api/student/sessions/:id/review', requireAuth('student'), requirePerm
 app.get('/api/tutor/sessions', requireAuth('tutor'), requirePermission('tutor.dashboard'), (req,res)=>res.json(db.prepare(`SELECT ls.id,ls.scheduled_at AS scheduledAt,ls.duration_minutes AS durationMinutes,ls.status,s.name AS subject,u.name AS student
   FROM learning_sessions ls JOIN users u ON u.id=ls.student_id LEFT JOIN subjects s ON s.id=ls.subject_id WHERE ls.tutor_id=? AND ls.status IN ('scheduled','ongoing') ORDER BY ls.scheduled_at`).all(req.user.id)));
 
-app.get('/api/student/financial', requireAuth('student'), requirePermission('student.dashboard'), (req, res) => {
+app.get('/api/student/financial', requireAuth('student'), requirePermission('student.dashboard'), asyncRoute(async (req, res) => {
+  await pgSync.syncTable(db, 'subscriptions');
+  await pgSync.syncTable(db, 'transactions');
+  await pgSync.syncTable(db, 'learning_subscriptions');
   const subscription = db.prepare('SELECT remaining,total FROM subscriptions WHERE user_id=?').get(req.user.id) || { remaining: 0, total: 0 };
   const transactions = db.prepare("SELECT id,description,amount,gateway,status,created_at AS date FROM transactions WHERE user_id=? ORDER BY created_at DESC LIMIT 100").all(req.user.id);
-  res.json({ subscription, transactions });
-});
+  const latestPaid = transactions.find(t => t.status === 'paid');
+  res.json({
+    subscription,
+    transactions,
+    activePackage: {
+      name: latestPaid ? latestPaid.description.replace(/\s*\(\d+.*$/, '').trim() : 'Paket Belajar',
+      remaining: subscription.remaining,
+      total: subscription.total,
+      description: latestPaid ? latestPaid.description : `${subscription.remaining} sesi aktif`
+    }
+  });
+}));
 
-function finalizeGatewayPayment(transaction, externalAmount) {
+async function finalizeGatewayPayment(transaction, externalAmount) {
   if (externalAmount != null && Math.round(Number(externalAmount) * 100) !== transaction.amount * 100) throw new Error('Nominal callback tidak cocok.');
   const metadata = JSON.parse(transaction.metadata || '{}');
   if (transaction.status === 'paid') return;
   if (!metadata.packageId || !Number.isInteger(metadata.sessions)) throw new Error('Metadata pesanan tidak valid.');
   const ts = now();
+  const subId = id('SUB');
   db.transaction(() => {
-    const changed=db.prepare("UPDATE transactions SET status='paid',metadata=? WHERE id=? AND status!='paid'").run(JSON.stringify({ ...metadata, paidAt: ts }), transaction.id).changes;
-    if(!changed)return;
+    const changed = db.prepare("UPDATE transactions SET status='paid',metadata=? WHERE id=? AND status!='paid'").run(JSON.stringify({ ...metadata, paidAt: ts }), transaction.id).changes;
+    if (!changed) return;
     db.prepare('INSERT INTO subscriptions(user_id,remaining,total) VALUES(?,?,?) ON CONFLICT(user_id) DO UPDATE SET remaining=remaining+excluded.remaining,total=total+excluded.total').run(transaction.user_id, metadata.sessions, metadata.sessions);
-    db.prepare('INSERT INTO learning_subscriptions(id,tenant_id,student_id,package_id,remaining,total,starts_at,status) VALUES(?,?,?,?,?,?,?,\'active\')').run(id('SUB'),'default',transaction.user_id,metadata.packageRecordId,metadata.sessions,metadata.sessions,ts);
+    db.prepare('INSERT INTO learning_subscriptions(id,tenant_id,student_id,package_id,remaining,total,starts_at,status) VALUES(?,?,?,?,?,?,?,\'active\')').run(subId,'default',transaction.user_id,metadata.packageRecordId,metadata.sessions,metadata.sessions,ts);
     audit(null,'payment.gateway_paid','transaction',transaction.id,{gateway:transaction.gateway,amount:transaction.amount});
   })();
+
   const pool = pgSync.getPool();
   if (pool) {
-    pool.query("UPDATE transactions SET status='paid',metadata=$1 WHERE id=$2", [JSON.stringify({ ...metadata, paidAt: ts }), transaction.id]).catch(() => {});
-    pool.query('INSERT INTO subscriptions(user_id,remaining,total) VALUES($1,$2,$3) ON CONFLICT(user_id) DO UPDATE SET remaining=subscriptions.remaining+$2,total=subscriptions.total+$3', [transaction.user_id, metadata.sessions, metadata.sessions]).catch(() => {});
+    try {
+      await pool.query("UPDATE transactions SET status='paid',metadata=$1 WHERE id=$2", [JSON.stringify({ ...metadata, paidAt: ts }), transaction.id]);
+      await pool.query('INSERT INTO subscriptions(user_id,remaining,total) VALUES($1,$2,$3) ON CONFLICT(user_id) DO UPDATE SET remaining=subscriptions.remaining+$2,total=subscriptions.total+$3', [transaction.user_id, metadata.sessions, metadata.sessions]);
+      await pool.query("INSERT INTO learning_subscriptions(id,tenant_id,student_id,package_id,remaining,total,starts_at,status) VALUES($1,'default',$2,$3,$4,$5,$6,'active')", [subId, transaction.user_id, metadata.packageRecordId, metadata.sessions, metadata.sessions, ts]);
+    } catch (pgErr) {
+      console.warn('[PostgresSync] Error in finalizeGatewayPayment:', pgErr.message);
+    }
   }
 }
+
+app.post('/api/payments/simulate-sandbox', requireAuth('student'), requirePermission('student.dashboard'), requireCsrf, asyncRoute(async (req, res) => {
+  const payment = paymentSettings();
+  if (['production', 'live'].includes(payment.mode)) {
+    return res.status(403).json({ error: 'Simulasi instan hanya tersedia di mode Sandbox.' });
+  }
+  const orderId = String(req.body?.orderId || '');
+  if (!orderId) return res.status(400).json({ error: 'Order ID wajib diisi.' });
+  const tx = db.prepare("SELECT id,user_id,gateway,status,amount,metadata FROM transactions WHERE id=? AND user_id=? AND kind='payment_gateway'").get(orderId, req.user.id);
+  if (!tx) return res.status(404).json({ error: 'Transaksi tidak ditemukan.' });
+  if (tx.status === 'paid') return res.json({ success: true, message: 'Transaksi sudah berstatus lunas.', status: 'paid' });
+
+  await finalizeGatewayPayment(tx, tx.amount);
+  res.json({
+    success: true,
+    message: `Transaksi ${tx.id} berhasil diselesaikan (settlement sandbox). Sesi belajar telah dialokasikan!`,
+    status: 'paid'
+  });
+}));
 
 app.post('/api/payments/create', requireAuth('student'), requirePermission('student.dashboard'), requireCsrf, asyncRoute(async (req,res)=>{
   await pgSync.syncTable(db, 'tenant_settings');
