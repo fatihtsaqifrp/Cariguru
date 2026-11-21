@@ -3,7 +3,8 @@ process.env.NETLIFY = 'true';
 process.env.TREVY_DB_PATH = '/tmp/trevy.sqlite';
 process.env.TREVY_UPLOAD_DIR = '/tmp/trevy-uploads';
 const serverless = require('serverless-http');
-const { app, seedDevelopmentUsers } = require('../../server.js');
+const { app, seedDevelopmentUsers, db } = require('../../server.js');
+const pgSync = require('../../postgres-sync.js');
 
 let initialized = false;
 let initPromise = null;
@@ -11,15 +12,16 @@ let initPromise = null;
 async function ensureInitialized() {
   if (initialized) return;
   if (!initPromise) {
-    initPromise = seedDevelopmentUsers()
-      .then(() => {
-        initialized = true;
-      })
-      .catch((err) => {
-        console.error('Initialization error in Netlify function:', err);
-        initPromise = null;
-        throw err;
-      });
+    initPromise = Promise.all([
+      seedDevelopmentUsers(),
+      pgSync.syncAll(db, true)
+    ]).then(() => {
+      initialized = true;
+    }).catch((err) => {
+      console.error('Initialization error in Netlify function:', err);
+      initPromise = null;
+      throw err;
+    });
   }
   return initPromise;
 }
@@ -30,6 +32,7 @@ module.exports.handler = async (event, context) => {
   // Ensure database admin user & seeds are initialized on cold start
   try {
     await ensureInitialized();
+    await pgSync.syncAll(db, false);
   } catch (err) {
     console.error('Failed to initialize users in Netlify function:', err.message);
   }

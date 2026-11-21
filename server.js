@@ -5,6 +5,7 @@ const crypto = require('node:crypto');
 const { promisify } = require('node:util');
 const Database = require('better-sqlite3');
 const fs = require('node:fs');
+const pgSync = require('./postgres-sync.js');
 
 try {
   if (typeof process.loadEnvFile === 'function' && fs.existsSync(path.join(__dirname, '.env'))) {
@@ -525,7 +526,13 @@ app.post('/api/auth/login', loginRateLimit, async (req, res) => {
   const email = identifier.toLowerCase();
   const password = String(req.body?.password || '');
   const requestedRole = String(req.body?.role || '');
-  const user = db.prepare('SELECT * FROM users WHERE lower(email)=? OR lower(name)=? ORDER BY CASE WHEN lower(email)=? THEN 0 ELSE 1 END LIMIT 1').get(email,email,email);
+
+  let user = db.prepare('SELECT * FROM users WHERE lower(email)=? OR lower(name)=? ORDER BY CASE WHEN lower(email)=? THEN 0 ELSE 1 END LIMIT 1').get(email,email,email);
+  if (!user) {
+    await pgSync.syncUser(db, email);
+    user = db.prepare('SELECT * FROM users WHERE lower(email)=? OR lower(name)=? ORDER BY CASE WHEN lower(email)=? THEN 0 ELSE 1 END LIMIT 1').get(email,email,email);
+  }
+
   const assignedRoles = user && db.prepare(`SELECT r.role_key FROM user_roles ur JOIN roles r ON r.id=ur.role_id
     WHERE ur.user_id=? AND ur.tenant_id='default' ORDER BY CASE r.role_key WHEN 'admin' THEN 0 ELSE 1 END, r.role_key`).all(user.id);
   const requestedRoleKey = requestedRole === 'tutor' ? 'guru' : requestedRole;
@@ -569,6 +576,28 @@ app.post('/api/auth/register', loginRateLimit, asyncRoute(async (req, res) => {
       }
       audit(userId, 'account.registered', 'user', userId, { role });
     })();
+
+    // Direct synchronous-like write to Netlify PostgreSQL
+    const pool = pgSync.getPool();
+    if (pool) {
+      try {
+        await pool.query('INSERT INTO users(id,name,email,password_hash,role,status,created_at) VALUES($1,$2,$3,$4,$5,$6,$7)', [userId, name, email, passwordHash, role, role === 'tutor' ? 'pending_verification' : 'active', now()]);
+        const roleRec = db.prepare('SELECT id FROM roles WHERE role_key=?').get(role === 'tutor' ? 'guru' : 'student');
+        if (roleRec) {
+          await pool.query('INSERT INTO user_roles(user_id,role_id,tenant_id,assigned_at) VALUES($1,$2,\'default\',$3)', [userId, roleRec.id, now()]);
+        }
+        if (role === 'student') {
+          await pool.query('INSERT INTO subscriptions(user_id,remaining,total) VALUES($1,0,0)', [userId]);
+          await pool.query('INSERT INTO student_profiles(user_id,tenant_id) VALUES($1,\'default\')', [userId]);
+        }
+        if (role === 'tutor') {
+          await pool.query('INSERT INTO tutor_wallets(user_id,available) VALUES($1,0)', [userId]);
+          await pool.query('INSERT INTO tutor_details(user_id,tenant_id) VALUES($1,\'default\')', [userId]);
+        }
+      } catch (pgErr) {
+        console.warn('[PostgresSync] Register write error:', pgErr.message);
+      }
+    }
   } catch (error) { if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') return res.status(409).json({ error: 'Email sudah digunakan.' }); throw error; }
   res.status(201).json({ message: role === 'tutor' ? 'Akun dibuat. Pengajar menunggu verifikasi Admin sebelum dapat masuk.' : 'Akun dibuat. Silakan masuk menggunakan email dan kata sandi.' });
 }));
@@ -620,12 +649,14 @@ app.put('/api/admin/roles/:roleKey/permissions', requireAuth('admin'), requirePe
   })();
   res.json({ role: role.role_key, permissions: unique });
 });
-app.get('/api/admin/users', requireAuth('admin'), requirePermission('admin.manage'), (_req,res) => {
+app.get('/api/admin/users', requireAuth('admin'), requirePermission('admin.manage'), asyncRoute(async (_req,res) => {
+  await pgSync.syncTable(db, 'users');
+  await pgSync.syncTable(db, 'user_roles');
   res.json(db.prepare(`SELECT u.id,u.name,u.email,u.status,u.created_at AS createdAt,r.role_key AS role,
     (SELECT group_concat(g.name,', ') FROM user_group_members gm JOIN user_groups g ON g.id=gm.group_id WHERE gm.user_id=u.id) AS groups,
     (SELECT gm.group_id FROM user_group_members gm WHERE gm.user_id=u.id ORDER BY gm.added_at LIMIT 1) AS groupId
     FROM users u LEFT JOIN user_roles ur ON ur.user_id=u.id AND ur.tenant_id='default' LEFT JOIN roles r ON r.id=ur.role_id ORDER BY u.created_at DESC`).all());
-});
+}));
 app.post('/api/admin/users', requireAuth('admin'), requirePermission('admin.manage'), requireCsrf, asyncRoute(async (req,res) => {
   const name=String(req.body?.name||'').trim(), email=String(req.body?.email||'').trim().toLowerCase(), password=String(req.body?.password||''), roleKey=String(req.body?.role||''), groupId=req.body?.groupId||null;
   const role=db.prepare('SELECT id,role_key FROM roles WHERE role_key=?').get(roleKey);
@@ -641,10 +672,35 @@ app.post('/api/admin/users', requireAuth('admin'), requirePermission('admin.mana
     if (groupId) db.prepare('INSERT INTO user_group_members(user_id,group_id,added_at) VALUES(?,?,?)').run(userId,groupId,now());
     audit(req.user.id,'user.created','user',userId,{role:roleKey,groupId});
   })(); } catch(error) { if(error.code==='SQLITE_CONSTRAINT_UNIQUE')return res.status(409).json({error:'Email sudah digunakan.'}); throw error; }
+
+  // Replicate to PostgreSQL
+  const pool = pgSync.getPool();
+  if (pool) {
+    try {
+      const legacyRole = roleKey === 'student' ? 'student' : roleKey === 'guru' ? 'tutor' : 'admin';
+      await pool.query('INSERT INTO users(id,name,email,password_hash,role,status,created_at) VALUES($1,$2,$3,$4,$5,$6,$7)', [userId, name, email, passwordHash, legacyRole, 'active', now()]);
+      await pool.query('INSERT INTO user_roles(user_id,role_id,tenant_id,assigned_at) VALUES($1,$2,\'default\',$3)', [userId, role.id, now()]);
+      if (roleKey === 'student') {
+        await pool.query('INSERT INTO subscriptions(user_id,remaining,total) VALUES($1,0,0)', [userId]);
+        await pool.query('INSERT INTO student_profiles(user_id,tenant_id) VALUES($1,\'default\')', [userId]);
+      }
+      if (roleKey === 'guru') {
+        await pool.query('INSERT INTO tutor_wallets(user_id,available) VALUES($1,0)', [userId]);
+        await pool.query('INSERT INTO tutor_details(user_id,tenant_id) VALUES($1,\'default\')', [userId]);
+      }
+    } catch (pgErr) {
+      console.warn('[PostgresSync] Admin create user error:', pgErr.message);
+    }
+  }
+
   res.status(201).json({id:userId,name,email,role:roleKey,status:'active'});
 }));
-app.patch('/api/admin/users/:id', requireAuth('admin'), requirePermission('admin.manage'), requireCsrf, (req,res) => {
-  const target=db.prepare('SELECT id,role,status FROM users WHERE id=?').get(req.params.id);
+app.patch('/api/admin/users/:id', requireAuth('admin'), requirePermission('admin.manage'), requireCsrf, asyncRoute(async (req,res) => {
+  let target=db.prepare('SELECT id,role,status FROM users WHERE id=?').get(req.params.id);
+  if (!target) {
+    await pgSync.syncUser(db, req.params.id);
+    target = db.prepare('SELECT id,role,status FROM users WHERE id=?').get(req.params.id);
+  }
   if(!target)return res.status(404).json({error:'Pengguna tidak ditemukan.'});
   const roleKey=req.body?.role; const status=req.body?.status; const groupId=req.body?.groupId;
   const role=roleKey ? db.prepare('SELECT id,role_key FROM roles WHERE role_key=?').get(roleKey) : null;
@@ -667,15 +723,44 @@ app.patch('/api/admin/users/:id', requireAuth('admin'), requirePermission('admin
     audit(req.user.id,'user.updated','user',target.id,{role:roleKey||undefined,status:status||undefined,groupId:groupId||null});
   })();
   if(status==='inactive'||roleKey) db.prepare('DELETE FROM sessions WHERE user_id=?').run(target.id);
+
+  // Replicate to PostgreSQL
+  const pool = pgSync.getPool();
+  if (pool) {
+    try {
+      if (status) await pool.query('UPDATE users SET status=$1 WHERE id=$2', [status, target.id]);
+      if (roleKey && role) {
+        const legacy = roleKey === 'student' ? 'student' : roleKey === 'guru' ? 'tutor' : 'admin';
+        await pool.query('UPDATE users SET role=$1 WHERE id=$2', [legacy, target.id]);
+        await pool.query('DELETE FROM user_roles WHERE user_id=$1', [target.id]);
+        await pool.query('INSERT INTO user_roles(user_id, role_id, tenant_id, assigned_at) VALUES($1, $2, \'default\', $3)', [target.id, role.id, now()]);
+      }
+    } catch (pgErr) {
+      console.warn('[PostgresSync] User update error:', pgErr.message);
+    }
+  }
+
   res.json({id:target.id,role:roleKey||undefined,status:status||target.status});
-});
-app.delete('/api/admin/users/:id',requireAuth('admin'),requirePermission('admin.manage'),requireCsrf,(req,res)=>{
+}));
+app.delete('/api/admin/users/:id',requireAuth('admin'),requirePermission('admin.manage'),requireCsrf,asyncRoute(async (req,res)=>{
   if(req.params.id===req.user.id)return res.status(400).json({error:'Admin tidak dapat menonaktifkan akunnya sendiri.'});
-  const target=db.prepare('SELECT id,status FROM users WHERE id=?').get(req.params.id);if(!target)return res.status(404).json({error:'Pengguna tidak ditemukan.'});
+  let target=db.prepare('SELECT id,status FROM users WHERE id=?').get(req.params.id);
+  if(!target) {
+    await pgSync.syncUser(db, req.params.id);
+    target=db.prepare('SELECT id,status FROM users WHERE id=?').get(req.params.id);
+  }
+  if(!target)return res.status(404).json({error:'Pengguna tidak ditemukan.'});
   const role=db.prepare("SELECT r.role_key FROM user_roles ur JOIN roles r ON r.id=ur.role_id WHERE ur.user_id=? AND ur.tenant_id='default'").get(target.id)?.role_key;
   if(role==='admin'&&target.status==='active'&&db.prepare("SELECT count(*) AS count FROM user_roles ur JOIN roles r ON r.id=ur.role_id JOIN users u ON u.id=ur.user_id WHERE r.role_key='admin' AND u.status='active'").get().count<=1)return res.status(409).json({error:'Sistem harus tetap memiliki minimal satu Super Admin aktif.'});
-  db.prepare("UPDATE users SET status='inactive' WHERE id=?").run(target.id);db.prepare('DELETE FROM sessions WHERE user_id=?').run(target.id);audit(req.user.id,'user.deactivated','user',target.id);res.json({id:target.id,status:'inactive'});
-});
+  db.prepare("UPDATE users SET status='inactive' WHERE id=?").run(target.id);db.prepare('DELETE FROM sessions WHERE user_id=?').run(target.id);audit(req.user.id,'user.deactivated','user',target.id);
+  const pool = pgSync.getPool();
+  if (pool) {
+    try {
+      await pool.query('UPDATE users SET status=\'inactive\' WHERE id=$1', [target.id]);
+    } catch (_) {}
+  }
+  res.json({id:target.id,status:'inactive'});
+}));
 app.get('/api/admin/groups', requireAuth('admin'), requirePermission('admin.manage'), (_req,res)=>res.json(db.prepare("SELECT id,name,description FROM user_groups WHERE tenant_id='default' ORDER BY name").all()));
 app.post('/api/admin/groups', requireAuth('admin'), requirePermission('admin.manage'), requireCsrf, (req,res)=>{
   const name=String(req.body?.name||'').trim(),description=String(req.body?.description||'').trim();
