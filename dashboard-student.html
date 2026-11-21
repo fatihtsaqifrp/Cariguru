@@ -190,8 +190,8 @@
 
             <div class="stat-card">
               <div class="stat-card__label">Total Sesi Selesai</div>
-              <div class="stat-card__value">24</div>
-              <div class="stat-card__meta" style="color: var(--clr-success-600);">+6 sesi selesai bulan ini</div>
+              <div class="stat-card__value" id="student-completed-sessions-count">0</div>
+              <div class="stat-card__meta" id="student-completed-sessions-meta" style="color: var(--clr-success-600);">Belum ada sesi selesai</div>
               <div class="stat-card__icon" style="background: var(--clr-secondary-50); color: var(--clr-secondary-600);">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
               </div>
@@ -199,8 +199,8 @@
 
             <div class="stat-card">
               <div class="stat-card__label">Mata Pelajaran Aktif</div>
-              <div class="stat-card__value">3</div>
-              <div class="stat-card__meta" style="color: var(--clr-primary-700);">Matematika, Fisika, B. Inggris</div>
+              <div class="stat-card__value" id="student-active-subjects-count">0</div>
+              <div class="stat-card__meta" id="student-active-subjects-meta" style="color: var(--clr-primary-700);">Belum ada mata pelajaran</div>
               <div class="stat-card__icon" style="background: var(--clr-primary-50); color: var(--clr-primary-700);">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/></svg>
               </div>
@@ -208,8 +208,8 @@
 
             <div class="stat-card" onclick="openPackageModal()" style="cursor: pointer;" title="Klik untuk perpanjang paket">
               <div class="stat-card__label">Status Paket (Klik Perpanjang)</div>
-              <div class="stat-card__value" style="font-size: var(--fs-xl);">Paket Bulanan</div>
-              <div class="stat-card__meta" style="color: var(--text-secondary);">Masa aktif s.d. 28 Nov 2026 &rarr;</div>
+              <div class="stat-card__value" style="font-size: var(--fs-xl);" id="student-package-status-val">Paket Belajar</div>
+              <div class="stat-card__meta" id="student-package-status-meta" style="color: var(--text-secondary);">Top up kuota belajar &rarr;</div>
               <div class="stat-card__icon" style="background: rgba(20,184,166,0.1); color: var(--clr-secondary-600);">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
               </div>
@@ -421,7 +421,7 @@
           <div class="panel">
             <div class="panel__header">
               <h2 class="panel__title">Klaim Kelas Percobaan Gratis</h2>
-              <span class="badge badge--success">1 Kuota Tersedia</span>
+              <span class="badge badge--success" id="trial-status-badge">1 Kuota Tersedia</span>
             </div>
             <div class="panel__body">
               <div style="background: var(--clr-primary-50); border: 1px solid var(--clr-primary-200); border-radius: var(--radius-xl); padding: var(--sp-6); margin-bottom: var(--sp-6);">
@@ -429,7 +429,7 @@
                 <p style="font-size: var(--fs-sm); color: var(--text-secondary); line-height: 1.6; margin-bottom: var(--sp-4);">
                   Setiap siswa baru yang terdaftar di wilayah Semarang berhak mendapatkan 1x sesi les privat tatap muka durasi 90 menit tanpa dipungut biaya apapun. Guru akan datang langsung ke alamat rumah Anda.
                 </p>
-                <button class="btn btn--primary" onclick="claimTrialBanner()">Aktifkan Free Trial Sekarang</button>
+                <button class="btn btn--primary" id="btn-claim-trial" onclick="claimTrialBanner()">Aktifkan Free Trial Sekarang</button>
               </div>
 
               <h4 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--sp-3);">Ketentuan Layanan Percobaan:</h4>
@@ -449,7 +449,7 @@
           <div class="panel">
             <div class="panel__header">
               <h2 class="panel__title">Riwayat Absensi & Kehadiran Belajar</h2>
-              <span class="badge badge--teal">Kehadiran 100%</span>
+              <span class="badge badge--teal" id="attendance-rate-badge">Memuat kehadiran…</span>
             </div>
             <div class="panel__body panel__body--flush">
               <div class="table-wrapper" style="border: none;">
@@ -459,36 +459,13 @@
                       <th>Tanggal</th>
                       <th>Mata Pelajaran</th>
                       <th>Nama Pengajar</th>
-                      <th>Waktu Masuk - Selesai</th>
+                      <th>Durasi Sesi</th>
                       <th>Materi Pembelajaran</th>
                       <th>Status Kehadiran</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr>
-                      <td>31 Okt 2026</td>
-                      <td>Matematika</td>
-                      <td>Budi Wicaksono, S.Pd</td>
-                      <td>09:02 - 10:35 WIB</td>
-                      <td>Integral Parsial & Substitusi</td>
-                      <td><span class="badge badge--success">Hadir & Terverifikasi</span></td>
-                    </tr>
-                    <tr>
-                      <td>28 Okt 2026</td>
-                      <td>Fisika</td>
-                      <td>Budi Wicaksono, S.Pd</td>
-                      <td>14:00 - 15:30 WIB</td>
-                      <td>Dinamika Gerak Lurus</td>
-                      <td><span class="badge badge--success">Hadir & Terverifikasi</span></td>
-                    </tr>
-                    <tr>
-                      <td>24 Okt 2026</td>
-                      <td>Bahasa Inggris</td>
-                      <td>Agus Kurniawan</td>
-                      <td>16:00 - 17:30 WIB</td>
-                      <td>Reading Comprehension & Grammar</td>
-                      <td><span class="badge badge--success">Hadir & Terverifikasi</span></td>
-                    </tr>
+                  <tbody id="student-attendance-table">
+                    <tr><td colspan="6" style="text-align:center; padding:24px; color:var(--text-tertiary);">Memuat catatan absensi…</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -1327,6 +1304,18 @@
             : `Sesi telah habis (0/${subscription.total}). Silakan beli paket baru.`;
         }
 
+        // 2b. Update Beranda stat card for package status
+        const pkgStatVal = document.getElementById('student-package-status-val');
+        if (pkgStatVal) {
+          pkgStatVal.textContent = state.activePackage?.name || (subscription.total > 0 ? 'Paket Aktif' : 'Belum Ada Paket');
+        }
+        const pkgStatMeta = document.getElementById('student-package-status-meta');
+        if (pkgStatMeta) {
+          pkgStatMeta.textContent = subscription.remaining > 0 
+            ? `Tersisa ${subscription.remaining} sesi → Perpanjang` 
+            : 'Top up kuota belajar →';
+        }
+
         // 3. Update payment history list
         const history = document.getElementById("payment-history-container");
         if (history) history.replaceChildren();
@@ -1401,6 +1390,49 @@
         home.replaceChildren();
         sessions.filter(item=>['scheduled','ongoing'].includes(item.status)).slice(0,3).forEach(session=>{const item=document.createElement('article');item.className='schedule-item schedule-item--upcoming';item.innerHTML=`<div class="schedule-item__info"><strong class="schedule-item__subject"></strong><div class="schedule-item__meta"></div></div><span class="badge badge--success"></span>`;item.querySelector('.schedule-item__subject').textContent=session.subject||'Sesi';item.querySelector('.schedule-item__meta').textContent=`${dateText(session)} • ${session.tutor||'Pengajar belum tersedia'}`;item.querySelector('.badge').textContent=session.status;home.append(item);});
         if(!home.children.length)home.textContent='Belum ada sesi terjadwal.';
+
+        // Sidebar schedule badge
+        const upcoming = sessions.filter(s => ['scheduled','ongoing'].includes(s.status));
+        const schedBadge = document.getElementById('student-schedule-badge');
+        if (schedBadge) schedBadge.textContent = upcoming.length;
+
+        // Beranda Stat Cards
+        const completedSessions = sessions.filter(s => s.status === 'completed');
+        const completedEl = document.getElementById('student-completed-sessions-count');
+        if (completedEl) completedEl.textContent = completedSessions.length;
+        const completedMetaEl = document.getElementById('student-completed-sessions-meta');
+        if (completedMetaEl) completedMetaEl.textContent = completedSessions.length ? `${completedSessions.length} sesi telah diselesaikan` : 'Belum ada sesi selesai';
+
+        const activeSubjects = [...new Set(sessions.map(s => s.subject).filter(Boolean))];
+        const subjEl = document.getElementById('student-active-subjects-count');
+        if (subjEl) subjEl.textContent = activeSubjects.length;
+        const subjMetaEl = document.getElementById('student-active-subjects-meta');
+        if (subjMetaEl) subjMetaEl.textContent = activeSubjects.slice(0, 3).join(', ') || 'Belum ada mata pelajaran';
+
+        // Tab 5 Absensi table
+        const attendanceTbody = document.getElementById('student-attendance-table');
+        if (attendanceTbody) {
+          if (completedSessions.length) {
+            attendanceTbody.innerHTML = completedSessions.map(session => `<tr><td>${dateText(session)}</td><td><strong>${session.subject || '—'}</strong></td><td>${session.tutor || 'Pengajar terverifikasi'}</td><td>${session.durationMinutes || 90} menit</td><td>${session.topic || 'Sesi pembelajaran tatap muka'}</td><td><span class="badge badge--success">Hadir & Terverifikasi</span></td></tr>`).join('');
+          } else {
+            attendanceTbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--text-tertiary);">Belum ada catatan absensi.</td></tr>';
+          }
+        }
+        const rateBadge = document.getElementById('attendance-rate-badge');
+        if (rateBadge) rateBadge.textContent = completedSessions.length ? `${completedSessions.length} Sesi Terverifikasi` : 'Belum ada sesi';
+
+        // Tab 4 Free Trial status
+        const hasUsedTrial = sessions.some(s => s.freeTrial);
+        const trialBadge = document.getElementById('trial-status-badge');
+        if (trialBadge) {
+          trialBadge.className = hasUsedTrial ? 'badge badge--secondary' : 'badge badge--success';
+          trialBadge.textContent = hasUsedTrial ? 'Sudah Digunakan' : '1 Kuota Tersedia';
+        }
+        const trialBtn = document.getElementById('btn-claim-trial');
+        if (trialBtn && hasUsedTrial) {
+          trialBtn.disabled = true;
+          trialBtn.textContent = 'Fasilitas Free Trial Telah Digunakan';
+        }
       } catch(error) { console.error('Gagal memuat jadwal siswa',error); }
     }
     async function loadStudentProfile(user) {

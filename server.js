@@ -808,11 +808,18 @@ app.put('/api/packages/:id',requireAuth(),requirePermission('package.manage'),re
   const result=db.prepare("UPDATE packages SET name=?,price=?,session_count=?,duration_minutes=?,is_active=? WHERE id=? AND tenant_id='default'").run(name,price,sessions,duration,active?1:0,req.params.id);
   if(!result.changes)return res.status(404).json({error:'Paket tidak ditemukan.'});audit(req.user.id,'package.updated','package',req.params.id,{name,price,sessions,duration,active});res.json({message:'Paket diperbarui.'});
 });
-app.get('/api/student/sessions', requireAuth('student'), requirePermission('student.dashboard'), (req,res)=>{
-  res.json(db.prepare(`SELECT ls.id,ls.scheduled_at AS scheduledAt,ls.duration_minutes AS durationMinutes,ls.status,ls.is_free_trial AS freeTrial,s.name AS subject,t.name AS tutor,
+app.get('/api/student/sessions', requireAuth('student'), requirePermission('student.dashboard'), asyncRoute(async (req,res)=>{
+  await pgSync.syncTable(db, 'learning_sessions');
+  await pgSync.syncTable(db, 'attendance');
+  await pgSync.syncTable(db, 'session_reviews');
+  res.json(db.prepare(`SELECT ls.id,ls.scheduled_at AS scheduledAt,ls.duration_minutes AS durationMinutes,ls.status,ls.is_free_trial AS freeTrial,s.name AS subject,t.name AS tutor, a.topic,
     EXISTS(SELECT 1 FROM session_reviews sr WHERE sr.learning_session_id=ls.id AND sr.student_id=ls.student_id) AS reviewed
-    FROM learning_sessions ls LEFT JOIN subjects s ON s.id=ls.subject_id LEFT JOIN users t ON t.id=ls.tutor_id WHERE ls.student_id=? ORDER BY ls.scheduled_at`).all(req.user.id));
-});
+    FROM learning_sessions ls
+    LEFT JOIN subjects s ON s.id=ls.subject_id
+    LEFT JOIN users t ON t.id=ls.tutor_id
+    LEFT JOIN attendance a ON a.learning_session_id=ls.id
+    WHERE ls.student_id=? ORDER BY ls.scheduled_at DESC`).all(req.user.id));
+}));
 function findAvailableTutor(subjectId, scheduledAt) {
   const starts=new Date(scheduledAt);const ends=new Date(starts.valueOf()+90*60*1000);
   const weekday=new Intl.DateTimeFormat('id-ID',{weekday:'long',timeZone:'Asia/Jakarta'}).format(starts);
@@ -1366,15 +1373,47 @@ app.post('/api/payments/simulate', requireAuth('student'), requirePermission('st
   res.status(201).json({ transaction: { id: txId, description: `${pkg.name} (${pkg.sessions} sesi)`, amount: pkg.price, gateway, status: 'simulated_success', date: ts }, subscription: db.prepare('SELECT remaining,total FROM subscriptions WHERE user_id=?').get(req.user.id) });
 });
 
-app.get('/api/tutor/financial', requireAuth('tutor'), requirePermission('tutor.dashboard'), (req, res) => {
+app.get('/api/tutor/financial', requireAuth('tutor'), requirePermission('tutor.dashboard'), asyncRoute(async (req, res) => {
+  await pgSync.syncTable(db, 'tutor_wallets');
+  await pgSync.syncTable(db, 'attendance');
+  await pgSync.syncTable(db, 'withdrawals');
+  await pgSync.syncTable(db, 'tutor_profiles');
+  await pgSync.syncTable(db, 'learning_sessions');
   const wallet = db.prepare('SELECT available FROM tutor_wallets WHERE user_id=?').get(req.user.id) || { available: 0 };
   const attendance = db.prepare('SELECT id,student_name AS student,subject,topic,status,honor,created_at AS date FROM attendance WHERE tutor_id=? ORDER BY created_at DESC LIMIT 100').all(req.user.id);
   const withdrawals = db.prepare('SELECT id,bank,account,amount,status,created_at AS date FROM withdrawals WHERE tutor_id=? ORDER BY created_at DESC LIMIT 100').all(req.user.id);
   const profile = db.prepare('SELECT bank_code AS bank,account_number AS accountNumber,account_name AS accountName,phone,availability_json AS availabilityJson FROM tutor_profiles WHERE user_id=?').get(req.user.id) || { bank: '', accountNumber: '', accountName: '', phone: '', availabilityJson: '[]' };
   profile.availability = JSON.parse(profile.availabilityJson || '[]'); delete profile.availabilityJson;
   const activeSession = db.prepare('SELECT student_name AS student,subject,started_at AS startedAt FROM tutor_active_sessions WHERE tutor_id=?').get(req.user.id) || null;
-  res.json({ wallet, attendance, withdrawals, profile, activeSession });
-});
+
+  // Calculate dynamic metrics for tutor
+  const now = new Date();
+  const currentMonthPrefix = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const sessionsThisMonth = attendance.filter(a => String(a.date).startsWith(currentMonthPrefix)).length;
+
+  const studentRows = db.prepare(`SELECT u.id, u.name, coalesce(sp.grade, 'Umum') AS grade, coalesce(sp.address, 'Semarang') AS address, s.name AS subject, count(ls.id) AS sessionCount
+    FROM learning_sessions ls
+    JOIN users u ON u.id = ls.student_id
+    LEFT JOIN student_profiles sp ON sp.user_id = u.id
+    LEFT JOIN subjects s ON s.id = ls.subject_id
+    WHERE ls.tutor_id = ?
+    GROUP BY u.id, u.name, sp.grade, sp.address, s.name`).all(req.user.id);
+
+  const reviewStats = db.prepare(`SELECT avg(sr.rating) AS avgRating, count(sr.id) AS reviewCount
+    FROM session_reviews sr
+    JOIN learning_sessions ls ON ls.id = sr.learning_session_id
+    WHERE ls.tutor_id = ?`).get(req.user.id);
+
+  const stats = {
+    sessionsThisMonth: sessionsThisMonth || attendance.length,
+    activeStudentCount: studentRows.length,
+    rating: reviewStats?.avgRating ? Number(reviewStats.avgRating).toFixed(1) : '5.0',
+    reviewCount: reviewStats?.reviewCount || 0,
+    totalEarned: attendance.filter(a => a.status === 'approved').reduce((acc, a) => acc + (a.honor || 0), 0) || wallet.available
+  };
+
+  res.json({ wallet, attendance, withdrawals, profile, activeSession, stats, students: studentRows });
+}));
 
 app.put('/api/tutor/availability', requireAuth('tutor'), requirePermission('tutor.dashboard'), requireCsrf, (req, res) => {
   const slots = req.body?.slots;
