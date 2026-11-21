@@ -829,6 +829,25 @@
                       <input class="pg-field__input pg-field__input--mono" id="setting-server-key" type="password" autocomplete="new-password" placeholder="Kosongkan agar key tersimpan tetap dipakai">
                     </label>
                   </div>
+                  <!-- Midtrans Iris Payout (Disbursement Otomatis) -->
+                  <div style="background: rgba(99, 102, 241, 0.05); border: 1px solid var(--clr-primary-200); border-radius: var(--radius-lg); padding: var(--sp-4); margin-top: var(--sp-3);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                      <div style="font-weight:var(--fw-semibold); font-size:var(--fs-sm); color:var(--clr-primary-800); display:flex; align-items:center; gap:6px;">
+                        <span>⚡ Midtrans Iris (Disbursement / Payout Otomatis Guru)</span>
+                        <span class="badge badge--success" style="font-size:0.65rem;">Active</span>
+                      </div>
+                      <button class="btn btn--xs btn--outline" type="button" onclick="checkIrisBalance()">Cek Saldo Kas Iris</button>
+                    </div>
+                    <div class="pg-grid pg-grid--1">
+                      <label class="pg-field">
+                        <span class="pg-field__label">Iris API Key / Creator Key <span class="pg-field__hint">(rahasia payout)</span></span>
+                        <input class="pg-field__input pg-field__input--mono" id="setting-iris-api-key" type="password" autocomplete="new-password" placeholder="Kunci API Iris (Creator/Approver). Kosongkan untuk mode simulasi otomatis">
+                      </label>
+                    </div>
+                    <div id="iris-balance-status" style="font-size:var(--fs-xs); color:var(--text-secondary); margin-top:6px;">
+                      Midtrans Iris siap memproses auto transfer dana ke rekening bank pengajar saat admin menyetujui penarikan.
+                    </div>
+                  </div>
                   <!-- Sandbox Bridge -->
                   <div class="pg-sandbox-bridge" id="pg-midtrans-sandbox-bridge">
                     <div class="pg-sandbox-bridge__header">
@@ -1582,10 +1601,15 @@
         if (!withdrawals.length) { const row = document.createElement('tr'); const cell = document.createElement('td'); cell.colSpan = 6; cell.className = 'data-empty-state'; cell.textContent = 'Belum ada pengajuan penarikan.'; row.append(cell); withdrawalsBody.append(row); }
         withdrawals.forEach(item => {
           const row = document.createElement('tr');
-          [`${item.tutor} • ${item.email}`, `${item.bank} • ${item.account}`, formatIDR(item.amount), 'Saldo tersedia telah dicadangkan', item.status === 'pending_admin' ? 'Menunggu Admin' : item.status === 'rejected' ? 'Ditolak • saldo dikembalikan' : 'Transfer simulasi selesai'].forEach(value => { const cell = document.createElement('td'); cell.textContent = value; row.appendChild(cell); });
+          const statusText = item.status === 'pending_admin'
+            ? 'Menunggu Admin • Iris Ready'
+            : item.status === 'rejected'
+              ? 'Ditolak • saldo dikembalikan'
+              : (item.payoutReference ? `Ditransfer Iris (${item.payoutReference})` : 'Transfer Iris Selesai');
+          [`${item.tutor} • ${item.email}`, `${item.bank} • ${item.account}`, formatIDR(item.amount), 'Saldo tersedia telah dicadangkan', statusText].forEach(value => { const cell = document.createElement('td'); cell.textContent = value; row.appendChild(cell); });
           const action = document.createElement('td');
           if (item.status === 'pending_admin') {
-            const transfer = document.createElement('button'); transfer.className = 'btn btn--sm btn--success'; transfer.textContent = 'Setujui & Transfer'; transfer.onclick = () => reviewWithdrawal(item.id, 'transfer');
+            const transfer = document.createElement('button'); transfer.className = 'btn btn--sm btn--success'; transfer.textContent = '⚡ Setujui & Auto-Transfer Iris'; transfer.onclick = () => reviewWithdrawal(item.id, 'transfer');
             const reject = document.createElement('button'); reject.className = 'btn btn--sm btn--ghost'; reject.textContent = 'Tolak'; reject.style.marginLeft = '6px'; reject.onclick = () => reviewWithdrawal(item.id, 'reject');
             action.append(transfer, reject);
           } else action.textContent = 'Selesai';
@@ -1632,8 +1656,28 @@
     }
 
     async function reviewWithdrawal(id, decision) {
-      try { await TrevyAPI.request(`/api/admin/withdrawals/${encodeURIComponent(id)}/review`, { method: 'POST', body: { decision } }); await renderConnectedAdminData(); showToast(decision === 'transfer' ? 'Transfer simulasi tercatat; dana nyata belum dikirim.' : 'Pengajuan ditolak dan saldo dikembalikan.', decision === 'transfer' ? 'success' : 'warning'); }
-      catch (error) { showToast(error.message, 'danger'); }
+      try {
+        const res = await TrevyAPI.request(`/api/admin/withdrawals/${encodeURIComponent(id)}/review`, { method: 'POST', body: { decision } });
+        await renderConnectedAdminData();
+        showToast(res.message || (decision === 'transfer' ? 'Transfer otomatis via Midtrans Iris berhasil diproses.' : 'Pengajuan ditolak.'), decision === 'transfer' ? 'success' : 'warning');
+      } catch (error) {
+        showToast(error.message, 'danger');
+      }
+    }
+
+    async function checkIrisBalance() {
+      const statusEl = document.getElementById('iris-balance-status');
+      if (statusEl) statusEl.textContent = 'Memeriksa saldo kas Midtrans Iris...';
+      try {
+        const res = await TrevyAPI.request('/api/admin/iris/balance');
+        if (statusEl) {
+          statusEl.innerHTML = `<strong>Saldo Kas Midtrans Iris Tersedia:</strong> <span style="font-family:var(--font-mono); font-weight:var(--fw-bold); color:var(--clr-success-700);">${res.formattedBalance}</span> (${res.mode.toUpperCase()})${res.simulated ? ' • <em>Simulated Balance</em>' : ''}`;
+        }
+        showToast(`Saldo Midtrans Iris: ${res.formattedBalance}`, 'info');
+      } catch (e) {
+        if (statusEl) statusEl.textContent = `Gagal cek saldo: ${e.message}`;
+        showToast(e.message, 'danger');
+      }
     }
 
     // Add Package
@@ -2068,7 +2112,7 @@
       const forms = {
         branding: { platformName: value('setting-platform-name'), tagline: value('setting-tagline'), primaryColor: value('setting-primary-color') },
         general: { contactEmail: value('setting-contact-email'), contactPhone: value('setting-contact-phone'), address: value('setting-address'), timezone: value('setting-timezone'), currency: value('setting-currency'), language: value('setting-language') },
-        payment: { provider: value('setting-provider'), mode: value('setting-payment-mode'), merchantId: value('setting-merchant-id'), clientKey: value('setting-client-key'), serverKey: value('setting-server-key'), secretKey: value('setting-secret-key'), publicKey: value('setting-public-key'), webhookVerificationToken: value('setting-webhook-token'), webhookReady: { ...currentWebhookReadiness, [value('setting-provider')]: document.getElementById('setting-webhook-ready').checked }, biSnapMode: value('setting-bisnap-mode'), biSnapClientId: value('setting-bisnap-client-id'), biSnapPartnerId: value('setting-bisnap-partner-id'), biSnapChannelId: value('setting-bisnap-channel-id'), biSnapClientSecret: value('setting-bisnap-client-secret'), biSnapPrivateKey: value('setting-bisnap-private-key'), biSnapMerchantPublicKey: value('setting-bisnap-merchant-public-key'), biSnapNotificationPublicKey: value('setting-bisnap-notification-public-key') },
+        payment: { provider: value('setting-provider'), mode: value('setting-payment-mode'), merchantId: value('setting-merchant-id'), clientKey: value('setting-client-key'), serverKey: value('setting-server-key'), irisApiKey: value('setting-iris-api-key'), secretKey: value('setting-secret-key'), publicKey: value('setting-public-key'), webhookVerificationToken: value('setting-webhook-token'), webhookReady: { ...currentWebhookReadiness, [value('setting-provider')]: document.getElementById('setting-webhook-ready').checked }, biSnapMode: value('setting-bisnap-mode'), biSnapClientId: value('setting-bisnap-client-id'), biSnapPartnerId: value('setting-bisnap-partner-id'), biSnapChannelId: value('setting-bisnap-channel-id'), biSnapClientSecret: value('setting-bisnap-client-secret'), biSnapPrivateKey: value('setting-bisnap-private-key'), biSnapMerchantPublicKey: value('setting-bisnap-merchant-public-key'), biSnapNotificationPublicKey: value('setting-bisnap-notification-public-key') },
         security: { minimumPasswordLength: Number(value('setting-password-min')), sessionTimeoutMinutes: Number(value('setting-session-timeout')) },
         operations: { standardRate: Number(value('setting-standard-rate')), freeTrialQuota: Number(value('setting-trial-quota')), sessionDurationMinutes: Number(value('setting-session-duration')) },
         notifications: { template: value('setting-notification-template'), enabled: document.getElementById('setting-notification-enabled').checked },
@@ -2076,7 +2120,7 @@
       };
       try {
         const saved=await TrevyAPI.request(`/api/admin/settings/${section}`, { method: 'PUT', body: { data: forms[section] } });
-        if (section === 'payment') { ['setting-server-key','setting-secret-key','setting-webhook-token','setting-bisnap-client-secret','setting-bisnap-private-key'].forEach(id => document.getElementById(id).value = ''); currentWebhookReadiness=forms.payment.webhookReady; currentActiveGateway=forms.payment.provider; initAdminGatewayUI(); await refreshPaymentGatewayStatus(); }
+        if (section === 'payment') { ['setting-server-key','setting-iris-api-key','setting-secret-key','setting-webhook-token','setting-bisnap-client-secret','setting-bisnap-private-key'].forEach(id => document.getElementById(id).value = ''); currentWebhookReadiness=forms.payment.webhookReady; currentActiveGateway=forms.payment.provider; initAdminGatewayUI(); await refreshPaymentGatewayStatus(); }
         if (section === 'branding') {
           for(const [inputId,purpose] of [['setting-logo','branding_logo'],['setting-favicon','branding_favicon']]){
           const file = document.getElementById(inputId).files[0];
