@@ -906,6 +906,11 @@ function finalizeGatewayPayment(transaction, externalAmount) {
     db.prepare('INSERT INTO learning_subscriptions(id,tenant_id,student_id,package_id,remaining,total,starts_at,status) VALUES(?,?,?,?,?,?,?,\'active\')').run(id('SUB'),'default',transaction.user_id,metadata.packageRecordId,metadata.sessions,metadata.sessions,ts);
     audit(null,'payment.gateway_paid','transaction',transaction.id,{gateway:transaction.gateway,amount:transaction.amount});
   })();
+  const pool = pgSync.getPool();
+  if (pool) {
+    pool.query("UPDATE transactions SET status='paid',metadata=$1 WHERE id=$2", [JSON.stringify({ ...metadata, paidAt: ts }), transaction.id]).catch(() => {});
+    pool.query('INSERT INTO subscriptions(user_id,remaining,total) VALUES($1,$2,$3) ON CONFLICT(user_id) DO UPDATE SET remaining=subscriptions.remaining+$2,total=subscriptions.total+$3', [transaction.user_id, metadata.sessions, metadata.sessions]).catch(() => {});
+  }
 }
 
 app.post('/api/payments/create', requireAuth('student'), requirePermission('student.dashboard'), requireCsrf, asyncRoute(async (req,res)=>{
@@ -919,42 +924,139 @@ app.post('/api/payments/create', requireAuth('student'), requirePermission('stud
   const pkg=db.prepare("SELECT id,package_key AS packageId,name,price,session_count AS sessions,duration_minutes AS durationMinutes FROM packages WHERE tenant_id='default' AND is_active=1 AND package_key=?").get(String(req.body?.packageId||''));
   const key=String(req.get('idempotency-key')||'');
   if(!pkg||! /^[A-Za-z0-9_-]{16,100}$/.test(key))return res.status(400).json({error:'Paket atau kunci permintaan tidak valid.'});
-  const existing=db.prepare('SELECT id,user_id,gateway,status,metadata FROM transactions WHERE idempotency_key=? AND user_id=?').get(key,req.user.id);
-  if(existing){const meta=JSON.parse(existing.metadata||'{}');if(existing.status==='pending'&&meta.checkoutUrl)return res.json({orderId:existing.id,checkoutUrl:meta.checkoutUrl,duplicate:true});return res.status(409).json({error:'Permintaan pembayaran ini sudah diproses.',status:existing.status});}
-  const orderId=id('PAY'); const ts=now(); const publicBase=process.env.TREVY_PUBLIC_URL||`${req.protocol}://${req.get('host')}`;
-  if((IS_PRODUCTION||provider==='xendit')&&(!process.env.TREVY_PUBLIC_URL||!/^https:\/\//i.test(publicBase)))return res.status(503).json({error:'Atur TREVY_PUBLIC_URL ke alamat HTTPS publik sebelum mengaktifkan checkout.'});
-  const base=publicBase.replace(/\/$/,'');
-  const metadata={packageId:pkg.packageId,packageRecordId:pkg.id,sessions:pkg.sessions};
+  const existing=db.prepare('SELECT id,user_id,gateway,status,metadata,amount FROM transactions WHERE idempotency_key=? AND user_id=?').get(key,req.user.id);
+  if(existing){
+    const meta=JSON.parse(existing.metadata||'{}');
+    if(existing.status==='pending') {
+      return res.json({ orderId: existing.id, amount: existing.amount, provider: existing.gateway, duplicate: true, ...meta });
+    }
+    return res.status(409).json({error:'Permintaan pembayaran ini sudah diproses.',status:existing.status});
+  }
+  const orderId=id('PAY'); const ts=now();
+  const channel=String(req.body?.channel || 'qris').toLowerCase();
+  const metadata={packageId:pkg.packageId,packageRecordId:pkg.id,sessions:pkg.sessions,channel};
   db.prepare('INSERT INTO transactions(id,user_id,kind,description,amount,gateway,status,metadata,idempotency_key,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)').run(orderId,req.user.id,'payment_gateway',`${pkg.name} (${pkg.sessions} sesi)`,pkg.price,provider,'pending',JSON.stringify(metadata),key,ts);
+  await pgSync.replicateWrite('INSERT INTO transactions(id,user_id,kind,description,amount,gateway,status,metadata,idempotency_key,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)', [orderId,req.user.id,'payment_gateway',`${pkg.name} (${pkg.sessions} sesi)`,pkg.price,provider,'pending',JSON.stringify(metadata),key,ts]);
+
   try {
-    let checkoutUrl;
+    let paymentDetails = { channel };
     if(provider==='midtrans'){
       const production=['production','live'].includes(payment.mode);
-      const endpoint=production?'https://app.midtrans.com/snap/v1/transactions':'https://app.sandbox.midtrans.com/snap/v1/transactions';
-      const response=await fetch(endpoint,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json','Authorization':`Basic ${Buffer.from(`${secret}:`).toString('base64')}`},body:JSON.stringify({transaction_details:{order_id:orderId,gross_amount:pkg.price},item_details:[{id:pkg.packageId,price:pkg.price,quantity:1,name:pkg.name.slice(0,50)}],customer_details:{first_name:req.user.name,email:req.user.email},callbacks:{finish:`${base}/dashboard-student.html?payment_order=${encodeURIComponent(orderId)}`}})});
-      const body=await response.json().catch(()=>({}));
-      if(!response.ok||!body.redirect_url)throw new Error('Midtrans menolak pembuatan transaksi. Periksa server key dan mode provider.');
-      checkoutUrl=body.redirect_url;
+      const chargeEndpoint=production?'https://api.midtrans.com/v2/charge':'https://api.sandbox.midtrans.com/v2/charge';
+
+      let chargePayload = {
+        transaction_details: { order_id: orderId, gross_amount: pkg.price },
+        customer_details: { first_name: req.user.name, email: req.user.email }
+      };
+
+      if (channel === 'qris') {
+        chargePayload.payment_type = 'qris';
+        chargePayload.qris = { acquirer: 'gopay' };
+      } else if (['bca','bni','bri','permata'].includes(channel)) {
+        chargePayload.payment_type = 'bank_transfer';
+        chargePayload.bank_transfer = { bank: channel };
+      } else if (channel === 'mandiri') {
+        chargePayload.payment_type = 'echannel';
+        chargePayload.echannel = { bill_info1: 'Pembelian Paket', bill_info2: 'Trevy Platform' };
+      } else {
+        chargePayload.payment_type = 'qris';
+        chargePayload.qris = { acquirer: 'gopay' };
+      }
+
+      const response = await fetch(chargeEndpoint, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${Buffer.from(`${secret}:`).toString('base64')}`
+        },
+        body: JSON.stringify(chargePayload)
+      });
+      const body = await response.json().catch(() => ({}));
+
+      if (!response.ok || (body.status_code && !['200', '201'].includes(String(body.status_code)))) {
+        throw new Error(body.status_message || 'Midtrans menolak pembuatan transaksi. Periksa server key.');
+      }
+
+      const qrAction = Array.isArray(body.actions) ? body.actions.find(a => a.name && a.name.includes('qr-code')) : null;
+      const vaNum = body.va_numbers?.[0]?.va_number || body.permata_va_number || null;
+      const bankResult = body.va_numbers?.[0]?.bank || (channel === 'permata' ? 'permata' : channel);
+
+      paymentDetails = {
+        channel,
+        vaNumber: vaNum,
+        bank: bankResult,
+        billerCode: body.biller_code || null,
+        billKey: body.bill_key || null,
+        qrCodeUrl: qrAction?.url || null,
+        qrString: body.qr_string || null,
+        expiryTime: body.expiry_time || null
+      };
     } else {
       const names=String(req.user.name||'Student').replace(/[^A-Za-z0-9 ]/g,' ').trim().split(/\s+/);
+      const publicBase=process.env.TREVY_PUBLIC_URL||`${req.protocol}://${req.get('host')}`;
+      const base=publicBase.replace(/\/$/,'');
       const response=await fetch('https://api.xendit.co/sessions',{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json','Authorization':`Basic ${Buffer.from(`${secret}:`).toString('base64')}`,'Idempotency-key':orderId},body:JSON.stringify({reference_id:orderId,session_type:'PAY',mode:'PAYMENT_LINK',amount:pkg.price,currency:'IDR',country:'ID',locale:'id',customer:{type:'INDIVIDUAL',email:req.user.email,individual_detail:{given_names:names[0]||'Student',surname:names.slice(1).join(' ')||'Student'}},description:`${pkg.name} (${pkg.sessions} sesi)`,success_return_url:`${base}/dashboard-student.html?payment_order=${encodeURIComponent(orderId)}`,cancel_return_url:`${base}/dashboard-student.html?payment_order=${encodeURIComponent(orderId)}`})});
       const body=await response.json().catch(()=>({}));
       if(!response.ok||!body.payment_link_url)throw new Error('Xendit menolak pembuatan payment session. Periksa secret key dan mode provider.');
-      checkoutUrl=body.payment_link_url;
+      paymentDetails = { channel: 'xendit', checkoutUrl: body.payment_link_url };
     }
-    db.prepare('UPDATE transactions SET metadata=? WHERE id=?').run(JSON.stringify({...metadata,checkoutUrl}),orderId);
-    res.status(201).json({orderId,checkoutUrl,provider});
+
+    const fullMeta = { ...metadata, ...paymentDetails };
+    db.prepare('UPDATE transactions SET metadata=? WHERE id=?').run(JSON.stringify(fullMeta), orderId);
+    await pgSync.replicateWrite('UPDATE transactions SET metadata=? WHERE id=?', [JSON.stringify(fullMeta), orderId]);
+
+    res.status(201).json({
+      orderId,
+      amount: pkg.price,
+      provider,
+      packageName: pkg.name,
+      sessions: pkg.sessions,
+      ...paymentDetails
+    });
   } catch(error) {
     db.prepare("UPDATE transactions SET status='failed',metadata=? WHERE id=? AND status='pending'").run(JSON.stringify({...metadata,providerError:error.message}),orderId);
+    await pgSync.replicateWrite("UPDATE transactions SET status='failed',metadata=? WHERE id=? AND status='pending'", [JSON.stringify({...metadata,providerError:error.message}),orderId]);
     throw error;
   }
 }));
 
-app.get('/api/payments/:id',requireAuth('student'),requirePermission('student.dashboard'),(req,res)=>{
-  const transaction=db.prepare('SELECT id,status,amount,gateway,description,created_at AS date FROM transactions WHERE id=? AND user_id=? AND kind=\'payment_gateway\'').get(req.params.id,req.user.id);
+app.get('/api/payments/:id', requireAuth('student'), requirePermission('student.dashboard'), asyncRoute(async (req,res)=>{
+  let transaction=db.prepare('SELECT id,user_id,status,amount,gateway,description,metadata,created_at AS date FROM transactions WHERE id=? AND user_id=? AND kind=\'payment_gateway\'').get(req.params.id,req.user.id);
   if(!transaction)return res.sendStatus(404);
+
+  // If pending and provider is midtrans, check real-time status with Midtrans API
+  if (transaction.status === 'pending' && transaction.gateway === 'midtrans') {
+    try {
+      const payment = paymentSettings();
+      const serverKey = providerSecret(payment, 'midtrans', 'serverKey');
+      if (serverKey) {
+        const checkEndpoint = ['production', 'live'].includes(payment.mode)
+          ? `https://api.midtrans.com/v2/${encodeURIComponent(transaction.id)}/status`
+          : `https://api.sandbox.midtrans.com/v2/${encodeURIComponent(transaction.id)}/status`;
+        const response = await fetch(checkEndpoint, {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': `Basic ${Buffer.from(serverKey + ':').toString('base64')}`
+          }
+        });
+        if (response.ok) {
+          const body = await response.json();
+          const status = String(body.transaction_status || '');
+          if (status === 'settlement' || (status === 'capture' && body.fraud_status === 'accept')) {
+            finalizeGatewayPayment(transaction, body.gross_amount || transaction.amount);
+            transaction = db.prepare('SELECT id,user_id,status,amount,gateway,description,metadata,created_at AS date FROM transactions WHERE id=? AND user_id=? AND kind=\'payment_gateway\'').get(req.params.id, req.user.id);
+          } else if (['deny', 'cancel', 'expire'].includes(status)) {
+            db.prepare("UPDATE transactions SET status='failed' WHERE id=? AND status='pending'").run(transaction.id);
+            transaction.status = 'failed';
+          }
+        }
+      }
+    } catch (_) {}
+  }
+
   res.json({transaction});
-});
+}));
 
 app.post('/api/payments/webhooks/midtrans',(req,res)=>{
   const payment=paymentSettings();const serverKey=providerSecret(payment,'midtrans','serverKey');const body=req.body||{};

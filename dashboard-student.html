@@ -757,11 +757,14 @@
         </div>
 
         <div style="margin-top:var(--sp-4); display:flex; flex-direction:column; gap:var(--sp-2);">
-          <button class="btn btn--primary btn--full btn--lg" id="btn-simulate-success" onclick="completeGatewaySimulation()">
-            Simulasikan Bayar Berhasil (Simulator)
+          <button class="btn btn--primary btn--full btn--lg" id="btn-check-payment-status" onclick="checkCurrentPaymentStatus()">
+            Cek Status Pembayaran
+          </button>
+          <button class="btn btn--secondary btn--full" id="btn-simulate-success" onclick="completeGatewaySimulation()">
+            Simulasikan Bayar Berhasil (Sandbox)
           </button>
           <button class="btn btn--ghost btn--full" onclick="closeGatewayScreen()">
-            Batalkan Pembayaran
+            Tutup Jendela Ini
           </button>
         </div>
       </div>
@@ -987,16 +990,83 @@
       const container = document.getElementById('gateway-payment-options');
       const notice = document.getElementById('checkout-security-notice');
       if (!paymentGatewayConfig.provider) { try { paymentGatewayConfig = await TrevyAPI.request('/api/tenant/payment-provider'); currentActiveGateway = paymentGatewayConfig.provider; } catch {} }
-      badge.textContent = gw === 'midtrans' ? 'Midtrans Snap' : 'Xendit Checkout';
+      badge.textContent = gw === 'midtrans' ? 'Midtrans Core API' : 'Xendit Checkout';
       badge.className = gw === 'midtrans' ? 'badge badge--teal' : 'badge badge--success';
-      container.innerHTML = paymentGatewayConfig.configured
-        ? '<div class="payment-checkout-note">Anda akan melanjutkan ke halaman checkout aman milik provider. Metode pembayaran yang tersedia ditampilkan di sana.</div>'
-        : paymentGatewayConfig.simulator
-          ? '<div class="payment-checkout-note">Mode development: transaksi hanya simulasi dan tidak menagih uang sungguhan.</div>'
-          : '<div class="payment-checkout-note">Gateway belum dikonfigurasi. Silakan hubungi administrator.</div>';
-      notice.textContent = paymentGatewayConfig.configured ? `Checkout ${gw === 'midtrans' ? 'Midtrans Snap' : 'Xendit Payment Session'} • mode ${paymentGatewayConfig.mode}` : paymentGatewayConfig.simulator ? 'SIMULATOR DEVELOPMENT — tidak ada pembayaran sungguhan' : 'Pembayaran belum tersedia';
+
+      container.innerHTML = `
+        <label class="pay-channel-card active" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border: 1.5px solid var(--clr-primary-500); border-radius: var(--radius-md); cursor: pointer; background: var(--clr-primary-50); transition: all 0.15s ease;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <input type="radio" name="pay-method" value="qris" checked onchange="updateSelectedChannelCard(this)">
+            <div>
+              <div style="font-weight: var(--fw-semibold); font-size: var(--fs-sm); color: var(--text-primary);">QRIS Dinamis</div>
+              <div style="font-size: var(--fs-xs); color: var(--text-secondary);">GoPay, ShopeePay, BCA Mobile, OVO, Dana, dll.</div>
+            </div>
+          </div>
+          <span class="badge badge--teal" style="font-size: 0.65rem;">Instan</span>
+        </label>
+
+        <label class="pay-channel-card" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border: 1.5px solid var(--clr-neutral-200); border-radius: var(--radius-md); cursor: pointer; background: #fff; transition: all 0.15s ease;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <input type="radio" name="pay-method" value="bca" onchange="updateSelectedChannelCard(this)">
+            <div>
+              <div style="font-weight: var(--fw-semibold); font-size: var(--fs-sm); color: var(--text-primary);">BCA Virtual Account</div>
+              <div style="font-size: var(--fs-xs); color: var(--text-secondary);">BCA Mobile, KlikBCA, ATM BCA</div>
+            </div>
+          </div>
+          <span class="badge" style="font-size: 0.65rem;">Otomatis</span>
+        </label>
+
+        <label class="pay-channel-card" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border: 1.5px solid var(--clr-neutral-200); border-radius: var(--radius-md); cursor: pointer; background: #fff; transition: all 0.15s ease;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <input type="radio" name="pay-method" value="bni" onchange="updateSelectedChannelCard(this)">
+            <div>
+              <div style="font-weight: var(--fw-semibold); font-size: var(--fs-sm); color: var(--text-primary);">BNI Virtual Account</div>
+              <div style="font-size: var(--fs-xs); color: var(--text-secondary);">BNI Mobile Banking, ATM BNI</div>
+            </div>
+          </div>
+          <span class="badge" style="font-size: 0.65rem;">Otomatis</span>
+        </label>
+
+        <label class="pay-channel-card" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border: 1.5px solid var(--clr-neutral-200); border-radius: var(--radius-md); cursor: pointer; background: #fff; transition: all 0.15s ease;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <input type="radio" name="pay-method" value="bri" onchange="updateSelectedChannelCard(this)">
+            <div>
+              <div style="font-weight: var(--fw-semibold); font-size: var(--fs-sm); color: var(--text-primary);">BRI Virtual Account (BRIVA)</div>
+              <div style="font-size: var(--fs-xs); color: var(--text-secondary);">BRImo, ATM BRI</div>
+            </div>
+          </div>
+          <span class="badge" style="font-size: 0.65rem;">Otomatis</span>
+        </label>
+
+        <label class="pay-channel-card" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border: 1.5px solid var(--clr-neutral-200); border-radius: var(--radius-md); cursor: pointer; background: #fff; transition: all 0.15s ease;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <input type="radio" name="pay-method" value="mandiri" onchange="updateSelectedChannelCard(this)">
+            <div>
+              <div style="font-weight: var(--fw-semibold); font-size: var(--fs-sm); color: var(--text-primary);">Mandiri Bill Payment</div>
+              <div style="font-size: var(--fs-xs); color: var(--text-secondary);">Livin' by Mandiri, ATM Mandiri</div>
+            </div>
+          </div>
+          <span class="badge" style="font-size: 0.65rem;">Otomatis</span>
+        </label>
+      `;
+
+      notice.textContent = paymentGatewayConfig.configured ? `Pembayaran langsung di aplikasi • ${gw === 'midtrans' ? 'Midtrans' : 'Xendit'} (${paymentGatewayConfig.mode || 'sandbox'})` : paymentGatewayConfig.simulator ? 'SIMULATOR DEVELOPMENT — tidak ada pembayaran sungguhan' : 'Pembayaran belum tersedia';
       document.getElementById('btn-process-pay').disabled = !paymentGatewayConfig.configured && !paymentGatewayConfig.simulator;
       openModalById('modal-package');
+    }
+
+    function updateSelectedChannelCard(radio) {
+      document.querySelectorAll('.pay-channel-card').forEach(card => {
+        card.classList.remove('active');
+        card.style.borderColor = 'var(--clr-neutral-200)';
+        card.style.background = '#fff';
+      });
+      const currentCard = radio.closest('.pay-channel-card');
+      if (currentCard) {
+        currentCard.classList.add('active');
+        currentCard.style.borderColor = 'var(--clr-primary-500)';
+        currentCard.style.background = 'var(--clr-primary-50)';
+      }
     }
 
     function updateCheckoutPrice() {
@@ -1005,9 +1075,9 @@
       document.getElementById('checkout-total-price').textContent = formatIDR(parseInt(price));
     }
 
-    
     let pendingPaymentData = null;
     let paymentSimulationInProgress = false;
+    let paymentPollInterval = null;
 
     async function processPayment() {
       const gw = getActiveGateway();
@@ -1015,9 +1085,9 @@
       const price = parseInt(select.options[select.selectedIndex].dataset.price);
       const sessions = parseInt(select.options[select.selectedIndex].dataset.sessions);
       const packageName = select.options[select.selectedIndex].text.split("—")[0].trim();
-      const channel = document.querySelector("input[name='pay-method']:checked")?.value || "va";
+      const channel = document.querySelector("input[name='pay-method']:checked")?.value || "qris";
 
-      const orderId = (gw === 'midtrans' ? 'MTR-SNAP-' : 'XND-INV-') + crypto.randomUUID();
+      const orderId = (gw === 'midtrans' ? 'MTR-PAY-' : 'XND-INV-') + crypto.randomUUID();
       pendingPaymentData = {
         gw: gw,
         packageId: select.value,
@@ -1027,15 +1097,34 @@
         channel: channel,
         orderId
       };
-      const button = document.getElementById('btn-process-pay'); button.disabled = true; button.textContent = 'Menyiapkan checkout…';
+      const button = document.getElementById('btn-process-pay'); button.disabled = true; button.textContent = 'Membuat tagihan…';
       try {
         if (paymentGatewayConfig.configured) {
-          const result = await TrevyAPI.request('/api/payments/create', { method: 'POST', headers: { 'Idempotency-Key': orderId }, body: { packageId: select.value } });
-          window.location.assign(result.checkoutUrl);
+          const result = await TrevyAPI.request('/api/payments/create', {
+            method: 'POST',
+            headers: { 'Idempotency-Key': orderId },
+            body: { packageId: select.value, channel: channel }
+          });
+          closeActiveModal();
+          openGatewayScreen({
+            orderId: result.orderId,
+            price: result.amount || price,
+            gw: result.provider || gw,
+            channel: result.channel || channel,
+            vaNumber: result.vaNumber,
+            bank: result.bank,
+            qrCodeUrl: result.qrCodeUrl,
+            qrString: result.qrString,
+            billerCode: result.billerCode,
+            billKey: result.billKey,
+            expiryTime: result.expiryTime,
+            isLive: true
+          });
           return;
         }
         if (!paymentGatewayConfig.simulator) throw new Error('Payment gateway belum dikonfigurasi.');
-        closeActiveModal(); openGatewayScreen(pendingPaymentData);
+        closeActiveModal();
+        openGatewayScreen(pendingPaymentData);
       } catch (error) { showToast(error.message, 'danger'); }
       finally { button.disabled = !paymentGatewayConfig.configured && !paymentGatewayConfig.simulator; button.textContent = 'Konfirmasi & Bayar'; }
     }
@@ -1052,103 +1141,178 @@
     }
 
     function openGatewayScreen(data) {
+      if (paymentPollInterval) clearInterval(paymentPollInterval);
+
       const header = document.getElementById("snap-header-element");
       const title = document.getElementById("snap-provider-title");
       const orderIdEl = document.getElementById("snap-order-id");
       const amountEl = document.getElementById("snap-amount-display");
       const content = document.getElementById("snap-channel-content");
+      const btnSimulate = document.getElementById("btn-simulate-success");
+      const badge = document.getElementById("snap-env-badge");
 
+      pendingPaymentData = data;
       orderIdEl.textContent = data.orderId;
       amountEl.textContent = formatIDR(data.price);
 
-      if (data.gw === "midtrans") {
-        header.className = "snap-header snap-header--midtrans";
-        title.textContent = "MIDTRANS SNAP CHECKOUT";
-        if (data.channel.includes("qris")) {
-          content.innerHTML = `
-            <div class="qris-barcode-box">
-              <div style="font-weight:var(--fw-bold); font-size:var(--fs-sm); margin-bottom:8px;">QRIS Dinamis Midtrans</div>
-              <div class="qris-svg-qr">
-                <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect width="8" height="8" x="2" y="2"/><rect width="8" height="8" x="14" y="2"/><rect width="8" height="8" x="2" y="14"/><rect width="4" height="4" x="6" y="6" fill="#fff"/><rect width="4" height="4" x="18" y="6" fill="#fff"/><rect width="4" height="4" x="6" y="18" fill="#fff"/><path d="M14 14h2v2h-2z"/><path d="M18 14h4v4h-4z"/><path d="M14 18h2v4h-2z"/><path d="M18 20h4v2h-4z"/></svg>
-              </div>
-              <div style="font-size:var(--fs-xs); color:var(--text-secondary); margin-top:8px;">Pindai dengan GoPay / ShopeePay / BCA Mobile</div>
-              <div style="font-size:0.7rem; color:var(--clr-danger-500); font-weight:var(--fw-semibold); margin-top:4px;">Berlaku 14:59</div>
+      header.className = data.gw === "midtrans" ? "snap-header snap-header--midtrans" : "snap-header snap-header--xendit";
+      title.textContent = data.gw === "midtrans" ? "PEMBAYARAN MIDTRANS" : "PEMBAYARAN XENDIT";
+      badge.textContent = paymentGatewayConfig.mode ? paymentGatewayConfig.mode.toUpperCase() : "SANDBOX";
+
+      // Show simulation button in sandbox / test / simulator mode
+      if (btnSimulate) {
+        btnSimulate.style.display = (paymentGatewayConfig.mode === 'sandbox' || paymentGatewayConfig.simulator || !paymentGatewayConfig.configured) ? 'block' : 'none';
+      }
+
+      if (data.channel === 'qris') {
+        const qrImg = data.qrCodeUrl
+          ? `<img src="${data.qrCodeUrl}" alt="QRIS Code" style="width: 210px; height: 210px; object-fit: contain; border-radius: 12px; border: 1.5px solid var(--clr-neutral-200); background: #fff; margin: 12px auto; display: block; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">`
+          : `<div class="qris-svg-qr" style="margin: 12px auto;"><svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect width="8" height="8" x="2" y="2"/><rect width="8" height="8" x="14" y="2"/><rect width="8" height="8" x="2" y="14"/><rect width="4" height="4" x="6" y="6" fill="#fff"/><rect width="4" height="4" x="18" y="6" fill="#fff"/><rect width="4" height="4" x="6" y="18" fill="#fff"/><path d="M14 14h2v2h-2z"/><path d="M18 14h4v4h-4z"/><path d="M14 18h2v4h-2z"/><path d="M18 20h4v2h-4z"/></svg></div>`;
+
+        content.innerHTML = `
+          <div class="qris-barcode-box" style="text-align: center;">
+            <div style="font-weight: var(--fw-bold); font-size: var(--fs-md); color: var(--text-primary);">QRIS Dinamis</div>
+            <div style="font-size: var(--fs-xs); color: var(--text-secondary); margin-bottom: 4px;">Pindai kode QR di bawah dengan aplikasi e-wallet atau mobile banking</div>
+            ${qrImg}
+            <div style="font-size: var(--fs-xs); color: var(--text-secondary); margin-top: 6px;">
+              Mendukung: <strong>GoPay, ShopeePay, OVO, Dana, BCA Mobile, Livin, BRImo</strong>, dll.
             </div>
-          `;
-        } else {
-          content.innerHTML = `
-            <div class="va-display-box">
-              <div style="font-size:var(--fs-xs); color:var(--text-secondary);">Nomor Virtual Account BCA (Midtrans):</div>
-              <div class="va-number">8077 7081 2283 1901</div>
-              <button class="btn btn--xs btn--outline" type="button" style="margin-top:6px;" onclick="showToast('Nomor Virtual Account disalin ke clipboard!', 'info')">Salin Nomor VA</button>
+            <div style="font-size: 0.75rem; color: var(--clr-danger-500); font-weight: var(--fw-semibold); margin-top: 6px;">
+              ⏱ Batas Waktu Bayar: 15 Menit
             </div>
-            <div style="font-size:var(--fs-xs); color:var(--text-secondary); line-height:1.6;">
-              1. Buka m-BCA &gt; m-Transfer &gt; BCA Virtual Account<br>
-              2. Masukkan nomor VA di atas<br>
-              3. Tidak ada pembayaran sungguhan; gunakan tombol simulasi untuk data demo.
-            </div>
-          `;
-        }
+          </div>
+        `;
+      } else if (data.channel === 'mandiri') {
+        content.innerHTML = `
+          <div class="va-display-box" style="border-color: #f59e0b; background: #fffbeb;">
+            <div style="font-size: var(--fs-xs); color: #b45309; font-weight: var(--fw-semibold);">Mandiri Bill Payment:</div>
+            <div style="margin-top: 8px; font-size: var(--fs-xs); color: var(--text-secondary);">Kode Perusahaan (Biller Code):</div>
+            <div class="va-number" style="font-size: var(--fs-md); color: #b45309;">${data.billerCode || '70012'}</div>
+            <div style="margin-top: 6px; font-size: var(--fs-xs); color: var(--text-secondary);">Nomor Pembayaran (Bill Key):</div>
+            <div class="va-number" style="color: #b45309;">${data.billKey || '990000000001'}</div>
+            <button class="btn btn--xs btn--outline" type="button" style="margin-top: 8px;" onclick="copyToClipboard('${data.billKey || '990000000001'}', 'Nomor Bill Key disalin!')">Salin Bill Key</button>
+          </div>
+          <div style="font-size: var(--fs-xs); color: var(--text-secondary); line-height: 1.6; margin-top: 10px;">
+            1. Buka <strong>Livin' by Mandiri</strong> &gt; Bayar &gt; Buat Pembayaran Baru<br>
+            2. Masukkan kode perusahaan <strong>${data.billerCode || '70012'}</strong><br>
+            3. Masukkan Bill Key <strong>${data.billKey || '990000000001'}</strong> dan selesaikan pembayaran.
+          </div>
+        `;
       } else {
-        header.className = "snap-header snap-header--xendit";
-        title.textContent = "XENDIT XENPAYMENTS INVOICE";
-        if (data.channel.includes("qris")) {
-          content.innerHTML = `
-            <div class="qris-barcode-box">
-              <div style="font-weight:var(--fw-bold); font-size:var(--fs-sm); margin-bottom:8px;">Pratinjau QRIS (simulator)</div>
-              <div class="qris-svg-qr" style="background:#0f172a;">
-                <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.8"><rect width="8" height="8" x="2" y="2"/><rect width="8" height="8" x="14" y="2"/><rect width="8" height="8" x="2" y="14"/><rect width="4" height="4" x="6" y="6" fill="#38bdf8"/><rect width="4" height="4" x="18" y="6" fill="#38bdf8"/><rect width="4" height="4" x="6" y="18" fill="#38bdf8"/><path d="M14 14h2v2h-2z"/><path d="M18 14h4v4h-4z"/><path d="M14 18h2v4h-2z"/><path d="M18 20h4v2h-4z"/></svg>
-              </div>
-              <div style="font-size:var(--fs-xs); color:var(--text-secondary); margin-top:8px;">Tidak terhubung ke dompet atau bank.</div>
-            </div>
-          `;
-        } else {
-          content.innerHTML = `
-            <div class="va-display-box" style="border-color:#38bdf8; background:#f0f9ff;">
-              <div style="font-size:var(--fs-xs); color:#0369a1;">Nomor Virtual Account Xendit Multi-Bank:</div>
-              <div class="va-number" style="color:#0284c7;">8808 1228 3190 1190</div>
-              <button class="btn btn--xs btn--outline" type="button" style="margin-top:6px;" onclick="showToast('Nomor VA Xendit disalin ke clipboard!', 'info')">Salin Nomor VA</button>
-            </div>
-            <div style="font-size:var(--fs-xs); color:var(--text-secondary); line-height:1.6;">
-              Transfer melalui ATM atau Mobile Banking jaringan ATM Bersama / Prima.
-            </div>
-          `;
-        }
+        const bankName = (data.bank || data.channel || 'BCA').toUpperCase();
+        const vaNo = data.vaNumber || '8077 7081 2283 1901';
+        content.innerHTML = `
+          <div class="va-display-box">
+            <div style="font-size: var(--fs-xs); color: var(--text-secondary);">Nomor Virtual Account ${bankName}:</div>
+            <div class="va-number" id="current-va-number-display">${vaNo}</div>
+            <button class="btn btn--xs btn--outline" type="button" style="margin-top: 8px;" onclick="copyToClipboard('${vaNo}', 'Nomor VA disalin!')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              Salin Nomor VA
+            </button>
+          </div>
+          <div style="font-size: var(--fs-xs); color: var(--text-secondary); line-height: 1.6; margin-top: 10px;">
+            1. Buka Mobile Banking / ATM ${bankName}<br>
+            2. Pilih menu <strong>Transfer &gt; Virtual Account</strong><br>
+            3. Masukkan nomor VA di atas dan konfirmasi pembayaran.
+          </div>
+        `;
       }
 
       openModalById("modal-gateway-screen");
+      startPaymentPolling(data.orderId);
+    }
+
+    function copyToClipboard(text, msg) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => showToast(msg || 'Disalin ke clipboard!', 'info')).catch(() => showToast(msg || 'Disalin!', 'info'));
+      } else {
+        showToast(msg || 'Disalin ke clipboard!', 'info');
+      }
+    }
+
+    function startPaymentPolling(orderId) {
+      if (paymentPollInterval) clearInterval(paymentPollInterval);
+      paymentPollInterval = setInterval(async () => {
+        try {
+          const res = await TrevyAPI.request(`/api/payments/${encodeURIComponent(orderId)}`);
+          if (res.transaction && res.transaction.status === 'paid') {
+            clearInterval(paymentPollInterval);
+            closeGatewayScreen();
+            await restoreStudentFinancialState();
+            showToast('🎉 Pembayaran berhasil dikonfirmasi! Paket belajar Anda sudah aktif.', 'success');
+          }
+        } catch (_) {}
+      }, 4000);
+    }
+
+    async function checkCurrentPaymentStatus() {
+      if (!pendingPaymentData?.orderId) return;
+      const btn = document.getElementById("btn-check-payment-status");
+      const originalText = btn.textContent;
+      btn.textContent = "Memverifikasi status...";
+      btn.disabled = true;
+      try {
+        const res = await TrevyAPI.request(`/api/payments/${encodeURIComponent(pendingPaymentData.orderId)}`);
+        if (res.transaction && res.transaction.status === 'paid') {
+          if (paymentPollInterval) clearInterval(paymentPollInterval);
+          closeGatewayScreen();
+          await restoreStudentFinancialState();
+          showToast('🎉 Pembayaran berhasil diverifikasi! Paket belajar Anda sudah aktif.', 'success');
+          return;
+        } else {
+          showToast('Status pembayaran masih menunggu transfer. Silakan transfer sesuai petunjuk.', 'info');
+        }
+      } catch (err) {
+        showToast(err.message || 'Gagal mengecek status pembayaran.', 'danger');
+      } finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }
     }
 
     function closeGatewayScreen() {
+      if (paymentPollInterval) clearInterval(paymentPollInterval);
       closeActiveModal();
     }
 
-    function completeGatewaySimulation() {
+    async function completeGatewaySimulation() {
       if (!pendingPaymentData || paymentSimulationInProgress) return;
       paymentSimulationInProgress = true;
       const data = pendingPaymentData;
       const btn = document.getElementById("btn-simulate-success");
-      btn.innerHTML = "Memverifikasi notifikasi webhook " + data.gw + "...";
+      btn.innerHTML = "Memproses konfirmasi simulasi...";
       btn.disabled = true;
 
-      setTimeout(async () => {
-        btn.innerHTML = "Simulasikan Bayar Berhasil (Simulator)";
-        btn.disabled = false;
+      try {
+        const res = await TrevyAPI.request('/api/admin/payments/bridge/midtrans-simulate-webhook', {
+          method: 'POST',
+          body: { orderId: data.orderId, transactionStatus: 'settlement' }
+        });
+        if (paymentPollInterval) clearInterval(paymentPollInterval);
+        closeGatewayScreen();
+        pendingPaymentData = null;
+        await restoreStudentFinancialState();
+        showToast('🎉 ' + (res.message || 'Pembayaran berhasil disimulasikan!'), 'success');
+      } catch (error) {
         try {
           const result = await TrevyAPI.request('/api/payments/simulate', {
-            method: 'POST', headers: { 'Idempotency-Key': data.orderId },
+            method: 'POST',
+            headers: { 'Idempotency-Key': data.orderId },
             body: { packageId: data.packageId, gateway: data.gw }
           });
-          closeActiveModal();
+          if (paymentPollInterval) clearInterval(paymentPollInterval);
+          closeGatewayScreen();
           pendingPaymentData = null;
           await restoreStudentFinancialState();
-          showToast(`Simulasi tercatat sebesar ${formatIDR(result.transaction.amount)}. Pembayaran sungguhan belum diverifikasi.`, 'success');
-        } catch (error) {
-          showToast(error.message, 'danger');
-        } finally {
-          paymentSimulationInProgress = false;
+          showToast(`Simulasi tercatat sebesar ${formatIDR(result.transaction.amount)}. Paket belajar aktif.`, 'success');
+        } catch (err2) {
+          showToast(err2.message, 'danger');
         }
-      }, 900);
+      } finally {
+        btn.innerHTML = "Simulasikan Bayar Berhasil (Sandbox)";
+        btn.disabled = false;
+        paymentSimulationInProgress = false;
+      }
     }
 
     async function restoreStudentFinancialState() {
